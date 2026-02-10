@@ -1,0 +1,124 @@
+---
+title: 'Claude Code: Subagents, Skills, and What They Mean for Your Workflow'
+description: "Claude Code introduces subagents, skills, and image generation. Here's how these features fit into a structured AI development workflow."
+author: 'Rogier Muller'
+authorUrl: 'https://www.linkedin.com/in/rogyr/'
+publishedAt: '2026-01-28'
+category: 'claude-features'
+tags:
+  - Claude Code
+  - subagents
+  - skills
+  - Claude Code
+  - AI agents
+featured: true
+keyTakeaways:
+  - 'Subagents run specialized tasks in parallel with isolated context'
+  - 'Skills let you encode team-specific workflows in SKILL.md files'
+  - 'Claude Blame (Enterprise) shows which code came from AI vs humans'
+---
+
+## What's New in Claude Code
+
+Released January 22, 2026, Claude Code focuses on agent infrastructure. The three major additions:
+
+1. **Subagents** — Independent agents that handle discrete subtasks in parallel
+2. **Skills** — Reusable domain knowledge defined in `SKILL.md` files
+3. **Image generation** — Create mockups and diagrams directly in the editor
+
+## Subagents: Parallel Specialized Execution
+
+Subagents are child agents that run independently of your main conversation. Each gets its own context window, tool access, and can use a different model.
+
+Claude Code includes default subagents for:
+
+- Researching your codebase
+- Running terminal commands
+- Executing parallel work streams
+
+You can also define custom subagents for your team's specific needs.
+
+**How This Fits Our Methodology**
+
+In our 7-step process, subagents expand what you can **delegate**:
+
+| Step  | Before 2.4                  | With Subagents                                           |
+| ----- | --------------------------- | -------------------------------------------------------- |
+| Plan  | AI reads specs, you analyze | Subagent maps dependencies while you focus on priorities |
+| Build | Sequential code generation  | Parallel generation across files                         |
+| Test  | One test file at a time     | Multiple test suites simultaneously                      |
+
+The key shift: you're now delegating coordination, not just individual tasks.
+
+## Skills: Encoding Team Knowledge
+
+Skills are defined in `SKILL.md` files. Unlike rules (which are always-on), skills are invoked when relevant.
+
+Use skills for:
+
+- Team-specific patterns ("how we build API routes")
+- Complex workflows ("our deployment process")
+- Domain knowledge ("our data model conventions")
+
+**Example: API Route Skill**
+
+```markdown
+# API Route Skill
+
+When creating API routes in this project:
+
+1. Use the handler pattern from `src/lib/api-handler.ts`
+2. Add Zod validation with schemas from `src/types/`
+3. Include rate limiting via the `withRateLimit` wrapper
+4. Log to our standard format
+```
+
+The agent discovers and applies this when you ask it to create an API route.
+
+## Image Generation
+
+Generate images directly from agent conversations. Useful for:
+
+- UI mockups during planning
+- Architecture diagrams
+- Quick visual assets
+
+Images save to `assets/` by default.
+
+## Claude Blame (Enterprise)
+
+Claude Blame adds AI attribution to git blame. For each line, you can see:
+
+- Whether it came from Tab, Agent, or human
+- Which model generated it
+- A link to the conversation that produced it
+
+This matters for code review. When reviewing AI-generated code, you want the **context** of why it was written that way.
+
+## Practical Application
+
+**What to Delegate Now**
+
+With 2.4, you can confidently delegate:
+
+- Multi-file scaffolding (subagents handle coordination)
+- Pattern-following tasks (skills encode your patterns)
+- Initial test coverage (parallel test generation)
+
+**What Still Needs Human Review**
+
+- Architecture decisions (subagents execute, they don't decide)
+- Security-critical code (AI doesn't understand your threat model)
+- Business logic (domain knowledge beyond your skills files)
+
+**What Humans Own**
+
+- Strategic direction
+- Final approval
+- Production decisions
+
+This hasn't changed. The tools are better, but the judgment stays with you.
+
+---
+
+_We train teams to use these features effectively. [Contact us](/contact) for hands-on training with Claude Code._

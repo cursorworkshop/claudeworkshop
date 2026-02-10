@@ -1,0 +1,201 @@
+---
+title: 'Claude Gas Town: Multi-Agent Orchestration for Claude Code'
+description: "We built Claude Gas Town—a Claude Code implementation of Steve Yegge's Gas Town multi-agent orchestrator. Built in collaboration with the Claude engineering team, it brings persistent work tracking and multi-agent coordination to Claude Code workflows."
+author: 'Rogier Muller'
+authorUrl: 'https://www.linkedin.com/in/rogyr/'
+publishedAt: '2026-01-28'
+category: 'open-source'
+tags:
+  - Claude Code
+  - multi-agent
+  - open source
+  - Gas Town
+  - agent orchestration
+  - workflow durability
+  - Claude Workshop
+featured: true
+metaTitle: 'Claude Gas Town: Multi-Agent Orchestration for Claude Code | Claude Workshop'
+metaDescription: "Claude Gas Town brings Steve Yegge's Gas Town multi-agent orchestration to Claude Code. Coordinate multiple agents with persistent work tracking and git-backed state management."
+keyTakeaways:
+  - "Claude Gas Town adapts Gas Town's architecture for Claude Code workflows"
+  - 'Built in collaboration with the Claude engineering team'
+  - 'Persistent work tracking survives agent crashes and restarts'
+  - 'Coordinate 20-30 agents across multiple projects with git-backed state'
+---
+
+# Claude Gas Town: Multi-Agent Orchestration for Claude Code
+
+We've been working on something we're excited to share: **Claude Gas Town**—a Claude Code implementation of Steve Yegge's Gas Town multi-agent orchestrator.
+
+Built in collaboration with the Claude engineering team, Claude Gas Town brings persistent work tracking and multi-agent coordination to Claude Code workflows.
+
+## What Is Gas Town?
+
+Gas Town is a workspace manager that coordinates multiple AI coding agents working on different tasks. Instead of losing context when agents restart, Gas Town persists work state in git-backed hooks, enabling reliable multi-agent workflows.
+
+The original Gas Town was built for Claude Code. We've adapted it for Claude Code, maintaining the same architecture while targeting the Claude Code ecosystem.
+
+## The Core Problem It Solves
+
+| Challenge                       | Gas Town Solution                            |
+| ------------------------------- | -------------------------------------------- |
+| Agents lose context on restart  | Work persists in git-backed hooks            |
+| Manual agent coordination       | Built-in mailboxes, identities, and handoffs |
+| 4-10 agents become chaotic      | Scale comfortably to 20-30 agents            |
+| Work state lost in agent memory | Work state stored in Beads ledger            |
+
+## How It Works
+
+### Core Concepts
+
+**The Mayor** — Your primary AI coordinator. The Mayor is a Claude Code agent with full context about your workspace, projects, and agents. Start here—just tell the Mayor what you want to accomplish.
+
+**Town** — Your workspace directory (e.g., `~/gt/`). Contains all projects, agents, and configuration.
+
+**Rigs** — Project containers. Each rig wraps a git repository and manages its associated agents.
+
+**Crew Members** — Your personal workspace within a rig. Where you do hands-on work.
+
+**Polecats** — Ephemeral worker agents that spawn, complete a task, and disappear.
+
+**Hooks** — Git worktree-based persistent storage for agent work. Survives crashes and restarts.
+
+**Convoys** — Work tracking units. Bundle multiple beads (tasks) that get assigned to agents.
+
+**Beads** — Git-backed issue tracking system that stores work state as structured data.
+
+### The Workflow
+
+1. **Create work as beads** — Define tasks using the Beads system
+2. **Group into convoys** — Track related work together
+3. **Assign to agents** — Use `gt sling` to dispatch work
+4. **Monitor progress** — Track through convoy status
+5. **Work persists** — State survives agent restarts via git hooks
+
+## Installation
+
+### Prerequisites
+
+- Go 1.23+
+- Git 2.25+ (for worktree support)
+- beads (bd) 0.47.0+
+- tmux 3.0+ (recommended)
+- Claude Code
+
+### Setup
+
+```bash
+# Install Gas Town and Beads
+go install github.com/claudeworkshop/claude-gastown/cmd/gt@latest
+go install github.com/steveyegge/beads/cmd/bd@latest
+export PATH="$PATH:$HOME/go/bin"
+
+# Create workspace
+gt install ~/gt --git
+cd ~/gt
+
+# Add a project
+gt rig add myproject https://github.com/you/repo.git
+
+# Create crew workspace
+gt crew add yourname --rig myproject
+
+# Verify setup
+gt doctor
+```
+
+## Quick Start
+
+```bash
+# Navigate to your rig
+cd ~/gt/myproject
+
+# Create beads for your tasks
+bd create "Add user authentication"
+bd create "Fix login page styling"
+bd create "Write integration tests"
+
+# Create a convoy tracking your beads
+gt convoy create "Auth Feature" gt-abc gt-def gt-ghi --notify
+
+# Assign work to agents
+gt sling gt-abc myproject
+
+# Monitor progress
+gt convoy list
+```
+
+## Key Features
+
+### Workflow Durability
+
+The most interesting aspect isn't the parallelism—it's how Gas Town handles durability.
+
+Each agent has a "hook" where you assign work. If Claude Code crashes or runs out of context, the workflow state lives in Git through the Beads system. A new agent picks up exactly where the last one stopped. No lost progress, no re-explaining context.
+
+### Multi-Agent Coordination
+
+Gas Town coordinates multiple agents working on different tasks simultaneously. The Mayor agent dispatches work, and agents coordinate through git-backed hooks.
+
+### Persistent State
+
+All work state is stored in git-backed hooks. This means:
+
+- Work survives agent crashes
+- You can resume from any point
+- Full history of changes
+- Easy rollback capability
+
+### Formulas
+
+Gas Town includes built-in formulas for common workflows:
+
+- `shiny` — Full feature workflow (design → implement → review → test → submit)
+- `code-review` — Review existing code
+- `security-audit` — Security-focused review
+- `design` — Design-only phase
+
+```bash
+# Use a formula
+gt sling shiny --var feature="User authentication" myproject
+```
+
+## Built with Claude Code Engineering
+
+This project was built in collaboration with the Claude engineering team. We worked closely with them to ensure Claude Gas Town integrates seamlessly with Claude Code workflows and maintains compatibility with Claude Code's agent architecture.
+
+## How This Relates to Our Methodology
+
+At Claude Workshop, we teach the **Delegate, Review, Own** framework. Claude Gas Town fits this model perfectly:
+
+**Delegate**: Gas Town handles the orchestration of boilerplate, standard implementations, and repetitive tasks across multiple agents. You describe what needs to happen; the agents figure out how.
+
+**Review**: The Refinery role provides automated review, but humans still own the final verification. Gas Town produces work faster, which means more time for meaningful review.
+
+**Own**: Strategic decisions—what to build, architectural choices, technology selection—remain human responsibilities. Gas Town amplifies execution but doesn't replace judgment.
+
+## Why We Built This
+
+As we train teams on AI-assisted development, we've seen the limitations of single-agent workflows. Teams need to coordinate multiple agents working on different parts of a codebase simultaneously.
+
+Gas Town solves this, but it was built for Claude Code. We wanted to bring the same capabilities to Claude Code users. Working with the Claude engineering team, we've adapted Gas Town's architecture for Claude Code.
+
+## Getting Started
+
+Claude Gas Town is open source and available on GitHub:
+
+**🔗 [claudeworkshop/claude-gastown](https://github.com/claudeworkshop/claude-gastown)**
+
+Built in collaboration with the Claude engineering team, this is a Claude Code implementation of Steve Yegge's Gas Town multi-agent orchestrator.
+
+For detailed documentation, installation guides, and examples, visit the [repository](https://github.com/claudeworkshop/claude-gastown).
+
+## The Future
+
+This is just the beginning. We're continuing to work with the Claude engineering team to improve multi-agent orchestration capabilities. As Claude Code evolves, so will Claude Gas Town.
+
+If you're using Claude Code and want to scale beyond single-agent workflows, Claude Gas Town provides the infrastructure you need.
+
+---
+
+_Claude Gas Town is open source and available on [GitHub](https://github.com/claudeworkshop/claude-gastown). Built in collaboration with the Claude engineering team. [Contact us](/contact) to learn how we can help your team adopt multi-agent workflows._

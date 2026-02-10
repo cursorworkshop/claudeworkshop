@@ -1,0 +1,46 @@
+---
+globs: *.tsx
+alwaysApply: false
+---
+# React Development Rules
+
+## Component Structure
+
+Use functional components with hooks, keep components small and focused, extract reusable logic into custom hooks, and use proper prop drilling or context as needed.
+
+## State Management
+
+Use React hooks (useState, useEffect, useContext), keep state as local as possible, use proper dependency arrays in useEffect, and avoid unnecessary re-renders.
+
+## Performance
+
+Use React.memo for expensive components, implement proper key props for lists, use useCallback and useMemo when appropriate, and optimize images with Next.js Image component.
+
+## Code Organization
+
+Follow this organized component structure:
+
+```typescript
+// ✅ Good: Organized component structure
+import React from 'react';
+import { ComponentProps } from './types';
+import { useCustomHook } from './hooks';
+
+const Component: React.FC<ComponentProps> = ({ prop1, prop2 }) => {
+  const { data, loading } = useCustomHook();
+  
+  if (loading) return <div>Loading...</div>;
+  
+  return (
+    <div className="container">
+      {/* Component content */}
+    </div>
+  );
+};
+
+export default Component;
+```
+
+## Best Practices
+
+Use proper event handling, implement proper form handling, use proper refs when needed, implement proper error boundaries, and use proper context for global state.

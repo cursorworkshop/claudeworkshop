@@ -1,0 +1,42 @@
+---
+globs: *.css
+alwaysApply: false
+---
+# Styling Development Rules
+
+## Tailwind CSS
+
+Use utility classes for styling, create custom components for repeated patterns, use consistent spacing and color scales, and implement responsive design patterns.
+
+## Design System
+
+Use consistent design tokens:
+
+```css
+/* ✅ Good: Consistent design tokens */
+:root {
+  --color-primary: #007ACC;
+  --color-secondary: #00D4AA;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+}
+```
+
+## Milano-Inspired Design
+
+Use Milano gradient (teal → blue → pink), implement proper color contrast, use Inter font consistently, and follow card-based layout patterns.
+
+## Responsive Design
+
+Use mobile-first approach, use Tailwind's responsive utilities, test on multiple devices, and implement proper touch targets.
+
+## Custom CSS
+
+Use CSS modules for component-specific styles, implement proper CSS custom properties, follow BEM methodology when needed, and use proper CSS-in-JS patterns.
+
+## Best Practices
+
+Use consistent spacing, implement proper color accessibility, use proper typography hierarchy, and implement proper hover states.

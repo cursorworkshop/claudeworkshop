@@ -1,0 +1,39 @@
+---
+globs: *.ts
+alwaysApply: false
+---
+# TypeScript Development Rules
+
+## Type Definitions
+
+Always define proper interfaces for props and data structures. Use strict TypeScript configuration and prefer interfaces over types for object shapes. Export types from dedicated type files.
+
+## Component Patterns
+
+Use proper interface definitions and component typing:
+
+```typescript
+// ✅ Good: Proper interface definition
+interface ComponentProps {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}
+
+// ✅ Good: Proper component typing
+const Component: React.FC<ComponentProps> = ({ title, description, children }) => {
+  return <div>{children}</div>;
+};
+```
+
+## Error Handling
+
+Use proper error boundaries, handle async operations with try-catch, provide meaningful error messages, and use TypeScript's strict null checks.
+
+## Type Safety
+
+Use strict mode in tsconfig.json, avoid `any` type - use proper typing, use union types for multiple possible values, use generics for reusable components, and use proper type guards for runtime checks.
+
+## Best Practices
+
+Use readonly for immutable data, use const assertions for literal types, use proper utility types (Partial, Pick, Omit), use proper generic constraints, and use proper type inference.

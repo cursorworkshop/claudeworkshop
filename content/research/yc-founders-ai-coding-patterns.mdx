@@ -1,0 +1,145 @@
+---
+title: 'How Y Combinator Founders Actually Ship with AI Coding Tools'
+description: 'Y Combinator asked their founders about AI coding patterns. One insight stood out: when AI produces garbage, git reset --hard and implement clean. Stop stacking fix attempts.'
+author: 'Rogier Muller'
+authorUrl: 'https://www.linkedin.com/in/rogyr/'
+publishedAt: '2026-01-28'
+category: 'ai-coding'
+tags:
+  - Y Combinator
+  - AI coding
+  - Claude Code
+  - git workflow
+  - founder productivity
+  - startup development
+  - AI best practices
+  - implementation patterns
+featured: false
+metaTitle: 'YC Founders AI Coding Patterns: Git Reset and Implementation Plans'
+metaDescription: 'Y Combinator founders share their AI coding workflows. Learn why git reset beats iterative prompting and how markdown implementation plans prevent scope creep.'
+keyTakeaways:
+  - "Git reset --hard when AI output goes wrong—don't stack fix attempts"
+  - 'Write implementation plans in markdown before coding with AI'
+  - 'Have AI mark sections complete as you go to prevent scope creep'
+  - 'Treat AI as a pair programmer that needs clear direction'
+---
+
+# How Y Combinator Founders Actually Ship with AI Coding Tools
+
+Y Combinator asked their founders how they actually ship with AI coding tools. One thing stood out that most people get wrong.
+
+## The Reset Pattern
+
+When the AI starts producing garbage, the instinct is to keep prompting and patching:
+
+- "That's not quite right, try again"
+- "Fix the error on line 42"
+- "Actually, I meant..."
+- "No, keep the previous version but change..."
+
+The founders who move fast do the opposite: `git reset --hard` and implement clean once they know the solution.
+
+Why this works:
+
+**Stacking fix attempts creates layers of bad code.** Each correction builds on a flawed foundation. The AI is trying to patch something that was wrong from the start. You end up with a frankenstein of half-working solutions.
+
+**Understanding comes from failure.** When AI produces garbage, it usually means your prompt was unclear or the task is more complex than expected. The failed attempt teaches you what you actually need. Now you can describe it properly.
+
+**Clean implementations are reviewable.** When you reset and rebuild, you get code you can actually understand. Patched code is hard to follow because it evolved through conversation rather than design.
+
+## The Markdown Plan Pattern
+
+The second pattern: write your implementation plan in a markdown file first and work section by section.
+
+```markdown
+# Feature: User Authentication
+
+## Tasks
+
+- [ ] Set up auth provider
+- [ ] Create login form component
+- [ ] Implement session handling
+- [ ] Add protected routes
+- [ ] Write tests for auth flow
+```
+
+Then work through each task with AI, marking them complete as you go:
+
+```markdown
+- [x] Set up auth provider
+- [x] Create login form component
+- [ ] Implement session handling
+- [ ] Add protected routes
+- [ ] Write tests for auth flow
+```
+
+**Why This Prevents Scope Creep**
+
+When Claude Code makes everything feel fast, scope creep is dangerous. You start adding features that weren't in the plan because "it's just one more prompt."
+
+The checklist anchors you. If it's not on the list, it doesn't get built right now. Add it to a future section if needed, but don't interrupt the current flow.
+
+**AI Updates the Plan**
+
+Have the AI mark things complete as you go. This creates a living document of progress and makes it obvious when you're veering off track.
+
+## The First Principles
+
+Y Combinator emphasizes treating AI as a pair programmer that needs clear direction:
+
+1. **Plan before prompting**: Know what you want before you ask for it
+2. **Choose scope carefully**: AI is better at small, well-defined tasks
+3. **Reset early, reset often**: Don't sink time into fixing broken foundations
+4. **Track progress visibly**: Markdown checklists keep you honest
+
+## How This Maps to Delegate, Review, Own
+
+**Delegate**: AI handles the implementation of each checklist item. You've already done the thinking; AI does the typing.
+
+**Review**: Each completed item gets reviewed before moving to the next. Small scope means review is actually possible.
+
+**Own**: The plan itself. What to build, in what order, what's in scope. This is human judgment, not delegated.
+
+## Common Anti-Patterns to Avoid
+
+**The Infinite Prompt Loop**
+
+Symptoms:
+
+- You've sent 20 messages about the same feature
+- Each response introduces new problems
+- You're further from working code than when you started
+
+Fix: `git reset --hard`, step back, understand what you actually need, then describe it clearly in one prompt.
+
+**The Missing Plan**
+
+Symptoms:
+
+- You started coding without knowing where you're going
+- Features keep expanding mid-implementation
+- You can't remember what you were trying to build
+
+Fix: Stop. Write the markdown plan. Then continue.
+
+**The Review Skip**
+
+Symptoms:
+
+- AI generated lots of code and you shipped it
+- You don't actually understand what it does
+- Bugs appear in production that confuse you
+
+Fix: Read every line before committing. If you can't explain it, you shouldn't ship it.
+
+## The Counterintuitive Truth
+
+Fast founders don't move fast by going fast. They move fast by knowing when to stop.
+
+When AI goes wrong, stopping and resetting is faster than fixing. When scope expands, stopping and planning is faster than chasing features. When code is confusing, stopping and reviewing is faster than debugging in production.
+
+Speed comes from clarity, not velocity.
+
+---
+
+_Claude Workshop helps founders and teams develop systematic AI workflows. Our training covers the practical patterns that separate effective AI-assisted development from frustrating prompt loops._

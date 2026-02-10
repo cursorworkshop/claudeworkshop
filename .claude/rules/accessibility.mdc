@@ -1,0 +1,26 @@
+---
+globs: *.tsx
+alwaysApply: false
+---
+
+# Accessibility & SEO Development Rules
+
+## Accessibility Standards
+
+Follow WCAG 2.1 AA guidelines, use proper semantic HTML, implement keyboard navigation, and provide proper alt text for images.
+
+## Testing
+
+Use accessibility testing tools, test with screen readers, implement proper focus management, and use proper ARIA attributes.
+
+## SEO Best Practices
+
+Use proper title and description, implement Open Graph tags, use structured data, and optimize for search engines.
+
+## Performance
+
+Optimize Core Web Vitals, implement proper caching, use Next.js optimization features, and monitor search console.
+
+## Best Practices
+
+Use proper heading hierarchy, implement proper color contrast, use proper language attributes, and provide proper error messages.

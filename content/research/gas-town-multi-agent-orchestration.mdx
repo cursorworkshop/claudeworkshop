@@ -1,0 +1,99 @@
+---
+title: "Gas Town: Steve Yegge's Multi-Agent Orchestrator and What It Means for AI Development"
+description: "Steve Yegge's Gas Town runs 20-30 Claude Code agents in parallel. Here's how multi-agent orchestration is changing AI-assisted development and why workflow durability matters."
+author: 'Rogier Muller'
+authorUrl: 'https://www.linkedin.com/in/rogyr/'
+publishedAt: '2026-01-28'
+category: 'ai-coding'
+tags:
+  - multi-agent
+  - Claude Code
+  - AI orchestration
+  - Steve Yegge
+  - Gas Town
+  - agentic development
+  - parallel agents
+  - workflow durability
+featured: true
+metaTitle: 'Gas Town Multi-Agent Orchestrator: Running 30 Claude Code Agents in Parallel'
+metaDescription: "Deep dive into Steve Yegge's Gas Town - a Go-based multi-agent orchestrator that coordinates 20-30 Claude Code instances for production-scale AI development."
+keyTakeaways:
+  - 'Gas Town orchestrates 7 distinct agent roles (Mayor, Polecats, Refinery, etc.) across multiple projects'
+  - "Workflow durability through Git-based 'Beads' system means no lost progress when agents crash"
+  - 'Successfully solved 1M-step workflows where prior research showed LLMs fail after hundreds of steps'
+  - "Work is broken into 'molecules' with dependency chains: design before implement, implement before test"
+---
+
+# Gas Town: Steve Yegge's Multi-Agent Orchestrator
+
+Steve Yegge released Gas Town in early 2026, and it represents a significant shift in how we think about AI-assisted development. Instead of one agent in your terminal, you run 20-30 in parallel across tmux sessions, coordinated by a "Mayor" agent that dispatches work.
+
+## The Core Innovation: Workflow Durability
+
+The most interesting aspect isn't the parallelism—it's how Gas Town handles durability.
+
+Each agent has a "hook" where you assign work. If Claude crashes or runs out of context, the workflow state lives in Git through Yegge's Beads system. A new agent picks up exactly where the last one stopped. No lost progress, no re-explaining context. The agent is persistent even when sessions aren't.
+
+This solves one of the biggest pain points in AI-assisted development: context loss. When you've been working with an AI agent for hours and it loses track of what you're building, you lose momentum. Gas Town treats this as an infrastructure problem with an infrastructure solution.
+
+## How It Works: Molecules and Dependencies
+
+Yegge breaks down work into "molecules" with dependency chains:
+
+1. **Design** before implement
+2. **Implement** before test
+3. **Test** before integration
+
+Agents check off steps as they complete them. The system tracks which molecules are complete, which are in progress, and which are blocked on dependencies.
+
+It's basically Kubernetes for coding agents—which sounds absurd until you see someone actually shipping with it.
+
+## The Seven Agent Roles
+
+Gas Town defines distinct roles for its agents:
+
+- **Mayor**: The coordinator that dispatches work and manages priorities
+- **Polecats**: Specialized agents for specific task types
+- **Refinery**: Code review and quality control
+- **Witness**: Monitoring and logging
+- **Deacon**: Documentation and standards
+- **Dogs**: Testing and validation
+- **Crew**: General-purpose implementation workers
+
+This specialization means each agent can optimize for its specific function rather than trying to be a generalist.
+
+## Performance: 1M-Step Workflows
+
+Gas Town successfully solved the MAKER benchmark (Tower of Hanoi) with 1M-step workflows. Prior research showed LLMs typically fail after hundreds of steps. This is a significant achievement that demonstrates the value of proper orchestration.
+
+The key insight: LLMs don't fail because they lack capability. They fail because context gets corrupted over long interactions. By maintaining workflow state externally and allowing fresh agents to pick up work, Gas Town sidesteps this limitation.
+
+## How This Relates to Our Methodology
+
+At Claude Workshop, we teach the **Delegate, Review, Own** framework. Gas Town fits this model well:
+
+**Delegate**: Gas Town handles the orchestration of boilerplate, standard implementations, and repetitive tasks across multiple agents. You describe what needs to happen; the agents figure out how.
+
+**Review**: The Refinery role provides automated review, but humans still own the final verification. Gas Town produces work faster, which means more time for meaningful review.
+
+**Own**: Strategic decisions—what to build, architectural choices, technology selection—remain human responsibilities. Gas Town amplifies execution but doesn't replace judgment.
+
+## Should You Use Gas Town?
+
+Yegge notes it requires "Stage 7+ AI-assisted development experience" to use effectively. This isn't a beginner tool. You need to:
+
+- Understand how LLMs work and fail
+- Be comfortable with complex terminal workflows
+- Know when to trust agent output and when to intervene
+
+For teams already shipping with AI tools like Claude Code or Claude Code, Gas Town represents the next evolution. For teams just starting their AI journey, master the fundamentals first.
+
+## The Bigger Picture
+
+As AI coding agents become commoditized, orchestration represents the next frontier. Individual agent capability matters less than how well you coordinate multiple agents at scale.
+
+Gas Town is open source on GitHub. Whether you use it directly or just learn from its patterns, understanding multi-agent orchestration is becoming essential for AI-assisted development teams.
+
+---
+
+_At Claude Workshop, we help teams navigate the rapidly evolving landscape of AI-assisted development. From individual tool proficiency to enterprise-scale orchestration strategies, we provide practical training grounded in real-world experience._

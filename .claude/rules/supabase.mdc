@@ -1,0 +1,29 @@
+# Supabase Project Rules
+
+## CRITICAL: Project Restriction
+
+**ONLY use the claudeworkshop.com Supabase project for this codebase.**
+
+- Project name: `claudeworkshop` (or similar - confirm with user)
+- DO NOT use any other Supabase project (e.g., "nomovu" or others)
+- Always verify the project ID before running any Supabase MCP commands
+
+## When Using Supabase MCP
+
+1. Always call `list_projects` first to find the claudeworkshop project
+2. Confirm the project ID with the user if uncertain
+3. Never run migrations or SQL on the wrong project
+
+## Environment Variables
+
+The following env vars should be set for Supabase:
+- `NEXT_PUBLIC_SUPABASE_URL` - The Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - The public anon key
+- `SUPABASE_SERVICE_ROLE_KEY` - Server-side only, for admin operations
+
+## Database Schema
+
+Analytics data is stored in these tables:
+- `analytics_sessions` - Visitor sessions with referrer, UTM, device info
+- `analytics_page_views` - Individual page views with timing
+- `analytics_events` - Custom events (form submissions, clicks, etc.)

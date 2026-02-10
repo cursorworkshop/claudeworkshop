@@ -1,0 +1,32 @@
+# claudeworkshop.com
+
+> Official Claude Ambassadors. Enterprise AI development training for engineering teams.
+
+## About
+
+Claude Workshop provides in-house and offsite training programs to help engineering teams master AI-assisted development using Claude Code and other AI coding tools. We train teams at Fortune 100 and DAX 40 companies.
+
+## Training Programs
+
+- Foundation: Introduction to AI-assisted development
+- Professional: Advanced workflows and team integration
+- Enterprise: Organization-wide AI transformation
+
+## Key Pages
+
+- /training - All training programs
+- /methodology - Our DRO (Delegate, Review, Own) framework
+- /research - Latest research on AI-assisted development
+- /about - About the founders and company
+- /contact - Get in touch
+
+## Framework
+
+We teach the DRO Framework:
+- Delegate: Hand off repetitive tasks to AI (boilerplate, tests, docs)
+- Review: AI proposes, you decide (bug fixes, refactoring)
+- Own: Human judgment required (architecture, security, business logic)
+
+## Contact
+
+For training inquiries: /contact

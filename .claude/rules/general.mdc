@@ -1,0 +1,37 @@
+---
+alwaysApply: true
+---
+
+# General Development Rules
+
+## Code Quality
+
+Use ESLint with TypeScript rules, implement Prettier for code formatting, use proper Git commit messages, and review code before merging.
+
+## Testing
+
+Write unit tests for utilities, test components with React Testing Library, implement integration tests for critical paths, and use proper mocking strategies.
+
+## Performance
+
+Optimize bundle size, implement proper image optimization, use Next.js built-in performance features, and monitor Core Web Vitals.
+
+## Deployment
+
+Use proper environment variables, implement proper build optimization, use Next.js static generation when possible, and implement proper error monitoring.
+
+## Documentation
+
+Use JSDoc for complex functions, document component props, explain business logic, and keep comments up to date.
+
+## Security
+
+Validate all user inputs, use proper authentication, implement proper authorization, and sanitize data before rendering.
+
+## Version Control
+
+Use feature branches, write descriptive commit messages, use proper PR templates, and implement proper code review.
+
+## Best Practices
+
+Follow Clean Code principles, use SOLID principles, implement proper design patterns, and maintain consistent code style.

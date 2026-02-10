@@ -1,0 +1,39 @@
+---
+alwaysApply: true
+---
+# Next.js Development Rules
+
+## App Router Patterns
+
+Use proper page and layout structure, implement proper metadata for SEO, use server components when possible, and handle loading and error states.
+
+## File Organization
+
+Follow this file organization structure:
+
+```bash
+src/app/
+├── layout.tsx          # Root layout
+├── page.tsx           # Home page
+├── about/
+│   └── page.tsx      # About page
+├── events/
+│   └── page.tsx      # Events page
+└── globals.css        # Global styles
+```
+
+## Data Fetching
+
+Use server components for data fetching, implement proper caching strategies, handle loading and error states, and use proper TypeScript for API responses.
+
+## Performance
+
+Use Next.js Image component for optimization, implement proper static generation, use proper dynamic imports, and optimize bundle size.
+
+## SEO
+
+Use proper meta tags, implement Open Graph tags, use structured data, and optimize for search engines.
+
+## Best Practices
+
+Use proper routing patterns, implement proper error handling, use proper environment variables, and implement proper security headers.

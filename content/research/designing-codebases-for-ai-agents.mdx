@@ -1,0 +1,148 @@
+---
+title: "Designing Codebases for AI Agents: Peter Steinberger's Approach"
+description: "Peter Steinberger doesn't design codebases for himself anymore—he engineers them so AI agents can work efficiently. Here's how to structure code for maximum agent productivity."
+author: 'Rogier Muller'
+authorUrl: 'https://www.linkedin.com/in/rogyr/'
+publishedAt: '2026-01-28'
+category: 'methodology'
+tags:
+  - codebase design
+  - AI agents
+  - Claude Code
+  - Claude Code
+  - agentic engineering
+  - code organization
+  - developer productivity
+  - Peter Steinberger
+featured: false
+metaTitle: 'How to Design Codebases for AI Coding Agents | Claude Workshop'
+metaDescription: "Learn how to structure your codebase so AI agents like Claude Code can work efficiently. Peter Steinberger's practical approach to agent-friendly code organization."
+keyTakeaways:
+  - 'Structure codebases for agent comprehension, not just human readability'
+  - 'Obvious folder structures and predictable doc locations reduce prompt overhead'
+  - "Evaluate changes by 'blast radius'—throw many small bombs, not large ones"
+  - 'Run 3-8 agents in parallel for maximum throughput'
+---
+
+# Designing Codebases for AI Agents
+
+Peter Steinberger dropped a post this week that hit different. He doesn't design codebases for himself anymore. He engineers them so AI agents can work efficiently.
+
+This is a subtle but important mindset shift. Most developers still think about code organization in terms of human comprehension. Steinberger thinks about agent comprehension first.
+
+## The Core Principle
+
+The more you build for how the model thinks, the less you waste on prompts and corrections.
+
+This means:
+
+- **Obvious folder structures**: If an agent needs to find your API routes, they should be in `/api` or `/routes`, not scattered across the codebase
+- **Predictable documentation locations**: README files in expected places, API docs where they should be
+- **Consistent naming conventions**: When patterns are predictable, agents infer correctly more often
+- **Minimal implicit knowledge**: Agents don't know your team's unwritten rules
+
+## The Blast Radius Concept
+
+Steinberger evaluates every change by its "blast radius"—how many files will be touched, and how long should it take?
+
+This mental model enables a key insight: **throw many small bombs at the codebase, not large ones**.
+
+Benefits:
+
+- Isolated commits that are easy to review
+- Simple rollbacks when something goes wrong
+- Parallel agent work without merge conflicts
+- Clear attribution of what changed and why
+
+When you ask an agent to refactor an entire feature, you get a massive PR that's impossible to review properly. When you ask for small, atomic changes, you get clean commits you can actually verify.
+
+## Parallel Agent Execution
+
+Steinberger runs 3-8 agents in parallel in a 3x3 terminal grid. He uses the `codex` CLI as his daily driver, often with multiple agents working in the same folder.
+
+This works because:
+
+- Each agent handles atomic, isolated changes
+- Git handles merging automatically
+- Blast radius thinking prevents conflicts
+- Agents make atomic commits as they work
+
+For a ~300k LOC TypeScript React codebase, this approach means AI agents write approximately 100% of his code. The human role shifts from writing to directing and reviewing.
+
+## Practical Implementation
+
+**1. Restructure for Discoverability**
+
+Before:
+
+```
+src/
+  utils/
+    helper.ts
+    other-helper.ts
+  components/
+    Button/
+      index.tsx
+```
+
+After:
+
+```
+src/
+  features/
+    auth/
+      components/
+      hooks/
+      api/
+      README.md
+    dashboard/
+      components/
+      hooks/
+      api/
+      README.md
+```
+
+Features are self-contained. An agent working on auth doesn't need to understand dashboard. Context stays focused.
+
+**2. Document for Agents**
+
+Add `AGENT.md` or `CLAUDE.md` files that explain:
+
+- Project conventions
+- How to run tests
+- Where to find what
+- Common patterns used
+
+Steinberger maintains the `agent-rules` repository (5.5k stars on GitHub) with templates for these files.
+
+**3. Make Implicit Knowledge Explicit**
+
+Your team knows that "the user service is weird because of legacy reasons." Agents don't. Document the quirks:
+
+```markdown
+## Known Issues
+
+- UserService uses deprecated auth patterns (ticket #1234 tracks migration)
+- Profile endpoints require double-encoding for special characters
+- Tests require TEST_DB_URL env var
+```
+
+## How This Relates to Delegate, Review, Own
+
+This approach maps directly to our methodology:
+
+**Delegate**: With a well-structured codebase, you can delegate more confidently. Agents make fewer mistakes when the structure guides them correctly.
+
+**Review**: Atomic commits with small blast radii are reviewable. You can actually verify what changed rather than scrolling through 50 files.
+
+**Own**: You own the structure itself. The architecture decisions, the organization patterns, the conventions—these remain human responsibilities.
+
+## The Counterintuitive Truth
+
+Investing time in codebase structure for agents feels like extra work. But it's actually the highest-leverage improvement you can make.
+
+Every hour spent making your codebase agent-friendly saves dozens of hours in prompt engineering, failed attempts, and manual fixes. It's not overhead—it's infrastructure.
+
+---
+
+_Claude Workshop helps teams redesign their development workflows for the AI era. From codebase restructuring to agent workflow optimization, we provide practical training that transforms how teams ship software._

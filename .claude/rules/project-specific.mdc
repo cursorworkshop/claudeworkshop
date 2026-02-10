@@ -1,0 +1,29 @@
+---
+alwaysApply: true
+---
+
+# Claude Workshop Project Rules
+
+## Project Overview
+
+This is a Next.js 14 application with TypeScript, Tailwind CSS, and React for the Claude Workshop meetup website.
+
+## Technology Stack
+
+Framework: Next.js 14 with App Router, Language: TypeScript (strict mode), Styling: Tailwind CSS with custom design system, Content: Markdown-based CMS, Icons: Lucide React, Font: Inter (optimized with Next.js font system).
+
+## Design System
+
+Colors: Milano-inspired gradient (teal → blue → pink), Typography: Inter font family, Components: Card-based layout with hover effects, Responsive: Mobile-first approach.
+
+## Content Guidelines
+
+Write clear, engaging content, use proper Italian language when needed, maintain professional tone, include proper call-to-actions, use proper imagery and branding, implement proper event descriptions, maintain community guidelines, and use proper speaker information.
+
+## Technical Guidelines
+
+Use Next.js 14 features effectively, implement proper TypeScript patterns, use Tailwind CSS consistently, optimize for performance, implement proper SEO, use proper accessibility patterns, maintain proper code organization, and follow proper testing strategies.
+
+## Community Focus
+
+Follow the Milano-inspired design system, use Inter font consistently, implement proper event management, maintain community-focused content, ensure accessibility for all users, optimize for Italian audience, implement proper SEO for meetup events, and use proper social media integration.
