@@ -22,7 +22,7 @@ export const siteConfig: SiteConfig = {
 export const navigation = [
   { name: 'Home', href: '/' },
   { name: 'Training', href: '/training' },
-  { name: 'Research', href: '/research' },
+  // { name: 'Research', href: '/research' }, // Hidden: content needs rewriting
   { name: 'Methodology', href: '/methodology' },
   { name: 'About', href: '/about' },
 ];

@@ -9,7 +9,7 @@ const links = {
   company: [
     { label: 'About', href: '/about' },
     { label: 'Methodology', href: '/methodology' },
-    { label: 'Research', href: '/research' },
+    // { label: 'Research', href: '/research' }, // Hidden: content needs rewriting
   ],
 };
 
