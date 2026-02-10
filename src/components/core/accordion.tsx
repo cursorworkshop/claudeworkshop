@@ -8,9 +8,8 @@ import { cn } from '@/lib/utils';
 
 const Accordion = AccordionPrimitive.Root;
 
-interface AccordionItemProps extends React.ComponentPropsWithoutRef<
-  typeof AccordionPrimitive.Item
-> {
+interface AccordionItemProps
+  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item> {
   children: React.ReactNode;
 }
 
@@ -24,9 +23,8 @@ const AccordionItem = React.forwardRef<
 ));
 AccordionItem.displayName = 'AccordionItem';
 
-interface AccordionTriggerProps extends React.ComponentPropsWithoutRef<
-  typeof AccordionPrimitive.Trigger
-> {
+interface AccordionTriggerProps
+  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger> {
   children: React.ReactNode;
 }
 
@@ -49,9 +47,8 @@ const AccordionTrigger = React.forwardRef<
 ));
 AccordionTrigger.displayName = 'AccordionTrigger';
 
-interface AccordionContentProps extends React.ComponentPropsWithoutRef<
-  typeof AccordionPrimitive.Content
-> {
+interface AccordionContentProps
+  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content> {
   children: React.ReactNode;
 }
 

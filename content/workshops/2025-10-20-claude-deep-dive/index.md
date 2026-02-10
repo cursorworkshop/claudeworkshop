@@ -28,14 +28,14 @@ This isn’t just another offsite — your engineers will:
 
 ## 5-Day Sprint Structure
 
-| Day | Focus                                                             |
-| --- | ----------------------------------------------------------------- |
-| 0   | Prep – .claude rules, repo access, time-tracking                  |
+| Day | Focus                                                                  |
+| --- | ---------------------------------------------------------------------- |
+| 0   | Prep – .claude rules, repo access, time-tracking                       |
 | 1   | Claude Code Fundamentals – tab completion, prompt design, inline edits |
-| 2   | Automated Workflows – Agent mode, CI/CD integration               |
-| 3   | Collaboration & Scaling – pair programming, control plane         |
-| 4   | Ship & Harden – AI debugging, rollbacks, monitoring               |
-| 5   | Capstone & Badging – demos, badging, roadmap                      |
+| 2   | Automated Workflows – Agent mode, CI/CD integration                    |
+| 3   | Collaboration & Scaling – pair programming, control plane              |
+| 4   | Ship & Harden – AI debugging, rollbacks, monitoring                    |
+| 5   | Capstone & Badging – demos, badging, roadmap                           |
 
 ## Impact
 
