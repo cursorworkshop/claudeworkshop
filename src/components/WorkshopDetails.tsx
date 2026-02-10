@@ -34,9 +34,9 @@ export default function WorkshopDetails() {
         <CardHeader>
           <CardTitle className='text-2xl'>Workshop Overview</CardTitle>
           <CardDescription>
-            This isn't just another offsite, your engineers will master Claude Code
-            through hands-on, expert-guided training while experiencing curated
-            leisure activities.
+            This isn't just another offsite, your engineers will master Claude
+            Code through hands-on, expert-guided training while experiencing
+            curated leisure activities.
           </CardDescription>
         </CardHeader>
         <CardContent className='space-y-6'>
@@ -44,7 +44,9 @@ export default function WorkshopDetails() {
             <Card className='border-dashed'>
               <CardContent className='p-4 text-center'>
                 <Code className='w-8 h-8 text-primary mx-auto mb-2' />
-                <CardTitle className='text-sm mb-1'>Master Claude Code</CardTitle>
+                <CardTitle className='text-sm mb-1'>
+                  Master Claude Code
+                </CardTitle>
                 <CardDescription className='text-xs'>
                   Expert-guided training
                 </CardDescription>
@@ -189,7 +191,8 @@ export default function WorkshopDetails() {
                     </li>
                     <li className='flex items-center gap-2'>
                       <CheckCircle className='w-4 h-4 text-primary' />
-                      Shared context, Claude Code Control Plane, chat-based reviews
+                      Shared context, Claude Code Control Plane, chat-based
+                      reviews
                     </li>
                     <li className='flex items-center gap-2'>
                       <CheckCircle className='w-4 h-4 text-primary' />
@@ -277,8 +280,8 @@ export default function WorkshopDetails() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Real-world data shows engineers using AI tools like Claude Code
-                  deliver faster, shipping more features, saving weeks per
+                  Real-world data shows engineers using AI tools like Claude
+                  Code deliver faster, shipping more features, saving weeks per
                   quarter.
                 </CardDescription>
               </CardContent>
@@ -308,8 +311,8 @@ export default function WorkshopDetails() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  New hires reach full speed up to 60% sooner with Claude Code best
-                  practices and in-tool help.
+                  New hires reach full speed up to 60% sooner with Claude Code
+                  best practices and in-tool help.
                 </CardDescription>
               </CardContent>
             </Card>

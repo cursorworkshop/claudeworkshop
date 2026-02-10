@@ -340,10 +340,10 @@ export default function AboutPage() {
               </CardHeader>
               <CardContent className='pt-0 flex-1 flex flex-col'>
                 <CardDescription className='text-base mb-4'>
-                  In daily contact with the Claude Code development team to ensure
-                  our training reflects the latest features and best practices.
-                  We help shape the product and provide feedback from real-world
-                  usage.
+                  In daily contact with the Claude Code development team to
+                  ensure our training reflects the latest features and best
+                  practices. We help shape the product and provide feedback from
+                  real-world usage.
                 </CardDescription>
                 <div className='mt-auto space-y-2 pt-4 border-t border-border/30'>
                   <div className='flex items-center gap-2 text-sm text-muted-foreground'>
@@ -407,8 +407,8 @@ export default function AboutPage() {
               </CardHeader>
               <CardContent className='pt-0 flex-1 flex flex-col'>
                 <CardDescription className='text-base mb-4'>
-                  We contribute to the Claude Code ecosystem with open source tools.
-                  Our flagship project coordinates multiple AI agents for
+                  We contribute to the Claude Code ecosystem with open source
+                  tools. Our flagship project coordinates multiple AI agents for
                   complex workflows.
                 </CardDescription>
 

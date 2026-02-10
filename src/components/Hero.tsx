@@ -43,8 +43,8 @@ export default function Hero({ nextEvent }: HeroProps) {
 
               <p className='text-xl text-muted-foreground max-w-2xl'>
                 Premium offsite experiences for engineering teams. Hands-on AI
-                development with Claude Code, small groups, expert instructors, real
-                projects.
+                development with Claude Code, small groups, expert instructors,
+                real projects.
               </p>
             </div>
 

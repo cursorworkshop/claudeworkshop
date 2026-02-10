@@ -219,8 +219,8 @@ export default async function EventsPage() {
                       Diverse Topics
                     </h3>
                     <p className='text-gray-600 text-sm'>
-                      AI development, Claude Code tips, product management, design,
-                      entrepreneurship, and more.
+                      AI development, Claude Code tips, product management,
+                      design, entrepreneurship, and more.
                     </p>
                   </div>
                 </div>

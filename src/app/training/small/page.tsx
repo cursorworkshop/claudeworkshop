@@ -99,8 +99,8 @@ export default function SmallTrainingPage() {
                 <h2 className='text-3xl font-bold mb-4'>What You'll Learn</h2>
                 <p className='text-lg text-muted-foreground mb-6'>
                   This introductory program covers the essential foundations of
-                  Claude Code, helping your team understand how AI can enhance their
-                  development workflow without overwhelming them.
+                  Claude Code, helping your team understand how AI can enhance
+                  their development workflow without overwhelming them.
                 </p>
               </div>
 
@@ -108,7 +108,9 @@ export default function SmallTrainingPage() {
                 <div className='flex items-start gap-3'>
                   <CheckCircle className='w-6 h-6 text-primary mt-1 flex-shrink-0' />
                   <div>
-                    <h3 className='font-semibold mb-1'>Claude Code Fundamentals</h3>
+                    <h3 className='font-semibold mb-1'>
+                      Claude Code Fundamentals
+                    </h3>
                     <p className='text-muted-foreground text-sm'>
                       Understanding the interface, basic commands, and core
                       features

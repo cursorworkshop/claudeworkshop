@@ -30,8 +30,8 @@ export default function Team() {
             Meet the Founders
           </h2>
           <p className='text-muted-foreground text-balance'>
-            Official Claude Ambassadors, in daily contact with the Claude Code team,
-            bringing you the latest features and best practices.
+            Official Claude Ambassadors, in daily contact with the Claude Code
+            team, bringing you the latest features and best practices.
           </p>
         </div>
         <div className='mt-12 grid gap-12 text-sm'>

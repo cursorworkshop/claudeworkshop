@@ -131,7 +131,8 @@ export default function StunningEventDetails() {
                     <CardContent className='p-6'>
                       <Code className='w-12 h-12 text-primary mx-auto mb-4' />
                       <CardTitle className='text-lg mb-2'>
-                        Master Claude Code through hands-on, expert-guided training
+                        Master Claude Code through hands-on, expert-guided
+                        training
                       </CardTitle>
                     </CardContent>
                   </Card>
@@ -330,8 +331,8 @@ export default function StunningEventDetails() {
                           <li className='flex items-center gap-3'>
                             <CheckCircle className='w-5 h-5 text-primary flex-shrink-0' />
                             <span>
-                              Shared context, Claude Code Control Plane, chat-based
-                              reviews
+                              Shared context, Claude Code Control Plane,
+                              chat-based reviews
                             </span>
                           </li>
                           <li className='flex items-center gap-3'>
@@ -446,8 +447,8 @@ export default function StunningEventDetails() {
                       </CardTitle>
                       <CardDescription>
                         Real-world data shows engineers using AI tools like
-                        Claude Code deliver faster, shipping more features, saving
-                        weeks per quarter.
+                        Claude Code deliver faster, shipping more features,
+                        saving weeks per quarter.
                       </CardDescription>
                     </CardContent>
                   </Card>
@@ -476,8 +477,8 @@ export default function StunningEventDetails() {
                         Faster Onboarding
                       </CardTitle>
                       <CardDescription>
-                        New hires reach full speed up to 60% sooner with Claude Code
-                        best practices and in-tool help.
+                        New hires reach full speed up to 60% sooner with Claude
+                        Code best practices and in-tool help.
                       </CardDescription>
                     </CardContent>
                   </Card>
