@@ -33,14 +33,7 @@ export type ResearchArticleWithContent = ResearchArticle & {
 const RESEARCH_DIR = path.join(process.cwd(), 'content', 'editorials');
 const CANONICAL_MULTI_AGENT_SLUG =
   'multi-agent-orchestration-2019564738649505882';
-const HIDDEN_RESEARCH_SLUGS = new Set([
-  'ai-coding-tooling-1977706278110765481',
-  'ai-coding-tooling-2020290971951391031',
-  'mcp-and-integrations-1961848171925278932',
-  'research-pipeline-spec',
-  'multi-agent-orchestration-20260305-1046',
-  'multi-agent-orchestration-20260306-0828',
-]);
+const PUBLIC_RESEARCH_SLUGS = new Set([CANONICAL_MULTI_AGENT_SLUG]);
 
 const calculateReadingTime = (content: string): number => {
   const wordsPerMinute = 200;
@@ -48,13 +41,8 @@ const calculateReadingTime = (content: string): number => {
   return Math.ceil(words / wordsPerMinute);
 };
 
-const isHiddenResearchSlug = (slug: string): boolean => {
-  if (HIDDEN_RESEARCH_SLUGS.has(slug)) {
-    return true;
-  }
-
-  return slug.startsWith(`${CANONICAL_MULTI_AGENT_SLUG}-`);
-};
+const isPublicResearchSlug = (slug: string): boolean =>
+  PUBLIC_RESEARCH_SLUGS.has(slug);
 
 export const getAllResearchArticles = (): ResearchArticle[] => {
   if (!fs.existsSync(RESEARCH_DIR)) {
@@ -96,13 +84,13 @@ export const getAllResearchArticles = (): ResearchArticle[] => {
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     );
 
-  return articles.filter(article => !isHiddenResearchSlug(article.slug));
+  return articles.filter(article => isPublicResearchSlug(article.slug));
 };
 
 export const getResearchArticle = (
   slug: string
 ): ResearchArticleWithContent | null => {
-  if (isHiddenResearchSlug(slug)) {
+  if (!isPublicResearchSlug(slug)) {
     return null;
   }
 

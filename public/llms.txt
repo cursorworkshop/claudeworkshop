@@ -24,13 +24,7 @@ Claude Workshop provides in-house and offsite training programs that help engine
 
 ## Research
 
-- [Claude 2.4: Subagents, Skills, and What They Mean for Your Workflow](https://claudeworkshop.com/research/claude-2-4-subagents-skills): How subagents, skills, and image generation fit into structured AI development
-- [Claude Gas Town: Multi-Agent Orchestration for Claude CLI](https://claudeworkshop.com/research/claude-gastown-multi-agent-orchestration): A Claude CLI implementation of multi-agent orchestration with persistent work tracking
-- [Gas Town: Steve Yegge's Multi-Agent Orchestrator](https://claudeworkshop.com/research/gas-town-multi-agent-orchestration): How running 20-30 Claude Code agents in parallel changes AI-assisted development
-- [Designing Codebases for AI Agents](https://claudeworkshop.com/research/designing-codebases-for-ai-agents): How to structure code so AI agents like Claude and Claude Code work efficiently
-- [Job vs Gym: Which Skills Should You Protect from AI?](https://claudeworkshop.com/research/job-vs-gym-ai-skills-framework): A framework for deciding when to use AI and when to maintain skills yourself
-- [Why Senior Engineers Accept More AI Suggestions Than Juniors](https://claudeworkshop.com/research/senior-vs-junior-ai-acceptance-rates): Research showing AI coding tools amplify existing engineering skill
-- [How Y Combinator Founders Ship with AI Coding Tools](https://claudeworkshop.com/research/yc-founders-ai-coding-patterns): Patterns from YC founders on using AI tools effectively
+- [What Multi-Agent Orchestration Changes for Teams Shipping With Coding Agents](https://claudeworkshop.com/research/multi-agent-orchestration-2019564738649505882): A practical look at orchestrating coding agents without wrecking your workflow
 
 ## About
 

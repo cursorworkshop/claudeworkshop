@@ -17,7 +17,7 @@ const members = [
     role: 'Co-Founder',
     bio: 'Official Claude Ambassador for Athens. Expert in enterprise AI adoption and developer productivity optimization.',
     linkedin: 'https://www.linkedin.com/in/vasilistsolis',
-    github: 'https://github.com/cursorworkshop',
+    github: 'https://github.com/okc0mputex',
   },
 ];
 

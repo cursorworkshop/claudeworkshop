@@ -166,7 +166,7 @@ export default async function HomePage() {
                 </Link>
                 <div className='flex justify-center gap-3 mt-2'>
                   <a
-                    href='https://github.com/cursorworkshop'
+                    href='https://github.com/okc0mputex'
                     target='_blank'
                     rel='noopener noreferrer'
                     className='text-zinc-800 dark:text-zinc-300 hover:text-blue-600 transition-colors'

@@ -52,7 +52,7 @@ const founders = [
     role: 'Co-Founder',
     image: '/images/people/vasilis-3-no-bg-site.svg',
     bio: 'Dedicated to spreading the power of AI coding tools and building a global community of Claude enthusiasts.',
-    github: 'https://github.com/cursorworkshop',
+    github: 'https://github.com/okc0mputex',
     linkedin: 'https://www.linkedin.com/in/vasilistsolis',
   },
 ];
@@ -282,7 +282,7 @@ export default function AboutPage() {
                       <p className='text-xs text-zinc-500'>Co-Founder</p>
                       <div className='flex justify-center gap-3 mt-2'>
                         <a
-                          href='https://github.com/cursorworkshop'
+                          href='https://github.com/okc0mputex'
                           target='_blank'
                           rel='noopener noreferrer'
                           className='text-zinc-800 hover:text-[#0A66C2] transition-colors'
