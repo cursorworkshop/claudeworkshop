@@ -150,23 +150,136 @@ Admin template editing:
   - `DELETE /api/admin/leads`
   - deletes all leads for that email and deletes `outreach_log` rows by email.
 
-## Deployment
+## Deployment Topology
 
-**IMPORTANT**: Production deploys use Vercel CLI in GitHub Actions (on `main`), with local CLI deploy as fallback.
+**IMPORTANT**: Deployment is repo-specific and site-specific. Do not treat the
+three workshop sites as one shared Vercel target.
 
-When deploying:
+### Repo -> Site -> Vercel project mapping
 
-1. Preferred path: push to `main` and let `.github/workflows/deploy.yml` run.
-2. Required GitHub secrets for deploy workflow:
+1. `cursorworkshop/claudeworkshop`
+   - site: `https://www.claudeworkshop.com`
+   - Vercel project: `cursorworkshop`
+   - purpose: source of truth + deploys `claudeworkshop.com`
+2. `cursorworkshop/claudeworkshop`
+   - site: `https://www.claudeworkshop.com`
+   - Vercel project: `claudeworkshop`
+   - purpose: brand mirror + deploys `claudeworkshop.com`
+3. `cursorworkshop/codexworkshop`
+   - site: `https://www.codexworkshop.com`
+   - Vercel project: `codexworkshop`
+   - purpose: brand mirror + deploys `codexworkshop.com`
+
+### Hard deployment rules
+
+1. Each repo must deploy only its own site.
+2. Each repo must point at its own matching Vercel project.
+3. Never deploy `claudeworkshop` or `codexworkshop` from the source repo's
+   `.vercel` link.
+4. Never point multiple repos at the same Vercel project.
+5. Never mirror `.vercel/`, `.env.local`, or `.env.vercel` between repos.
+6. If a site is live but shows stale content, verify the repo-to-Vercel mapping
+   before changing code.
+
+### Required GitHub secrets by repo
+
+1. In `cursorworkshop/claudeworkshop`:
    - `VERCEL_TOKEN`
    - `VERCEL_ORG_ID`
    - `VERCEL_PROJECT_ID`
-3. If deploy auth fails, relink locally and refresh secrets from `.vercel/project.json`:
-   - `vercel --prod --yes`
-4. Local/manual fallback deploy remains:
-   - `vercel --prod --yes`
-5. Always run formatting before deploy to avoid lint/build failures:
+   - `BRAND_SYNC_TOKEN`
+2. In `cursorworkshop/claudeworkshop`:
+   - `VERCEL_TOKEN`
+   - `VERCEL_ORG_ID`
+   - `VERCEL_PROJECT_ID`
+3. In `cursorworkshop/codexworkshop`:
+   - `VERCEL_TOKEN`
+   - `VERCEL_ORG_ID`
+   - `VERCEL_PROJECT_ID`
+
+### Required Vercel Git linkage
+
+1. Vercel project `cursorworkshop` must be linked to GitHub repo
+   `cursorworkshop/claudeworkshop` on branch `main`.
+2. Vercel project `claudeworkshop` must be linked to GitHub repo
+   `cursorworkshop/claudeworkshop` on branch `main`.
+3. Vercel project `codexworkshop` must be linked to GitHub repo
+   `cursorworkshop/codexworkshop` on branch `main`.
+4. If the Git link is wrong, pushes may succeed while the live site stays old.
+   Fix the Git link first, then re-run deploys.
+
+### Standard production flow
+
+1. Make the change in `cursorworkshop`.
+2. Run formatting/build checks before pushing:
    - `pnpm format`
+   - `pnpm build`
+3. Push `cursorworkshop` to `main`.
+4. Let `cursorworkshop/.github/workflows/deploy.yml` deploy
+   `claudeworkshop.com`.
+5. Let `cursorworkshop/.github/workflows/sync-brand-sites.yml` fan the same
+   commit out to:
+   - `cursorworkshop/claudeworkshop`
+   - `cursorworkshop/codexworkshop`
+6. Let each mirror repo's own `.github/workflows/deploy.yml` deploy its own
+   production site.
+7. Verify all three production domains after the pipelines finish.
+
+### Source repo workflows
+
+1. `.github/workflows/deploy.yml`
+   - runs on push to `main`
+   - deploys only the `cursorworkshop` Vercel project
+   - uses:
+     - `vercel pull --environment=production`
+     - `vercel build --prod`
+     - `vercel deploy --prebuilt --prod --archive=tgz`
+2. `.github/workflows/sync-brand-sites.yml`
+   - runs on push to `main`
+   - pushes mirrored commits into the Claude and Codex repos
+   - requires `BRAND_SYNC_TOKEN`
+   - does not itself deploy Claude or Codex to Vercel; it only updates their
+     GitHub repos
+
+### Mirror repo workflows
+
+1. `cursorworkshop/claudeworkshop/.github/workflows/deploy.yml`
+   - must deploy only `claudeworkshop.com`
+   - must use that repo's own `VERCEL_PROJECT_ID`
+2. `cursorworkshop/codexworkshop/.github/workflows/deploy.yml`
+   - must deploy only `codexworkshop.com`
+   - must use that repo's own `VERCEL_PROJECT_ID`
+3. Mirror deploy repos must not reuse the source repo's Vercel project ID.
+
+### Manual fallback deploys
+
+1. Preferred path is always GitHub Actions on `main`.
+2. Use local/manual Vercel deploys only as a fallback.
+3. Before any local fallback deploy, confirm the repo is linked to the correct
+   Vercel project:
+   - `cursorworkshop` local repo -> `cursorworkshop`
+   - `claudeworkshop` local repo -> `claudeworkshop`
+   - `codexworkshop` local repo -> `codexworkshop`
+4. Safe manual fallback command:
+   - `vercel --prod --yes`
+5. If local deploy auth fails, relink and refresh project metadata first.
+
+### Deployment troubleshooting
+
+1. Push succeeded but site did not change:
+   - check the repo's GitHub Action run
+   - check the repo's `VERCEL_PROJECT_ID`
+   - check that the Vercel project is linked to the matching GitHub repo
+2. Source site updated but Claude/Codex did not:
+   - check `sync-brand-sites.yml`
+   - check whether mirrored commits landed in the sibling repos
+   - check each mirror repo's own deploy workflow
+3. Mirror repo updated but live mirror site stayed old:
+   - check that the mirror Vercel project has a valid GitHub link
+   - check for missing Vercel secrets in that mirror repo
+4. Local Vercel deploy fails with upload/rate-limit errors:
+   - prefer GitHub Actions or a fresh non-rate-limited token
+   - do not keep retrying uploads blindly
 
 ## Multi-Repo Brand Mirrors
 
