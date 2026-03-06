@@ -34,6 +34,7 @@ export type BrandConfig = {
 };
 
 const DEFAULT_BRAND_KEY: BrandKey = 'claude';
+const CODEX_LOGO_BLACK_URL = '/images/brands/codex-logo-black.png?v=20260306b';
 
 const BRANDS: Record<BrandKey, BrandConfig> = {
   cursor: {
@@ -90,7 +91,7 @@ const BRANDS: Record<BrandKey, BrandConfig> = {
     workshopsName: 'Codex Workshops',
     domain: 'codexworkshop.com',
     siteUrl: 'https://codexworkshop.com',
-    favicon: '/images/brands/codex-logo-black.png',
+    favicon: CODEX_LOGO_BLACK_URL,
     infoEmail: 'info@codexworkshop.com',
     privacyEmail: 'privacy@codexworkshop.com',
     calUrl: 'https://cal.com/codexworkshop',
@@ -103,7 +104,7 @@ const BRANDS: Record<BrandKey, BrandConfig> = {
     logo: {
       variant: 'image',
       alt: 'Codex Workshop logo',
-      src: '/images/brands/codex-logo-black.png',
+      src: CODEX_LOGO_BLACK_URL,
       width: 96,
       height: 96,
     },
