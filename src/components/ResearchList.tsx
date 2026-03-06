@@ -25,7 +25,7 @@ const articleImages: Record<string, string> = {
   'claude-gastown-multi-agent-orchestration':
     '/images/editorials/research-renaissance-7.jpg',
   'multi-agent-orchestration-2019564738649505882':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882.png',
+    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304124620.png',
   'ai-coding-tooling-1977706278110765481':
     '/images/editorials/ai-coding-tooling-1977706278110765481.png',
   'mcp-and-integrations-1961848171925278932':
@@ -70,8 +70,15 @@ const articleImages: Record<string, string> = {
     '/images/editorials/multi-agent-orchestration-20260306-0828.png',
 };
 
-const getArticleImage = (slug: string): string => {
-  return articleImages[slug] || `/images/editorials/${slug}.png`;
+const getArticleImage = (article: ResearchArticle): string => {
+  const explicitImage = article.image?.trim();
+  if (explicitImage) {
+    return explicitImage;
+  }
+
+  return (
+    articleImages[article.slug] || `/images/editorials/${article.slug}.png`
+  );
 };
 
 const formatDate = (dateString: string) => {
@@ -133,7 +140,7 @@ export function ResearchList({ articles }: Props) {
               <div className='md:w-80 lg:w-96 flex-shrink-0'>
                 <div className='relative aspect-[16/10] rounded-lg overflow-hidden bg-zinc-100'>
                   <Image
-                    src={getArticleImage(article.slug)}
+                    src={getArticleImage(article)}
                     alt={article.title}
                     fill
                     className='object-cover group-hover:scale-105 transition-transform duration-500'

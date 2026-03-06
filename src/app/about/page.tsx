@@ -35,6 +35,7 @@ import {
 } from '@/components/ui/accordion';
 import { InView } from '@/components/motion/in-view';
 import { AnimatedGroup } from '@/components/motion/animated-group';
+import { RecentEventsGallery } from '@/components/RecentEventsGallery';
 import { TextEffect } from '@/components/motion/text-effect';
 
 const founders = [
@@ -305,6 +306,8 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <RecentEventsGallery />
 
       {/* What We Do Section */}
       <section className='py-24 bg-zinc-50'>

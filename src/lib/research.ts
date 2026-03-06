@@ -31,11 +31,29 @@ export type ResearchArticleWithContent = ResearchArticle & {
 };
 
 const RESEARCH_DIR = path.join(process.cwd(), 'content', 'editorials');
+const CANONICAL_MULTI_AGENT_SLUG =
+  'multi-agent-orchestration-2019564738649505882';
+const HIDDEN_RESEARCH_SLUGS = new Set([
+  'ai-coding-tooling-1977706278110765481',
+  'ai-coding-tooling-2020290971951391031',
+  'mcp-and-integrations-1961848171925278932',
+  'research-pipeline-spec',
+  'multi-agent-orchestration-20260305-1046',
+  'multi-agent-orchestration-20260306-0828',
+]);
 
 const calculateReadingTime = (content: string): number => {
   const wordsPerMinute = 200;
   const words = content.split(/\s+/).length;
   return Math.ceil(words / wordsPerMinute);
+};
+
+const isHiddenResearchSlug = (slug: string): boolean => {
+  if (HIDDEN_RESEARCH_SLUGS.has(slug)) {
+    return true;
+  }
+
+  return slug.startsWith(`${CANONICAL_MULTI_AGENT_SLUG}-`);
 };
 
 export const getAllResearchArticles = (): ResearchArticle[] => {
@@ -78,12 +96,16 @@ export const getAllResearchArticles = (): ResearchArticle[] => {
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     );
 
-  return articles;
+  return articles.filter(article => !isHiddenResearchSlug(article.slug));
 };
 
 export const getResearchArticle = (
   slug: string
 ): ResearchArticleWithContent | null => {
+  if (isHiddenResearchSlug(slug)) {
+    return null;
+  }
+
   const filePath = path.join(RESEARCH_DIR, `${slug}.mdx`);
 
   if (!fs.existsSync(filePath)) {

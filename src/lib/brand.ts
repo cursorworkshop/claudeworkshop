@@ -34,7 +34,7 @@ export type BrandConfig = {
 };
 
 const DEFAULT_BRAND_KEY: BrandKey = 'claude';
-const CODEX_LOGO_BLACK_URL = '/images/brands/codex-logo-black.png?v=20260306b';
+const CODEX_LOGO_BLACK_URL = '/images/brands/codex-logo.png?v=20260306c';
 
 const BRANDS: Record<BrandKey, BrandConfig> = {
   cursor: {
