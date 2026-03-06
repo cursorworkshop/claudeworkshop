@@ -6,7 +6,7 @@ January 2026
 
 ---
 
-Most organizations get it wrong. They deploy Claude Code, Copilot, or Claude across their engineering teams. Junior developers generate code they cannot properly verify while senior engineers see marginal productivity gains. The organization lacks a shared framework for what AI should handle versus what requires human judgment.
+Most organizations get it wrong. They deploy Claude, Copilot, or Claude across their engineering teams. Junior developers generate code they cannot properly verify while senior engineers see marginal productivity gains. The organization lacks a shared framework for what AI should handle versus what requires human judgment.
 
 The data is clear. Research from Jellyfish shows senior engineers are 22% faster with AI coding tools. Junior developers? Just 4% faster. The tools are identical. The gap is in how people use them.
 
@@ -145,7 +145,7 @@ This white paper provides the framework. In training, your team receives impleme
 
 **I. Tool Proficiency**
 
-Claude Code (Tab completion, Composer, multi-file context, MCP servers), Claude Code (terminal-native workflows), and Codex (background agents at scale). We cover the tools your team uses or plans to adopt. Your engineers learn the keyboard shortcuts, context management techniques, and advanced features that separate casual users from power users.
+Claude (Tab completion, Composer, multi-file context, MCP servers), Claude Code (terminal-native workflows), and Codex (background agents at scale). We cover the tools your team uses or plans to adopt. Your engineers learn the keyboard shortcuts, context management techniques, and advanced features that separate casual users from power users.
 
 **II. Infrastructure Development**
 
@@ -219,21 +219,21 @@ For teams that want continued guidance, we provide access to our experts as you 
 
 ## About Claude Workshop
 
-Claude Workshop is an official Claude Ambassador organization, recognized by Anysphere (the company behind Claude Code) as certified experts in AI-assisted development training. This designation reflects our demonstrated expertise, our contribution to the Claude Code ecosystem, and our track record of successful enterprise implementations.
+Claude Workshop is an official Claude Ambassador organization, recognized by Anysphere (the company behind Claude) as certified experts in AI-assisted development training. This designation reflects our demonstrated expertise, our contribution to the Claude ecosystem, and our track record of successful enterprise implementations.
 
-We maintain direct communication with the Claude Code development team, ensuring our training reflects the latest capabilities and best practices. This access allows us to provide insights that other training providers cannot offer, including early access to features and direct feedback channels for enterprise-specific requirements.
+We maintain direct communication with the Claude development team, ensuring our training reflects the latest capabilities and best practices. This access allows us to provide insights that other training providers cannot offer, including early access to features and direct feedback channels for enterprise-specific requirements.
 
 Our workshops consistently rate above 4.8/5. We have trained over 100 teams across financial services, SaaS, consulting, and professional services organizations. Fortune 100 and DAX 40 engineering teams trust us to transform how their developers work with AI.
 
 **Rogier Muller**, Co-founder
 
-CTO at BlueMonks Group, a fintech company, and founder of delta0, a software company building tools for technical teams including pipeline optimization, document automation, and domain-specific AI agents. Official Claude Ambassador and Anthropic Community Lead in Amsterdam. In daily contact with the Claude Code development team, providing feedback from real-world enterprise usage and receiving early access to new features.
+CTO at BlueMonks Group, a fintech company, and founder of delta0, a software company building tools for technical teams including pipeline optimization, document automation, and domain-specific AI agents. Official Claude Ambassador and Anthropic Community Lead in Amsterdam. In daily contact with the Claude development team, providing feedback from real-world enterprise usage and receiving early access to new features.
 
 LinkedIn: linkedin.com/in/rogyr
 
 **Vasilis Tsolis**, Co-founder
 
-Founder of Cognitive+ with deep expertise in agentic workflows and enterprise engineering practices. Official Claude Ambassador for Athens. Dedicated to building a global community of developers who leverage AI coding tools effectively. Contributes to open source projects including claude-gastown, a multi-agent orchestration framework.
+Founder of Cognitive+ with deep expertise in agentic workflows and enterprise engineering practices. Official Claude Ambassador for Athens. Dedicated to building a global community of developers who leverage AI coding tools effectively. Contributes to open source projects including cursor-gastown, a multi-agent orchestration framework.
 
 LinkedIn: linkedin.com/in/vasilistsolis
 
@@ -243,7 +243,7 @@ LinkedIn: linkedin.com/in/vasilistsolis
 
 - Official Claude Ambassadors with direct access to the development team
 - 100+ teams trained across Fortune 100 companies, DAX 40 enterprises, and high-growth startups
-- We build in the open, contributing to the Claude Code ecosystem with open source tools
+- We build in the open, contributing to the Claude ecosystem with open source tools
 - Early access to new features ensures our training reflects the latest capabilities
 - Workshops consistently rate above 4.8/5 across financial services, SaaS, and professional services organizations
 

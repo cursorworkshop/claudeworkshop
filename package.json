@@ -2,10 +2,13 @@
   "name": "claude-workshop-website",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.2.1",
   "engines": {
-    "node": "22.x"
+    "node": "22.x",
+    "pnpm": "10.x"
   },
   "scripts": {
+    "preinstall": "node scripts/ensure-pnpm.js",
     "predev": "node scripts/copy-event-images.js",
     "dev": "next dev -p 3760",
     "prebuild": "node scripts/copy-event-images.js",
@@ -18,9 +21,11 @@
     "format:check": "prettier --check .",
     "verify-images": "node scripts/verify-images.js",
     "copy-images": "node scripts/copy-event-images.js",
+    "sync:brands": "node scripts/sync-brand-sites.mjs --all",
+    "deploy:brands": "node scripts/sync-brand-sites.mjs --all --push",
     "clean": "rm -rf .next out dist",
     "analyze": "ANALYZE=true pnpm build",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },
@@ -67,7 +72,7 @@
     "mdx": "^0.3.1",
     "motion": "^12.31.0",
     "next": "15.5.9",
-    "next-mdx-remote": "^5.0.0",
+    "next-mdx-remote": "^6.0.0",
     "next-themes": "^0.4.6",
     "nodemailer": "^7.0.11",
     "react": "^18",
@@ -81,6 +86,7 @@
     "resend": "^6.9.1",
     "sonner": "^2.0.7",
     "stripe": "^18.5.0",
+    "svix": "^1.84.1",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^4.0.17"
@@ -107,10 +113,11 @@
     "eslint-plugin-react": "^7.33.0",
     "eslint-plugin-react-hooks": "^7.0.1",
     "jest": "^29.0.0",
+    "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8",
     "prettier": "^3.6.2",
     "puppeteer": "^24.36.1",
     "tailwindcss": "^3.4.18",
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   }
 }

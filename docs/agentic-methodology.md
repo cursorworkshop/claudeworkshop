@@ -71,7 +71,7 @@ Reads
 
 Planning the development of software has gotten more viable and efficient using AI. Developers and PM’s can now synchronously and collaboratively work on planning without unnecessary meetings and handoffs.
 
-In this section, we’ll discuss the various ways AI IDE’s (predominantly Claude Code, but to a lesser extent also Codex and Claude Code) can help drive this efficiency, divided into our framework: delegate, review, own. Here, we will discuss general planning, large changes and smaller changes (one-off issues).
+In this section, we’ll discuss the various ways AI IDE’s (predominantly Claude, but to a lesser extent also Codex and Claude Code) can help drive this efficiency, divided into our framework: delegate, review, own. Here, we will discuss general planning, large changes and smaller changes (one-off issues).
 
 ## Delegate to AI {#delegate-to-ai}
 
@@ -135,9 +135,9 @@ Design is a highly personal component of software, and taste varies by person. T
 - Generate code stubs from selected Figma frames, including layout, basic states, and placeholder data.
 - Detect design–implementation drift and propose concrete “bring code back in line with Figma” tasks.
 
-**Claude Code Browser div‑selector**
+**Claude Browser div‑selector**
 
-- Capture DOM snippets from a live app and send them to Claude Code to identify the underlying components/files. This speeds up the progress drastically, but more so for junior developers or engineers with a stronger tendency towards backend.
+- Capture DOM snippets from a live app and send them to Claude to identify the underlying components/files. This speeds up the progress drastically, but more so for junior developers or engineers with a stronger tendency towards backend.
 - Suggest CSS/layout tweaks to make the live UI match Figma (spacing, font sizes, breakpoints).
 - Generate robust test selectors and Playwright test steps from selected DOM nodes and flows.
 
@@ -166,7 +166,7 @@ Design is a highly personal component of software, and taste varies by person. T
 
 Reliability remains the moat of DevOps; unlike design, you cannot "vibe check" a security vulnerability or a race condition.
 
-While AI can scaffold infrastructure code in seconds, it lacks the context of production reality—often hallucinating configurations that work in isolation but fail under load. The convergence of AI-ops has led to a flood of "works on my machine" containers. To combat this, we use verified MCPs to bridge local development with cloud truth. Below, we instruct how we use specific MCPs to orchestrate builds that survive beyond the demo.
+While AI can scaffold infrastructure code in seconds, it lacks the context of production reality. It often hallucinates configurations that work in isolation but fail under load. The convergence of AI-ops has led to a flood of "works on my machine" containers. To combat this, we use verified MCPs to bridge local development with cloud truth. Below, we instruct how we use specific MCPs to orchestrate builds that survive beyond the demo.
 
 ##
 
@@ -176,7 +176,7 @@ While AI can scaffold infrastructure code in seconds, it lacks the context of pr
 
 Given a stack, generate the Infrastructure from Code (IfC) rather than clicking through AWS/Vercel consoles. The standard for 2025 is defining infrastructure alongside application code.
 
-- Generate sst.config.ts or Dockerfile optimized for caching, specifically asking Claude Code to "structure for multi-stage builds" to keep images light.
+- Generate sst.config.ts or Dockerfile optimized for caching, specifically asking Claude to "structure for multi-stage builds" to keep images light.
 - Scan the package.json to auto-generate the correct build scripts and exclude dev-dependencies from production artifacts.
 
 [https://sst.dev/](https://sst.dev/)  
@@ -186,11 +186,11 @@ Given a stack, generate the Infrastructure from Code (IfC) rather than clicking 
 
 Use the official MCP servers to interact with your repo and cloud provider directly from the editor, avoiding context-switching fatigue.
 
-- GitHub MCP: Search PRs and Actions logs directly in Claude Code to diagnose CI failures without leaving the IDE. Ask the agent to "fix the workflow file based on this error log."
+- GitHub MCP: Search PRs and Actions logs directly in Claude to diagnose CI failures without leaving the IDE. Ask the agent to "fix the workflow file based on this error log."
 - AWS / Vercel MCP: Check live deployment status and tail logs. Use this to verify that the environment variables in your code match what is actually set in the cloud.
 - Postgres MCP: safely generate migration SQL by comparing your local schema against the production database state (read-only connection recommended).
 
-**Claude Code Terminal**
+**Claude Terminal**
 
 Treat the terminal as a read-write interface for the agent.
 
@@ -213,7 +213,7 @@ Treat the terminal as a read-write interface for the agent.
 - Production Gating: The decision of _when_ to ship. Green tests do not equal a ready product.
 - Security Policy: Who has access to the prod database and how encryption keys are managed.
 - The Bill: Setting up billing alerts and cost ceilings. AI does not care about your credits.
-- Teaching workshop participants that "deployed" isn't the finish line—observability is.
+- Teaching workshop participants that "deployed" isn't the finish line. Observability is.
 
 #
 
@@ -246,7 +246,7 @@ Stop mocking the database. Use MCPs to verify the actual state of data and the U
 [https://github.com/modelcontextprotocol/servers/tree/main/src/postgres](https://github.com/modelcontextprotocol/servers/tree/main/src/postgres)  
 [https://github.com/modelcontextprotocol/servers/tree/main/src/puppeteer](https://github.com/modelcontextprotocol/servers/tree/main/src/puppeteer)
 
-**Claude Code Terminal & Self-Correction**
+**Claude Terminal & Self-Correction**
 
 The iteration loop for testing is 10x faster when you keep the context in the terminal.
 
@@ -256,7 +256,7 @@ The iteration loop for testing is 10x faster when you keep the context in the te
 ## Engineer Reviews {#engineer-reviews-3}
 
 - Mock Verification: Reject tests that mock too much. If the AI mocks the database, the API, and the browser, it is testing nothing.
-- Flake Detection: AI writes race conditions. Look for hardcoded waitForTimeout(5000)—delete them and demand waitForSelector or expect.toPass.
+- Flake Detection: AI writes race conditions. Look for hardcoded waitForTimeout(5000). Delete them and demand waitForSelector or expect.toPass.
 - Happy Path Bias: AI loves the "success" state. Review to ensure negative test cases (404s, 500s, permission denied) exist.
 - Selector Durability: Ensure AI uses accessibility-based selectors (Buttons, Labels) rather than class names (.div-flex-col-2), which will break on the next design update.
 
@@ -272,24 +272,24 @@ The iteration loop for testing is 10x faster when you keep the context in the te
 
 Context remains the moat of Senior Engineers; AI can spot a syntax error in milliseconds but cannot understand _why_ you built the feature in the first place.
 
-In the Claude Code era, "Code Review" has split into two streams: the Auto-Review (handled by the Composer Agent enforcing your rules) and the Strategic Review (handled by humans verifying intent). If you are commenting on variable names in 2025, you are wasting your time. Below, we instruct how to configure Claude Code to handle the pedantic work so you can focus on the architecture.
+In the Claude era, "Code Review" has split into two streams: the Auto-Review (handled by the Composer Agent enforcing your rules) and the Strategic Review (handled by humans verifying intent). If you are commenting on variable names in 2025, you are wasting your time. Below, we instruct how to configure Claude to handle the pedantic work so you can focus on the architecture.
 
 ##
 
 ## Delegate to AI {#delegate-to-ai-4}
 
-**Feature / Claude Code Rules (.claude)**
+**Feature / Claude Rules (.cursorrules)**
 
 - This is the single most important file in your repository. It acts as the "Constitution" for the AI. Instead of repeating "use strict typescript" in every prompt, define it once.
-- Action: Create a .claude file in the root.\[[1](https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEgx4mBRPCHZcHZTESCa3Oc1ZFDL75xS7bKjW_ynTn-h-b63q-8iXW6cef4-kas6BiMg82qGdSEWQvzKoQOwUrbNY1fLcQsHhOzdTsNNLJJ-fOZctq39Gw-7-JqWKch5MuSiE3uYWS-RQ==)\] Hardcode your team’s "Must Haves" (e.g., "Always use Zod for validation," "Never use any," "Prefer functional components").
-- Workflow: Before you even open a PR, the Claude Code Tab (autofill) and Composer will aggressively align generated code with these rules, effectively "pre-reviewing" code as it is written.
+- Action: Create a .cursorrules file in the root.\[[1](https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEgx4mBRPCHZcHZTESCa3Oc1ZFDL75xS7bKjW_ynTn-h-b63q-8iXW6cef4-kas6BiMg82qGdSEWQvzKoQOwUrbNY1fLcQsHhOzdTsNNLJJ-fOZctq39Gw-7-JqWKch5MuSiE3uYWS-RQ==)\] Hardcode your team’s "Must Haves" (e.g., "Always use Zod for validation," "Never use any," "Prefer functional components").
+- Workflow: Before you even open a PR, the Claude Tab (autofill) and Composer will aggressively align generated code with these rules, effectively "pre-reviewing" code as it is written.
 - \+ AGENTS.md
 
 **Feature / Composer Agent (Cmd+I)**
 
 The standard for 2025 is using the **Composer** agent as a first-pass reviewer. It processes the entire multi-file context, not just the open tab.
 
-- Workflow: Open Composer and type: _"Review the @Diff for security vulnerabilities, performance bottlenecks, and adherence to .claude. Fix the simple stuff, list the complex risks."_
+- Workflow: Open Composer and type: _"Review the @Diff for security vulnerabilities, performance bottlenecks, and adherence to .cursorrules. Fix the simple stuff, list the complex risks."_
 - Outcome: The Agent will likely apply fixes directly (which you can accept/reject inline) rather than just leaving comments.
 
 **MCP / GitHub**
@@ -301,13 +301,13 @@ Use the official **GitHub MCP** to bridge the gap between local changes and the 
 
 ## Engineer Reviews {#engineer-reviews-4}
 
-- Intent Verification: The AI confirms _how_ the code works; you must confirm _if_ it solves the user's problem.
-- Rule Auditing: If you find yourself leaving the same comment twice (e.g., "Use const here"), do not fix the code—fix the .claude. The AI should never make the same mistake three times.
+- Intent Verification: The AI confirms _how_ the code works. You must confirm _if_ it solves the user's problem.
+- Rule Auditing: If you find yourself leaving the same comment twice (e.g., "Use const here"), do not fix the code, fix the .cursorrules. The AI should never make the same mistake three times.
 - Agent Drift: Watch for "Lazy Agent" syndrome, where Composer mocks complex logic instead of implementing it. Verify that "Simulated" tests actually touch the database.
 
 ## Engineer Owns {#engineer-owns-4}
 
-- The .claude (+ [AGENTS.md](http://AGENTS.md)): This is now as important as the codebase itself. The Senior Engineer owns the maintenance of these rules.
+- The .cursorrules (+ [AGENTS.md](http://AGENTS.md)): This is now as important as the codebase itself. The Senior Engineer owns the maintenance of these rules.
 - Risk Acceptance: The Agent will flag "Potential Issue". You own the decision to ship it anyway.
 - Architectural Fit: AI is bad at knowing if a new component duplicates functionality hidden in a folder it didn't scan. You own the "Don't Repeat Yourself" (DRY) check at the module level.
 - Teaching the team that a "LGTM" on GitHub means you validated the logic, not just the syntax.
@@ -349,7 +349,7 @@ Use the official **GitHub MCP** to bridge the gap between local changes and the 
 
 Uptime remains the moat of SREs; AI can deploy a container in seconds, but it cannot negotiate with a saturated database connection pool.
 
-Deployment is no longer an event; it is a continuous state. While AI can obliterate the friction of "Infrastructure as Code," it lacks the instinct for "Day 2" operations—cost spirals, race conditions, and incident response. To combat this, we use Claude Code and MCPs to bring the production environment _into_ the editor, treating the cloud as a read-write file system. Below, we instruct how to ship and keep the lights on.
+Deployment is no longer an event; it is a continuous state. While AI can obliterate the friction of "Infrastructure as Code," it lacks the instinct for "Day 2" operations: cost spirals, race conditions, and incident response. To combat this, we use Claude and MCPs to bring the production environment _into_ the editor, treating the cloud as a read-write file system. Below, we instruct how to ship and keep the lights on.
 
 ##
 
@@ -367,9 +367,9 @@ Stop clicking in the AWS console. The standard for 2025 is defining infrastructu
 
 **MCP / Cloud & Observability**
 
-Use Model Context Protocol to manage production without leaving Claude Code. Context switching is the enemy of uptime.
+Use Model Context Protocol to manage production without leaving Claude. Context switching is the enemy of uptime.
 
-- AWS MCP: If a deploy fails, do not check the console. Ask Claude Code: "Tail the CloudWatch logs for the last deployment of stack my-app-prod and analyze the crash."
+- AWS MCP: If a deploy fails, do not check the console. Ask Claude: "Tail the CloudWatch logs for the last deployment of stack my-app-prod and analyze the crash."
 - Sentry MCP: proactively maintain code. "Query Sentry for the top 3 recurring errors in the last 24 hours and propose fixes in the code."
 
 [https://github.com/awslabs/aws-mcp-server](https://github.com/awslabs/aws-mcp-server)  

@@ -70,7 +70,7 @@ export default function ReservePage() {
                     <Badge variant='outline'>November 9-15, 2025</Badge>
                   </div>
                   <CardTitle className='text-2xl'>
-                    Claude Code Engineering Offsite
+                    Claude Engineering Offsite
                   </CardTitle>
                   <CardDescription>
                     Kyrimai Hotel • Mani Peninsula, Greece
@@ -149,7 +149,7 @@ export default function ReservePage() {
                     <StripePayment
                       amount={totalAmount}
                       currency='eur'
-                      description={`Claude Code Engineering Offsite Reservation - ${selectedSeats} seat${selectedSeats > 1 ? 's' : ''}`}
+                      description={`Claude Engineering Offsite Reservation - ${selectedSeats} seat${selectedSeats > 1 ? 's' : ''}`}
                     />
 
                     <div className='flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground'>

@@ -19,7 +19,7 @@ import FAQs from '@/components/faqs-2';
 export const metadata: Metadata = {
   title: 'Training Programs | Claude Workshop',
   description:
-    'Professional Claude Code training. On-site sessions at your location or premium offsite programs in stunning locations.',
+    'Professional Claude training. On-site sessions at your location or premium offsite programs in stunning locations.',
 };
 
 export default function TrainingPage() {
@@ -32,7 +32,7 @@ export default function TrainingPage() {
             Training Programs
           </p>
           <h1 className='text-4xl lg:text-6xl font-medium text-foreground tracking-tight mb-6'>
-            Master Claude Code with Expert Training
+            Master Claude with Expert Training
           </h1>
           <p className='text-xl text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto'>
             Choose how you want to learn. On-site training at your location or

@@ -42,7 +42,7 @@ const founders = [
     name: 'Rogier Muller',
     role: 'Co-Founder',
     image: '/images/people/rogier-9-no-bg-site-v2.svg',
-    bio: 'Passionate about AI-assisted development and helping teams unlock their full potential with Claude Code.',
+    bio: 'Passionate about AI-assisted development and helping teams unlock their full potential with Claude.',
     github: 'https://github.com/rogierx',
     linkedin: 'https://www.linkedin.com/in/rogyr',
   },
@@ -50,8 +50,8 @@ const founders = [
     name: 'Vasilis Tsolis',
     role: 'Co-Founder',
     image: '/images/people/vasilis-3-no-bg-site.svg',
-    bio: 'Dedicated to spreading the power of AI coding tools and building a global community of Claude Code enthusiasts.',
-    github: 'https://github.com/claudeworkshop',
+    bio: 'Dedicated to spreading the power of AI coding tools and building a global community of Claude enthusiasts.',
+    github: 'https://github.com/cursorworkshop',
     linkedin: 'https://www.linkedin.com/in/vasilistsolis',
   },
 ];
@@ -61,7 +61,7 @@ const aboutStats = [
     icon: Award,
     title: 'Official Claude Ambassadors',
     description:
-      'In daily contact with the Claude Code development team to ensure our training reflects the latest features and best practices. We help shape the product and provide feedback from real-world usage.',
+      'In daily contact with the Claude development team to ensure our training reflects the latest features and best practices. We help shape the product and provide feedback from real-world usage.',
     highlights: [
       { icon: Zap, text: 'Early access to new features' },
       { icon: MessageSquare, text: 'Direct feedback channel' },
@@ -83,9 +83,9 @@ const aboutStats = [
     icon: Github,
     title: 'We Build in the Open',
     description:
-      'We contribute to the Claude Code ecosystem with open source tools. Our flagship project coordinates multiple AI agents for complex workflows.',
+      'We contribute to the Claude ecosystem with open source tools. Our flagship project coordinates multiple AI agents for complex workflows.',
     isOpenSource: true,
-    link: 'https://github.com/claudeworkshop/claude-gastown',
+    link: 'https://github.com/cursorworkshop/cursor-gastown',
   },
 ];
 
@@ -93,7 +93,7 @@ const faqItems = [
   {
     question: 'What makes Claude Workshop different?',
     answer:
-      'We are official Claude ambassadors with direct access to the Claude Code development team. Our training is always up-to-date with the latest features, and we provide insights that others simply cannot. We have trained over 100 teams at Fortune 100 and DAX 40 companies.',
+      'We are official Claude ambassadors with direct access to the Claude development team. Our training is always up-to-date with the latest features, and we provide insights that others simply cannot. We have trained over 100 teams at Fortune 100 and DAX 40 companies.',
   },
   {
     question: 'What is the Delegate, Review, Own framework?',
@@ -132,7 +132,7 @@ export default function AboutPage() {
 
   useEffect(() => {
     // Fetch live GitHub stats
-    fetch('https://api.github.com/repos/claudeworkshop/claude-gastown')
+    fetch('https://api.github.com/repos/cursorworkshop/cursor-gastown')
       .then(res => res.json())
       .then(data => {
         if (data.stargazers_count !== undefined) {
@@ -281,7 +281,7 @@ export default function AboutPage() {
                       <p className='text-xs text-zinc-500'>Co-Founder</p>
                       <div className='flex justify-center gap-3 mt-2'>
                         <a
-                          href='https://github.com/claudeworkshop'
+                          href='https://github.com/cursorworkshop'
                           target='_blank'
                           rel='noopener noreferrer'
                           className='text-zinc-800 hover:text-[#0A66C2] transition-colors'
@@ -321,7 +321,7 @@ export default function AboutPage() {
                 What makes us different
               </h2>
               <p className='text-muted-foreground max-w-xl mx-auto'>
-                Direct connection to Claude Code and a passion for developer
+                Direct connection to Claude and a passion for developer
                 education.
               </p>
             </div>
@@ -340,10 +340,10 @@ export default function AboutPage() {
               </CardHeader>
               <CardContent className='pt-0 flex-1 flex flex-col'>
                 <CardDescription className='text-base mb-4'>
-                  In daily contact with the Claude Code development team to
-                  ensure our training reflects the latest features and best
-                  practices. We help shape the product and provide feedback from
-                  real-world usage.
+                  In daily contact with the Claude development team to ensure
+                  our training reflects the latest features and best practices.
+                  We help shape the product and provide feedback from real-world
+                  usage.
                 </CardDescription>
                 <div className='mt-auto space-y-2 pt-4 border-t border-border/30'>
                   <div className='flex items-center gap-2 text-sm text-muted-foreground'>
@@ -407,8 +407,8 @@ export default function AboutPage() {
               </CardHeader>
               <CardContent className='pt-0 flex-1 flex flex-col'>
                 <CardDescription className='text-base mb-4'>
-                  We contribute to the Claude Code ecosystem with open source
-                  tools. Our flagship project coordinates multiple AI agents for
+                  We contribute to the Claude ecosystem with open source tools.
+                  Our flagship project coordinates multiple AI agents for
                   complex workflows.
                 </CardDescription>
 
@@ -418,7 +418,7 @@ export default function AboutPage() {
                     Latest contribution
                   </p>
                   <a
-                    href='https://github.com/claudeworkshop/claude-gastown'
+                    href='https://github.com/cursorworkshop/cursor-gastown'
                     target='_blank'
                     rel='noopener noreferrer'
                     className='block group'
@@ -428,7 +428,7 @@ export default function AboutPage() {
                         <div className='flex items-center gap-2'>
                           <Github className='w-4 h-4 text-zinc-700' />
                           <span className='font-medium text-sm text-foreground'>
-                            claude-gastown
+                            cursor-gastown
                           </span>
                         </div>
                         <ExternalLink className='w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors' />

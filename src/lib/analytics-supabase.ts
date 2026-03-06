@@ -7,6 +7,8 @@ import {
   type AnalyticsPageView,
   type AnalyticsSession,
 } from './supabase';
+import { fetchCalBookingsCount, isCalComConfigured } from './calcom';
+import { siteConfig } from './config';
 import { inferChannel, normalizeUtm, getReferrerHost } from './tracking';
 
 // Check if Supabase is configured
@@ -146,21 +148,83 @@ export const storeFormSubmission = async (
 };
 
 // Get admin analytics summary with proper counting (avoids 1000 row limit)
-export const getAnalyticsSummary = async (days = 30) => {
+export const getAnalyticsSummary = async (
+  days = 30,
+  options?: { compare?: boolean }
+) => {
   if (!isSupabaseConfigured()) {
     return null;
   }
 
   const supabase = createServerClient();
-  const startDate = new Date();
+  const compare = options?.compare !== false;
+  const endDate = new Date();
+  const startDate = new Date(endDate);
   startDate.setDate(startDate.getDate() - days);
+  const previousEndDate = new Date(startDate);
+  const previousStartDate = new Date(startDate);
+  previousStartDate.setDate(previousStartDate.getDate() - days);
+
   const startDateStr = startDate.toISOString();
+  const endDateStr = endDate.toISOString();
+  const previousStartDateStr = previousStartDate.toISOString();
+  const previousEndDateStr = previousEndDate.toISOString();
+
+  // Cal.com tracking (booking conversion) + click tracking via redirect route (/r/call).
+  const { count: callClickCount } = await supabase
+    .from('analytics_events')
+    .select('*', { count: 'exact', head: true })
+    .gte('timestamp', startDateStr)
+    .lt('timestamp', endDateStr)
+    .eq('event_name', 'outreach_click_call');
+
+  const { count: previousCallClickCount } = compare
+    ? await supabase
+        .from('analytics_events')
+        .select('*', { count: 'exact', head: true })
+        .gte('timestamp', previousStartDateStr)
+        .lt('timestamp', previousEndDateStr)
+        .eq('event_name', 'outreach_click_call')
+    : { count: 0 };
+
+  let calBookings = 0;
+  let calBookingsCancelled = 0;
+  let calBookingsPrevious = 0;
+  let calBookingsCancelledPrevious = 0;
+  let calWarning: string | null = null;
+
+  if (isCalComConfigured()) {
+    try {
+      const current = await fetchCalBookingsCount({
+        afterCreatedAt: startDateStr,
+        beforeCreatedAt: endDateStr,
+      });
+      calBookings = current.total;
+      calBookingsCancelled = current.cancelled;
+
+      if (compare) {
+        const previous = await fetchCalBookingsCount({
+          afterCreatedAt: previousStartDateStr,
+          beforeCreatedAt: previousEndDateStr,
+        });
+        calBookingsPrevious = previous.total;
+        calBookingsCancelledPrevious = previous.cancelled;
+      }
+    } catch (error) {
+      console.error('Cal.com booking fetch failed:', error);
+      calWarning =
+        error instanceof Error ? error.message : 'Cal.com booking fetch failed';
+    }
+  } else {
+    calWarning = 'Cal.com tracking is disabled (missing CALCOM_API_KEY).';
+  }
 
   // Use count queries to get accurate totals (avoids 1000 row limit)
   const { count: sessionCount } = await supabase
     .from('analytics_sessions')
     .select('*', { count: 'exact', head: true })
     .gte('started_at', startDateStr)
+    .lt('started_at', endDateStr)
     .eq('is_bot', false);
 
   // Count bot sessions separately
@@ -168,19 +232,39 @@ export const getAnalyticsSummary = async (days = 30) => {
     .from('analytics_sessions')
     .select('*', { count: 'exact', head: true })
     .gte('started_at', startDateStr)
+    .lt('started_at', endDateStr)
     .eq('is_bot', true);
 
   const { count: formSubmissionCount } = await supabase
     .from('analytics_form_submissions')
     .select('*', { count: 'exact', head: true })
-    .gte('submitted_at', startDateStr);
+    .gte('submitted_at', startDateStr)
+    .lt('submitted_at', endDateStr);
 
   // Get lead signups count (exit intent)
   // Note: archived column may not exist yet, so we don't filter by it here
   const { count: leadCount } = await supabase
     .from('leads')
     .select('*', { count: 'exact', head: true })
-    .gte('created_at', startDateStr);
+    .gte('created_at', startDateStr)
+    .lt('created_at', endDateStr);
+
+  const { count: previousSessionCount } = compare
+    ? await supabase
+        .from('analytics_sessions')
+        .select('*', { count: 'exact', head: true })
+        .gte('started_at', previousStartDateStr)
+        .lt('started_at', previousEndDateStr)
+        .eq('is_bot', false)
+    : { count: 0 };
+
+  const { count: previousLeadCount } = compare
+    ? await supabase
+        .from('leads')
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', previousStartDateStr)
+        .lt('created_at', previousEndDateStr)
+    : { count: 0 };
 
   // Fetch full datasets (paginated) for factual aggregation.
   // Note: analytics ingestion can resend the same page list multiple times.
@@ -189,6 +273,7 @@ export const getAnalyticsSummary = async (days = 30) => {
 
   type SessionRow = {
     session_id: string;
+    visitor_id: string | null;
     started_at: string;
     last_activity_at: string;
     channel: string | null;
@@ -241,13 +326,55 @@ export const getAnalyticsSummary = async (days = 30) => {
     const result = await supabase
       .from('analytics_sessions')
       .select(
-        'session_id, started_at, last_activity_at, channel, referrer_host, referrer, device_type, country, browser, os, landing_page, utm_source, utm_medium, utm_campaign, utm_content, utm_term, gclid, fbclid, msclkid, li_fat_id, ttclid'
+        'session_id, visitor_id, started_at, last_activity_at, channel, referrer_host, referrer, device_type, country, browser, os, landing_page, utm_source, utm_medium, utm_campaign, utm_content, utm_term, gclid, fbclid, msclkid, li_fat_id, ttclid'
       )
       .gte('started_at', startDateStr)
+      .lt('started_at', endDateStr)
       .eq('is_bot', false)
       .order('started_at', { ascending: false })
       .range(from, to);
     return { data: result.data as SessionRow[] | null, error: result.error };
+  });
+
+  const previousSessions = compare
+    ? await fetchAll<Pick<SessionRow, 'session_id' | 'visitor_id'>>(
+        async (from, to) => {
+          const result = await supabase
+            .from('analytics_sessions')
+            .select('session_id,visitor_id')
+            .gte('started_at', previousStartDateStr)
+            .lt('started_at', previousEndDateStr)
+            .eq('is_bot', false)
+            .order('started_at', { ascending: false })
+            .range(from, to);
+          return {
+            data: result.data as Array<{
+              session_id: string;
+              visitor_id: string | null;
+            }> | null,
+            error: result.error,
+          };
+        }
+      )
+    : [];
+
+  const allTimeVisitors = await fetchAll<{
+    session_id: string;
+    visitor_id: string | null;
+  }>(async (from, to) => {
+    const result = await supabase
+      .from('analytics_sessions')
+      .select('session_id,visitor_id')
+      .eq('is_bot', false)
+      .order('started_at', { ascending: false })
+      .range(from, to);
+    return {
+      data: result.data as Array<{
+        session_id: string;
+        visitor_id: string | null;
+      }> | null,
+      error: result.error,
+    };
   });
 
   // Create a set of valid (non-bot) session IDs for filtering page views
@@ -258,6 +385,7 @@ export const getAnalyticsSummary = async (days = 30) => {
       .from('analytics_page_views')
       .select('session_id, path, started_at, duration_ms')
       .gte('started_at', startDateStr)
+      .lt('started_at', endDateStr)
       .order('started_at', { ascending: false })
       .range(from, to);
     return { data: result.data as PageViewRow[] | null, error: result.error };
@@ -291,6 +419,7 @@ export const getAnalyticsSummary = async (days = 30) => {
     .from('analytics_form_submissions')
     .select('*')
     .gte('submitted_at', startDateStr)
+    .lt('submitted_at', endDateStr)
     .order('submitted_at', { ascending: false })
     .limit(50);
 
@@ -298,13 +427,15 @@ export const getAnalyticsSummary = async (days = 30) => {
   const { data: allFormSubmissions } = await supabase
     .from('analytics_form_submissions')
     .select('utm_source, utm_medium, utm_campaign, channel')
-    .gte('submitted_at', startDateStr);
+    .gte('submitted_at', startDateStr)
+    .lt('submitted_at', endDateStr);
 
   // Get ALL leads for campaign performance
   const { data: allLeads } = await supabase
     .from('leads')
-    .select('source, channel, created_at')
-    .gte('created_at', startDateStr);
+    .select('source, channel, created_at, utm_source, utm_medium, utm_campaign')
+    .gte('created_at', startDateStr)
+    .lt('created_at', endDateStr);
 
   // Get recent leads
   // Note: archived column filtering is handled client-side after migration is run
@@ -312,6 +443,7 @@ export const getAnalyticsSummary = async (days = 30) => {
     .from('leads')
     .select('*')
     .gte('created_at', startDateStr)
+    .lt('created_at', endDateStr)
     .order('created_at', { ascending: false })
     .limit(50);
 
@@ -329,10 +461,30 @@ export const getAnalyticsSummary = async (days = 30) => {
   const utmTermCounts: Record<string, number> = {};
   const adCounts: Record<string, number> = {}; // Full ad identifier
   const landingPageCounts: Record<string, number> = {};
+  const sourceAttributionCounts: Record<string, number> = {};
   const dailySessionCounts: Record<string, number> = {};
+  const dailyUniqueVisitorSets: Record<string, Set<string>> = {};
+  const dailyLeadCounts: Record<string, number> = {};
   const hourlySessionCounts: Record<number, number> = {};
   const aiReferrerCounts: Record<string, number> = {};
+  const campaignSessions: Record<string, number> = {};
+  const campaignFormSubmissions: Record<string, number> = {};
+  const campaignLeads: Record<string, number> = {};
   let paidTrafficSessions = 0;
+
+  function buildCampaignKey(
+    utmSource?: string | null,
+    utmMedium?: string | null,
+    utmCampaign?: string | null
+  ) {
+    const source = (utmSource || '').trim();
+    const medium = (utmMedium || '').trim();
+    const campaign = (utmCampaign || '').trim();
+    if (!source && !medium && !campaign) return '';
+    return [source || '(none)', medium || '(none)', campaign || '(none)'].join(
+      ' / '
+    );
+  }
 
   sessions.forEach(s => {
     const channel = s.channel || 'Unknown';
@@ -349,6 +501,9 @@ export const getAnalyticsSummary = async (days = 30) => {
     const landing = s.landing_page || '/';
     const date = s.started_at.split('T')[0];
     const hour = new Date(s.started_at).getHours();
+    const visitorKey = s.visitor_id || s.session_id;
+    const attributionSource = source || referrer || channel || 'Direct';
+    const campaignKey = buildCampaignKey(source, medium, campaign);
 
     channelCounts[channel] = (channelCounts[channel] || 0) + 1;
     referrerCounts[referrer] = (referrerCounts[referrer] || 0) + 1;
@@ -356,6 +511,16 @@ export const getAnalyticsSummary = async (days = 30) => {
     countryCounts[country] = (countryCounts[country] || 0) + 1;
     browserCounts[browser] = (browserCounts[browser] || 0) + 1;
     osCounts[os] = (osCounts[os] || 0) + 1;
+    sourceAttributionCounts[attributionSource] =
+      (sourceAttributionCounts[attributionSource] || 0) + 1;
+    dailySessionCounts[date] = (dailySessionCounts[date] || 0) + 1;
+    if (!dailyUniqueVisitorSets[date]) {
+      dailyUniqueVisitorSets[date] = new Set<string>();
+    }
+    dailyUniqueVisitorSets[date].add(visitorKey);
+    if (campaignKey) {
+      campaignSessions[campaignKey] = (campaignSessions[campaignKey] || 0) + 1;
+    }
 
     // Track all UTM parameters
     if (campaign)
@@ -394,7 +559,6 @@ export const getAnalyticsSummary = async (days = 30) => {
     }
 
     landingPageCounts[landing] = (landingPageCounts[landing] || 0) + 1;
-    dailySessionCounts[date] = (dailySessionCounts[date] || 0) + 1;
     hourlySessionCounts[hour] = (hourlySessionCounts[hour] || 0) + 1;
 
     // Track AI referrers separately
@@ -571,64 +735,124 @@ export const getAnalyticsSummary = async (days = 30) => {
   });
   // Exit flows require reliable exit tracking. Disabled until ingestion supports it.
 
-  // Campaign Performance: aggregate sessions, form submissions, and leads per campaign
-  const campaignPerformance: Record<
-    string,
-    { sessions: number; formSubs: number; leads: number }
-  > = {};
-
-  // Count sessions per campaign
-  sessions.forEach(s => {
-    if (s.utm_campaign) {
-      if (!campaignPerformance[s.utm_campaign]) {
-        campaignPerformance[s.utm_campaign] = {
-          sessions: 0,
-          formSubs: 0,
-          leads: 0,
-        };
-      }
-      campaignPerformance[s.utm_campaign].sessions++;
-    }
-  });
-
-  // Count form submissions per campaign
+  // Count form submissions per campaign key
   (allFormSubmissions || []).forEach(sub => {
-    const campaign = sub.utm_campaign;
-    if (campaign) {
-      if (!campaignPerformance[campaign]) {
-        campaignPerformance[campaign] = { sessions: 0, formSubs: 0, leads: 0 };
-      }
-      campaignPerformance[campaign].formSubs++;
-    }
+    const key = buildCampaignKey(
+      sub.utm_source,
+      sub.utm_medium,
+      sub.utm_campaign
+    );
+    if (!key) return;
+    campaignFormSubmissions[key] = (campaignFormSubmissions[key] || 0) + 1;
   });
 
-  // Count leads per channel (leads don't have UTM directly, but have channel)
+  // Count leads per channel and campaign key
   const leadsPerChannel: Record<string, number> = {};
   (allLeads || []).forEach(lead => {
     const channel = lead.channel || 'Unknown';
+    const key = buildCampaignKey(
+      lead.utm_source,
+      lead.utm_medium,
+      lead.utm_campaign
+    );
+    const date =
+      typeof lead.created_at === 'string' ? lead.created_at.split('T')[0] : '';
     leadsPerChannel[channel] = (leadsPerChannel[channel] || 0) + 1;
+    if (key) campaignLeads[key] = (campaignLeads[key] || 0) + 1;
+    if (date) dailyLeadCounts[date] = (dailyLeadCounts[date] || 0) + 1;
   });
 
-  // Build campaign performance array with conversion rates
-  const campaignPerformanceArray = Object.entries(campaignPerformance)
-    .map(([campaign, data]) => ({
-      campaign,
-      sessions: data.sessions,
-      formSubs: data.formSubs,
-      leads: data.leads,
-      formConvRate:
-        data.sessions > 0
-          ? Math.round((data.formSubs / data.sessions) * 10000) / 100
-          : 0,
-      leadConvRate:
-        data.sessions > 0
-          ? Math.round((data.leads / data.sessions) * 10000) / 100
-          : 0,
-    }))
+  // Build campaign performance array with conversion rates (UTM first attribution).
+  const campaignKeySet = new Set([
+    ...Object.keys(campaignSessions),
+    ...Object.keys(campaignFormSubmissions),
+    ...Object.keys(campaignLeads),
+  ]);
+
+  const campaignPerformanceArray = Array.from(campaignKeySet)
+    .map(campaignKey => {
+      const sessionsCount = campaignSessions[campaignKey] || 0;
+      const formSubsCount = campaignFormSubmissions[campaignKey] || 0;
+      const leadsCount = campaignLeads[campaignKey] || 0;
+      return {
+        campaign: campaignKey,
+        sessions: sessionsCount,
+        formSubs: formSubsCount,
+        leads: leadsCount,
+        formConvRate:
+          sessionsCount > 0
+            ? Math.round((formSubsCount / sessionsCount) * 10000) / 100
+            : 0,
+        leadConvRate:
+          sessionsCount > 0
+            ? Math.round((leadsCount / sessionsCount) * 10000) / 100
+            : 0,
+      };
+    })
     .sort((a, b) => b.sessions - a.sessions)
-    .slice(0, 20);
+    .slice(0, 40);
+
+  // Unique visitor metrics
+  const uniqueVisitorRangeSet = new Set<string>();
+  sessions.forEach(sessionRow => {
+    uniqueVisitorRangeSet.add(sessionRow.visitor_id || sessionRow.session_id);
+  });
+
+  const uniqueVisitorPreviousSet = new Set<string>();
+  previousSessions.forEach(sessionRow => {
+    uniqueVisitorPreviousSet.add(
+      sessionRow.visitor_id || sessionRow.session_id
+    );
+  });
+
+  const uniqueVisitorEverSet = new Set<string>();
+  allTimeVisitors.forEach(visitorRow => {
+    uniqueVisitorEverSet.add(visitorRow.visitor_id || visitorRow.session_id);
+  });
+
+  const uniqueDailyValues = Object.values(dailyUniqueVisitorSets).map(
+    set => set.size
+  );
+  const uniqueDailyAverage =
+    uniqueDailyValues.length > 0
+      ? uniqueDailyValues.reduce((sum, value) => sum + value, 0) /
+        uniqueDailyValues.length
+      : 0;
+
+  // Build combined trends used in admin dashboard.
+  const trendDates = new Set([
+    ...Object.keys(dailySessionCounts),
+    ...Object.keys(dailyLeadCounts),
+    ...Object.keys(dailyUniqueVisitorSets),
+  ]);
+  const trends = Array.from(trendDates)
+    .map(date => ({
+      date,
+      sessions: dailySessionCounts[date] || 0,
+      uniqueDaily: dailyUniqueVisitorSets[date]?.size || 0,
+      leads: dailyLeadCounts[date] || 0,
+    }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  const safeDeltaPercent = (current: number, previous: number) => {
+    if (previous <= 0) return current > 0 ? 100 : 0;
+    return Math.round(((current - previous) / previous) * 1000) / 10;
+  };
+
+  const safeRatePercent = (part: number, whole: number) => {
+    if (!whole || whole <= 0) return 0;
+    return Math.round((part / whole) * 1000) / 10;
+  };
 
   return {
+    period: {
+      days,
+      start: startDateStr,
+      end: endDateStr,
+      previousStart: previousStartDateStr,
+      previousEnd: previousEndDateStr,
+      compareEnabled: compare,
+    },
     totals: {
       sessions: sessionCount || 0,
       botSessions: botSessionCount || 0,
@@ -644,6 +868,57 @@ export const getAnalyticsSummary = async (days = 30) => {
       pageViewDurationCoverage:
         Math.round(pageViewDurationCoverage * 1000) / 10,
     },
+    uniqueSessions: {
+      ever: uniqueVisitorEverSet.size,
+      range: uniqueVisitorRangeSet.size,
+      dailyAverage: Math.round(uniqueDailyAverage * 10) / 10,
+      previousRange: uniqueVisitorPreviousSet.size,
+    },
+    comparison: {
+      sessions: {
+        current: sessionCount || 0,
+        previous: previousSessionCount || 0,
+        deltaPercent: safeDeltaPercent(
+          sessionCount || 0,
+          previousSessionCount || 0
+        ),
+      },
+      uniqueRange: {
+        current: uniqueVisitorRangeSet.size,
+        previous: uniqueVisitorPreviousSet.size,
+        deltaPercent: safeDeltaPercent(
+          uniqueVisitorRangeSet.size,
+          uniqueVisitorPreviousSet.size
+        ),
+      },
+      leads: {
+        current: leadCount || 0,
+        previous: previousLeadCount || 0,
+        deltaPercent: safeDeltaPercent(leadCount || 0, previousLeadCount || 0),
+      },
+    },
+    cal: {
+      url: siteConfig.bookings.callUrl,
+      configured: isCalComConfigured(),
+      warning: calWarning,
+      callClicks: callClickCount || 0,
+      callClicksPrevious: previousCallClickCount || 0,
+      bookings: calBookings,
+      bookingsCancelled: calBookingsCancelled,
+      bookingsPrevious: calBookingsPrevious,
+      bookingsCancelledPrevious: calBookingsCancelledPrevious,
+      clickToBookingRate: safeRatePercent(calBookings, callClickCount || 0),
+      clickToBookingRatePrevious: safeRatePercent(
+        calBookingsPrevious,
+        previousCallClickCount || 0
+      ),
+    },
+    trends,
+    sourceMix: Object.entries(sourceAttributionCounts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 20),
+    campaignTable: campaignPerformanceArray,
     channels: Object.entries(channelCounts)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count),

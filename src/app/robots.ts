@@ -1,14 +1,26 @@
 import { MetadataRoute } from 'next';
 
+import { siteConfig } from '@/lib/config';
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/admin/', '/white-paper'],
+        disallow: [
+          '/admin/',
+          '/api/',
+          '/email-preview',
+          '/popup-modal',
+          '/r/',
+          '/reserve',
+          '/reserve/success',
+          '/contact/thank-you',
+          '/white-paper',
+        ],
       },
     ],
-    sitemap: 'https://www.claudeworkshop.com/sitemap.xml',
+    sitemap: `${siteConfig.url}/sitemap.xml`,
   };
 }

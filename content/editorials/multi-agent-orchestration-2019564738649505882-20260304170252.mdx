@@ -1,0 +1,573 @@
+---
+title: 'What Multi‑Agent Orchestration Changes for Teams Shipping With Coding Agents'
+description: 'A practical look at how to use a strong coordinator model to manage specialized coding agents, what it changes for engineering teams, and where it breaks.'
+image: '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304170252.png'
+author: 'Rogier Muller'
+authorUrl: 'https://www.linkedin.com/in/rogyr/'
+publishedAt: '2026-03-04'
+category: 'ai-coding'
+tags:
+  - 'multi-agent'
+  - 'agentic-coding'
+  - 'software-engineering'
+  - 'workflows'
+  - 'architecture'
+  - 'team-practices'
+featured: false
+metaTitle: 'Multi‑Agent Orchestration for Coding Teams: Architecture, Playbooks, and Tradeoffs'
+metaDescription: 'How a strong coordinator model can orchestrate specialized coding agents, what it changes for engineering teams, and concrete patterns, steps, and limitations.'
+---
+# What Multi‑Agent Orchestration Changes for Teams Shipping With Coding Agents
+
+The pattern behind the tweet is simple:
+
+> Use a strong, general model ("Opus 4.6") as a coordinator to manage a set of smaller, more specialized coding agents ("Codex 5.3"), and aim for a material increase in throughput.
+
+Names aside, this is the **multi‑agent orchestration** pattern. One model plans and delegates; others execute narrower tasks.
+
+This article looks at what that changes for:
+
+- Individual engineers using coding agents
+- Teams trying to ship real software with agents
+
+And how to implement it without over‑promising or creating a system that drifts.
+
+We’ll cover:
+
+- What “orchestration” means in practice
+- When a coordinator + worker agents is useful
+- Concrete architecture patterns
+- Implementation steps you can try in a week
+- Failure modes and tradeoffs
+
+Where details are uncertain (for example, specific model versions or performance numbers), they’re left abstract on purpose.
+
+---
+
+## 1. What “multi‑agent orchestration” is
+
+In this context, an **agent** is just:
+
+- A loop around an LLM
+- With a role, tools, and memory
+- That can decide what to do next based on state
+
+**Orchestration** is a higher‑level process that:
+
+- Breaks a goal into tasks
+- Assigns tasks to agents
+- Integrates results
+- Decides when you’re done
+
+The idea:
+
+- **Coordinator**: a strong general model ("Opus 4.6")
+- **Workers**: multiple coding‑focused agents ("Codex 5.3")
+
+The coordinator doesn’t write most of the code. It:
+
+- Understands the user’s intent
+- Designs a plan
+- Chooses which worker to call next
+- Checks and merges their outputs
+
+Workers are:
+
+- Narrower (for example, “Python refactorer”, “test generator”, “migration assistant”)
+- Potentially cheaper or faster
+- Easier to constrain and evaluate
+
+This is closer to software architecture than anything else. You’re designing a system of specialized services, not a single model trying to do everything.
+
+---
+
+## 2. When a coordinator + worker agents is useful
+
+You don’t need orchestration for everything. It adds complexity and latency.
+
+It tends to pay off when:
+
+1. **Tasks are decomposable**
+   - Example: “Add feature X across backend, frontend, and tests.”
+   - You can split into: spec → backend change → frontend change → tests → docs.
+
+2. **You need different skills or tools**
+   - Example: one agent is good at SQL migrations, another at React, another at test generation.
+   - Each has its own tools (DB schema access, UI component catalog, test runner).
+
+3. **You care about consistency across multiple edits**
+   - Example: a cross‑cutting refactor across 30 files.
+   - The coordinator maintains a global view and enforces a single plan.
+
+4. **You want to parallelize safely**
+   - Example: generating tests for many modules.
+   - The coordinator can shard work and reconcile conflicts.
+
+It’s usually not worth it when:
+
+- The task is small (single‑file change, quick bugfix)
+- Latency is critical (hot path in a dev tool)
+- Your infra and logging are immature (hard to debug multi‑step failures)
+
+For many teams, the right starting point is a single strong model with good tools. Move to orchestration when you hit clear bottlenecks:
+
+- Context window limits
+- Long‑running multi‑file tasks
+- Need for specialization
+
+---
+
+## 3. A concrete architecture: “Opus as PM, Codex as ICs”
+
+Think of the coordinator as a project lead and the workers as IC engineers.
+
+## 3.1 Roles
+
+**Coordinator agent (Opus‑class model)**
+
+- Inputs: user request, repo context, current plan state
+- Responsibilities:
+  - Clarify requirements (ask user or infer from code/tests)
+  - Propose and update a task plan
+  - Decide which worker to call next
+  - Review worker output for consistency and quality
+  - Maintain a global state of the change
+
+**Worker agents (Codex‑class models)**
+
+Each worker has:
+
+- A narrow role (for example, “TypeScript implementer”, “Python refactorer”, “Test generator”)
+- A limited toolset
+- A tight prompt describing style, constraints, and failure modes
+
+## 3.2 Data flow (simplified)
+
+1. **User request → Coordinator**
+   - User: “Add a feature flag for new checkout flow and wire it through API and UI.”
+
+2. **Coordinator → Plan**
+   - Reads relevant files (via tools).
+   - Produces a structured plan, for example:
+     - T1: Define feature flag in config
+     - T2: Backend: add flag check to checkout API
+     - T3: Frontend: gate new UI behind flag
+     - T4: Tests: add coverage for both paths
+
+3. **Coordinator → Worker calls**
+   - For each task, selects a worker and calls it with:
+     - Task description
+     - Relevant file snippets
+     - Constraints (style, patterns, safety checks)
+
+4. **Worker → Patch proposal**
+   - Returns a patch or code snippet plus rationale.
+
+5. **Coordinator → Review + integration**
+   - Checks patch against plan and context.
+   - May:
+     - Accept and apply
+     - Ask worker to revise
+     - Adjust plan
+
+6. **Completion**
+   - Coordinator summarizes changes.
+   - Optionally generates a draft PR description and follow‑up tasks.
+
+You can implement this with a simple state machine and a message bus, or just sequential calls in a backend service.
+
+---
+
+## 4. Practical implementation steps (1–2 week pilot)
+
+Below is a minimal but realistic path to try this pattern.
+
+## Step 0: Choose a narrow, repetitive use case
+
+Pick something like:
+
+- “Add or modify API endpoints + tests”
+- “Apply consistent refactors across many files”
+- “Generate and maintain tests for existing modules”
+
+Avoid greenfield feature design at first. You want clear inputs and outputs.
+
+## Step 1: Define 2–3 worker agents
+
+For a backend‑heavy repo, you might start with:
+
+1. **Spec‑to‑code worker**
+   - Role: implement small backend changes from a structured spec.
+   - Tools: read/write files, run unit tests.
+
+2. **Test generator worker**
+   - Role: generate or update tests for a given change.
+   - Tools: read code, write test files, run tests.
+
+3. **Refactor worker** (optional)
+   - Role: apply mechanical refactors (rename, extract function, etc.).
+
+Each worker gets a prompt with:
+
+- Clear role description
+- Allowed file types
+- Coding style constraints
+- Safety rules (for example, “do not change public API signatures unless explicitly requested”)
+
+## Step 2: Implement a simple coordinator
+
+You don’t need a full agent framework to start. A straightforward backend service can:
+
+1. Accept a user request.
+2. Call the coordinator model once to:
+   - Clarify the request
+   - Produce a **structured plan** (JSON) with tasks
+3. Iterate over tasks:
+   - For each task, call the coordinator again to:
+     - Select a worker
+     - Build a worker prompt with relevant context
+   - Call the worker model
+   - Ask the coordinator to review the patch:
+     - If “OK”, apply
+     - If “needs revision”, call worker again with feedback
+
+Keep the state in a simple object:
+
+```json
+{
+  "request": "Add feature flag for new checkout flow",
+  "tasks": [
+    { "id": "T1", "status": "done", "...": "..." },
+    { "id": "T2", "status": "in_progress", "...": "..." }
+  ],
+  "appliedPatches": [ ... ],
+  "notes": [ ... ]
+}
+```
+
+## Step 3: Wire in tools carefully
+
+The biggest practical issues are usually around tools, not prompts.
+
+Start with:
+
+- **File access**
+  - `read_file(path)`
+  - `list_files(pattern)`
+  - `apply_patch(path, diff)`
+
+- **Tests**
+  - `run_tests(pattern)` returning:
+    - pass/fail
+    - truncated logs
+
+Guardrails:
+
+- Limit which directories workers can touch.
+- Cap patch size per call.
+- Log every tool call and patch.
+
+## Step 4: Add human checkpoints
+
+For a pilot, keep a human in the loop:
+
+- Require approval before applying patches to the repo.
+- Show:
+  - The plan
+  - Each task’s proposed patch
+  - Coordinator’s rationale
+
+This lets you:
+
+- Catch systematic errors early
+- Refine prompts and constraints
+- Decide if the orchestration overhead is worth it
+
+## Step 5: Measure, don’t guess
+
+Track at least:
+
+- **Time to complete a task** (human‑only vs. assisted)
+- **Number of model calls per task**
+- **Patch acceptance rate** (how often humans accept without edits)
+- **Test pass rate** after agent changes
+
+If you don’t see a clear improvement on at least one dimension (speed, coverage, or cognitive load), adjust or stop.
+
+---
+
+## 5. Patterns that tend to work
+
+These are patterns teams often converge on after some iteration.
+
+## 5.1 Coordinator as planner + reviewer, not coder
+
+Let the coordinator:
+
+- Plan
+- Route
+- Review
+
+Avoid having it:
+
+- Directly edit code
+- Bypass workers
+
+This keeps responsibilities clear, makes logs easier to interpret, and simplifies evaluation. You know which worker produced which change.
+
+## 5.2 Workers as “tools with opinions”
+
+Workers work best when they:
+
+- Have a narrow, stable contract
+- Are tuned for a specific language or framework
+- Are treated like tools, not mini‑coordinators
+
+Example contracts:
+
+- “Given a function and a description of a refactor, return a patch that only changes that function.”
+- “Given a module and its public API, generate tests that cover the described behavior without changing implementation code.”
+
+## 5.3 Plans as first‑class artifacts
+
+Make the plan explicit and inspectable:
+
+- Store it as JSON or a simple DSL
+- Show it in your UI
+- Let humans edit it before execution
+
+This makes it easier to debug when things go wrong, reuse plans for similar tasks later, and add constraints (for example, “don’t touch payment code”).
+
+---
+
+## 6. Tradeoffs and limitations
+
+Multi‑agent orchestration trades complexity for structure and specialization.
+
+## 6.1 Overhead and latency
+
+- More model calls → higher latency and cost.
+- Coordinator‑worker back‑and‑forth can be slow for small tasks.
+
+Mitigations:
+
+- Use orchestration only for tasks above a certain size.
+- Batch similar tasks (for example, generate tests for N modules in one plan).
+- Cache context (for example, file summaries) across calls.
+
+## 6.2 Error propagation
+
+- A bad plan from the coordinator can produce many bad patches.
+- Workers may follow instructions too literally, amplifying mistakes.
+
+Mitigations:
+
+- Add sanity checks in the coordinator prompt, such as:
+  - “Before finalizing the plan, verify that each task is necessary and that no task contradicts existing tests.”
+- Use tests as a hard gate where possible.
+- Start with read‑only mode and human review.
+
+## 6.3 Observability and debugging
+
+Multi‑step systems are harder to debug than single calls.
+
+You’ll need:
+
+- Structured logs of:
+  - Plans
+  - Tool calls
+  - Patches
+  - Test runs
+- A way to replay a run with the same inputs
+
+Without this, it’s hard to:
+
+- Understand regressions
+- Improve prompts and roles
+- Explain the system to the rest of the team
+
+## 6.4 Model limitations
+
+Even a strong coordinator model has limits:
+
+- Long‑range consistency across very large repos
+- Deep domain knowledge (for example, complex business rules)
+- Non‑obvious performance implications
+
+In practice, this means:
+
+- You still need humans to own architecture and non‑functional requirements.
+- The system is better at mechanical and local changes than at subtle, cross‑cutting design decisions.
+
+## 6.5 Organizational fit
+
+Multi‑agent setups change how people work:
+
+- More time spent specifying tasks and reviewing plans
+- Less time on mechanical edits
+
+This works best when:
+
+- Engineers are comfortable writing clear, structured requests
+- There is some appetite for process and tooling investment
+
+If your team prefers ad‑hoc, highly creative work with little repetition, the payoff may be smaller.
+
+---
+
+## 7. How this changes day‑to‑day engineering work
+
+Assuming you get a basic orchestration setup working, what actually changes?
+
+## 7.1 For individual engineers
+
+The workflow shifts from:
+
+- “Ask the model to write code in this file”
+
+to:
+
+- “Describe the change once, review a plan, then supervise execution.”
+
+Typical new workflows:
+
+- **Plan review**
+  - Engineer refines the coordinator’s plan before any code is touched.
+
+- **Patch triage**
+  - Engineer reviews grouped patches per task instead of many small suggestions.
+
+- **Spec‑first work**
+  - Engineers write more explicit specs because the system depends on them.
+
+## 7.2 For teams
+
+You get more:
+
+- **Consistency**
+  - The same worker handles similar tasks across the repo.
+
+- **Traceability**
+  - Each change is tied to a plan and a task.
+
+- **Surface area for policy**
+  - You can encode rules at the coordinator level, such as:
+    - “Always add tests for new public APIs.”
+    - “Never change code in these directories without human approval.”
+
+You also take on:
+
+- A small platform‑style responsibility, even if informal
+- The need to maintain prompts, tools, and evaluation over time
+
+---
+
+## 8. A minimal reference design (pseudo‑code)
+
+Below is a sketch of how you might wire this up. It’s intentionally abstract and omits model‑specific details.
+
+```python
+class Coordinator:
+    def __init__(self, llm, workers, tools):
+        self.llm = llm
+        self.workers = workers  # {"backend": Worker(...), ...}
+        self.tools = tools
+
+    def create_plan(self, request):
+        # Call LLM to produce structured plan
+        prompt = build_plan_prompt(request)
+        response = self.llm(prompt)
+        return parse_plan(response)
+
+    def select_worker(self, task):
+        # Simple routing based on task metadata
+        if task["area"] == "backend":
+            return self.workers["backend"]
+        if task["area"] == "tests":
+            return self.workers["tests"]
+        return self.workers["general"]
+
+    def execute_task(self, task, state):
+        worker = self.select_worker(task)
+        context = fetch_relevant_context(task, self.tools)
+        patch = worker.propose_patch(task, context)
+
+        review = self.review_patch(task, patch, context)
+        if review["status"] == "accept":
+            self.tools.apply_patch(patch)
+            task["status"] = "done"
+        else:
+            # Optionally iterate with feedback
+            task["status"] = "needs_human_review"
+
+    def review_patch(self, task, patch, context):
+        prompt = build_review_prompt(task, patch, context)
+        response = self.llm(prompt)
+        return parse_review(response)
+
+
+class Worker:
+    def __init__(self, llm, role_prompt, tools):
+        self.llm = llm
+        self.role_prompt = role_prompt
+        self.tools = tools
+
+    def propose_patch(self, task, context):
+        prompt = build_worker_prompt(self.role_prompt, task, context)
+        response = self.llm(prompt)
+        return parse_patch(response)
+```
+
+This is enough to:
+
+- Run a simple plan
+- Route tasks
+- Generate and review patches
+
+You can later add parallel execution, better routing, and stronger evaluation as you find bottlenecks.
+
+---
+
+## 9. When to stop at “single agent + tools”
+
+Multi‑agent orchestration is optional. In many cases, a single strong model with good tools is simpler and good enough.
+
+Stay with a single agent if:
+
+- Your tasks are mostly small and local
+- You don’t have clear, repeatable workflows to automate
+- You lack time to build and maintain orchestration infra
+
+Move to a coordinator + workers when you can point to:
+
+- Specific, repetitive workflows
+- Pain from context limits or manual coordination
+- A team willing to experiment and own the system
+
+---
+
+## 10. Summary
+
+Using a strong coordinator model to manage specialized coding agents turns the problem into a system design problem.
+
+It gives you:
+
+- Structure for complex, multi‑step changes
+- A place to encode team conventions and policies
+- A way to specialize and parallelize work
+
+It costs you:
+
+- More infrastructure and logging
+- More moving parts to debug
+- Higher latency and complexity for small tasks
+
+A practical path is incremental:
+
+1. Start with a narrow workflow.
+2. Define 2–3 worker agents with clear contracts.
+3. Implement a simple coordinator that plans, routes, and reviews.
+4. Keep humans in the loop and measure outcomes.
+5. Expand only where you see real gains.
+
+Multi‑agent setups are about making your coding workflows explicit, inspectable, and automatable.

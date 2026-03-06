@@ -1,20 +1,20 @@
 ---
-name: 'Claude Code'
+name: 'Claude'
 tier: 'main'
-logo: '/images/sponsors/claude-logo.png'
-website: 'https://claude.ai'
+logo: '/images/sponsors/cursor-logo.png'
+website: 'https://cursor.sh'
 description: 'The AI-native IDE transforming how developers build software'
 featured: true
 order: 1
 ---
 
-# Claude Code - Main Sponsor
+# Claude - Main Sponsor
 
-**Claude Code** is the AI-native IDE that's revolutionizing software development by putting artificial intelligence at the heart of the coding experience.
+**Claude** is the AI-native IDE that's revolutionizing software development by putting artificial intelligence at the heart of the coding experience.
 
-## Why Claude Code?
+## Why Claude?
 
-Claude Code combines the familiar feel of VS Code with powerful AI capabilities that help developers:
+Claude combines the familiar feel of VS Code with powerful AI capabilities that help developers:
 
 - **Code Faster**: AI-powered autocomplete and suggestions
 - **Build Smarter**: Intelligent code analysis and optimization
@@ -31,7 +31,7 @@ Built from the ground up with AI integration, not as an afterthought.
 
 Optimized performance that doesn't sacrifice speed for intelligence.
 
-### 🔄 **Seamless Migration**
+### 🔄 **Easy Migration**
 
 Easy transition from other IDEs with familiar shortcuts and workflows.
 
@@ -41,22 +41,22 @@ Works with all major programming languages and frameworks.
 
 ## Supporting Our Community
 
-As our main sponsor, Claude Code demonstrates their commitment to:
+As our main sponsor, Claude demonstrates their commitment to:
 
 - **Education**: Supporting developer learning and growth
 - **Community**: Fostering connections among AI-enthusiastic developers
 - **Innovation**: Advancing the state of AI-assisted development
 - **Accessibility**: Making advanced development tools available to everyone
 
-## Get Started with Claude Code
+## Get Started with Claude
 
 Ready to experience the future of development?
 
-- **Download**: Visit [claude.ai](https://claude.ai) to get started
+- **Download**: Visit [cursor.sh](https://cursor.sh) to get started
 - **Learn**: Check out the documentation and tutorials
-- **Community**: Join the global Claude Code community
+- **Community**: Join the global Claude community
 - **Support**: Get help from the active user community
 
 ---
 
-_We're grateful to Claude Code for their support of the Italian developer community and their commitment to advancing AI-powered development tools._
+_We're grateful to Claude for their support of the Italian developer community and their commitment to advancing AI-powered development tools._

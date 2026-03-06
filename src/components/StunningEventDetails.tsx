@@ -75,13 +75,12 @@ export default function StunningEventDetails() {
               {/* Text content - semi-transparent on mobile, normal on desktop */}
               <div className='bg-black/40 backdrop-blur-sm rounded-xl p-4 space-y-3 md:bg-transparent md:backdrop-blur-none md:rounded-none md:p-0 md:space-y-4'>
                 <h1 className='text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white leading-tight'>
-                  Claude Code Engineering Offsite
+                  Claude Engineering Offsite
                 </h1>
                 <p className='text-base sm:text-lg md:text-xl text-white/95 md:text-white/90 max-w-3xl leading-relaxed'>
-                  Master AI-powered development in the stunning Mani Peninsula.
-                  This isn't just training, it's a complete transformation
-                  experience combining intensive technical upskilling with
-                  Mediterranean relaxation.
+                  Master AI-powered development on the Mani Peninsula. Five days
+                  of intensive technical upskilling, Mediterranean coastline,
+                  and real projects you bring back to your team.
                 </p>
               </div>
 
@@ -119,7 +118,7 @@ export default function StunningEventDetails() {
                 </CardTitle>
                 <CardDescription className='text-lg md:text-xl max-w-4xl mx-auto leading-relaxed'>
                   This isn't just another offsite, your engineers will master
-                  Claude Code through hands-on, expert-guided training while
+                  Claude through hands-on, expert-guided training while
                   experiencing curated leisure activities to recharge, connect,
                   and get inspired.
                 </CardDescription>
@@ -131,8 +130,7 @@ export default function StunningEventDetails() {
                     <CardContent className='p-6'>
                       <Code className='w-12 h-12 text-primary mx-auto mb-4' />
                       <CardTitle className='text-lg mb-2'>
-                        Master Claude Code through hands-on, expert-guided
-                        training
+                        Master Claude through hands-on, expert-guided training
                       </CardTitle>
                     </CardContent>
                   </Card>
@@ -161,7 +159,7 @@ export default function StunningEventDetails() {
 
                 <div className='text-center'>
                   <h3 className='text-xl font-bold text-primary'>
-                    Claude Code Training & Leisure in Harmony
+                    Claude Training & Leisure in Harmony
                   </h3>
                 </div>
               </CardContent>
@@ -213,7 +211,7 @@ export default function StunningEventDetails() {
                           Day 0 - Prep
                         </CardTitle>
                         <CardDescription>
-                          .claude/rules, ignore, privacy, time-tracking
+                          .cursor/rules, ignore, privacy, time-tracking
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
@@ -240,7 +238,7 @@ export default function StunningEventDetails() {
                       <CardHeader>
                         <CardTitle className='flex items-center gap-3'>
                           <BookOpen className='w-6 h-6 text-primary' />
-                          Day 1 - Claude Code Fundamentals
+                          Day 1 - Claude Fundamentals
                         </CardTitle>
                         <CardDescription>
                           Tab completion, prompt design, repo setup, inline
@@ -294,7 +292,7 @@ export default function StunningEventDetails() {
                           <li className='flex items-center gap-3'>
                             <CheckCircle className='w-5 h-5 text-primary flex-shrink-0' />
                             <span>
-                              Use Claude Code Agent Mode for CI/CD, multi-file
+                              Use Claude Agent Mode for CI/CD, multi-file
                               changes, persistent chat tabs
                             </span>
                           </li>
@@ -331,8 +329,8 @@ export default function StunningEventDetails() {
                           <li className='flex items-center gap-3'>
                             <CheckCircle className='w-5 h-5 text-primary flex-shrink-0' />
                             <span>
-                              Shared context, Claude Code Control Plane,
-                              chat-based reviews
+                              Shared context, Claude Control Plane, chat-based
+                              reviews
                             </span>
                           </li>
                           <li className='flex items-center gap-3'>
@@ -447,8 +445,8 @@ export default function StunningEventDetails() {
                       </CardTitle>
                       <CardDescription>
                         Real-world data shows engineers using AI tools like
-                        Claude Code deliver faster, shipping more features,
-                        saving weeks per quarter.
+                        Claude deliver faster, shipping more features, saving
+                        weeks per quarter.
                       </CardDescription>
                     </CardContent>
                   </Card>
@@ -478,7 +476,7 @@ export default function StunningEventDetails() {
                       </CardTitle>
                       <CardDescription>
                         New hires reach full speed up to 60% sooner with Claude
-                        Code best practices and in-tool help.
+                        best practices and in-tool help.
                       </CardDescription>
                     </CardContent>
                   </Card>
@@ -512,7 +510,7 @@ export default function StunningEventDetails() {
                     </CardHeader>
                     <CardContent>
                       <p className='text-muted-foreground'>
-                        Trained engineers become in-house Claude Code champions,
+                        Trained engineers become in-house Claude champions,
                         spreading value team-wide and ensuring sustained impact.
                       </p>
                     </CardContent>
@@ -527,11 +525,11 @@ export default function StunningEventDetails() {
             <Card className='border-0 shadow-2xl'>
               <CardHeader>
                 <CardTitle className='text-3xl font-bold text-center mb-4'>
-                  Why Proper Claude Code Training Matters
+                  Why Proper Claude Training Matters
                 </CardTitle>
                 <CardDescription className='text-lg text-center max-w-3xl mx-auto'>
                   Without focused training, even experienced engineers struggle
-                  to unlock Claude Code's full value
+                  to unlock Claude's full value
                 </CardDescription>
               </CardHeader>
 
@@ -550,7 +548,7 @@ export default function StunningEventDetails() {
                         },
                         {
                           title: 'Workflow Gaps and Inefficiency',
-                          desc: 'Key automation tools (Agent Mode, persistent chat tabs, or project rule integration) go undiscovered, meaning teams keep doing tasks manually that Claude Code could automate, slowing down delivery.',
+                          desc: 'Key automation tools (Agent Mode, persistent chat tabs, or project rule integration) go undiscovered, meaning teams keep doing tasks manually that Claude could automate, slowing down delivery.',
                         },
                         {
                           title: 'Misconfigurations & Security Risks',
@@ -603,7 +601,7 @@ export default function StunningEventDetails() {
                         },
                         {
                           title: 'Multiplier Effect',
-                          desc: 'Trained engineers become in-house Claude Code champions, spreading value team-wide.',
+                          desc: 'Trained engineers become in-house Claude champions, spreading value team-wide.',
                         },
                       ].map((item, i) => (
                         <Card
@@ -680,11 +678,11 @@ export default function StunningEventDetails() {
                     <div>
                       <h3 className='text-2xl font-bold mb-4'>Kyrimai Hotel</h3>
                       <p className='text-muted-foreground leading-relaxed mb-6'>
-                        Kyrimai Hotel, a beautifully restored 19th-century stone
-                        complex nestled in the picturesque fishing village of
-                        Gerolimenas, offers a stunning seaside location with
-                        breathtaking views of Cavo Grosso. It perfectly blends
-                        traditional Maniot architecture with modern luxury.
+                        Kyrimai Hotel is a restored 19th-century stone complex
+                        in the fishing village of Gerolimenas, right on the
+                        water with views of Cavo Grosso. Traditional Maniot
+                        architecture, modern rooms, and a kitchen worth the trip
+                        on its own.
                       </p>
 
                       <div className='grid grid-cols-2 gap-2 text-sm'>

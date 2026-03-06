@@ -27,7 +27,7 @@ import {
 export const metadata: Metadata = {
   title: 'Foundation - Essential Training',
   description:
-    'Essential Claude Code training to improve developer efficiency for teams new to Claude Code. Perfect starting point for teams exploring efficient development workflows.',
+    'Essential Claude training to improve developer efficiency for teams new to Claude. Perfect starting point for teams exploring efficient development workflows.',
 };
 
 export default function FoundationTrainingPage() {
@@ -57,7 +57,7 @@ export default function FoundationTrainingPage() {
                 Essential Training
               </h1>
               <p className='text-xl text-muted-foreground'>
-                Perfect starting point for teams new to Claude Code. Learn the
+                Perfect starting point for teams new to Claude. Learn the
                 fundamentals to improve developer efficiency and build
                 confidence with efficient development workflows.
               </p>
@@ -110,8 +110,8 @@ export default function FoundationTrainingPage() {
                 <h2 className='text-3xl font-bold mb-4'>What You'll Learn</h2>
                 <p className='text-lg text-muted-foreground mb-6'>
                   This introductory program covers the essential foundations of
-                  Claude Code, helping your team understand how to improve
-                  developer efficiency without overwhelming them.
+                  Claude, helping your team understand how to improve developer
+                  efficiency without overwhelming them.
                 </p>
               </div>
 
@@ -119,9 +119,7 @@ export default function FoundationTrainingPage() {
                 <div className='flex items-start gap-3'>
                   <CheckCircle className='w-6 h-6 text-primary mt-1 flex-shrink-0' />
                   <div>
-                    <h3 className='font-semibold mb-1'>
-                      Claude Code Fundamentals
-                    </h3>
+                    <h3 className='font-semibold mb-1'>Claude Fundamentals</h3>
                     <p className='text-muted-foreground text-sm'>
                       Understanding the interface, basic commands, and core
                       features
@@ -132,7 +130,7 @@ export default function FoundationTrainingPage() {
                   <CheckCircle className='w-6 h-6 text-primary mt-1 flex-shrink-0' />
                   <div>
                     <h3 className='font-semibold mb-1'>
-                      Claude Code Coding Basics for Efficiency
+                      Claude Coding Basics for Efficiency
                     </h3>
                     <p className='text-muted-foreground text-sm'>
                       Writing effective prompts and leveraging AI suggestions
@@ -185,7 +183,7 @@ export default function FoundationTrainingPage() {
                 <ul className='space-y-2 text-sm'>
                   <li className='flex items-start gap-2'>
                     <span className='text-primary mt-1'>•</span>
-                    <span>Claude Code installation and setup</span>
+                    <span>Claude installation and setup</span>
                   </li>
                   <li className='flex items-start gap-2'>
                     <span className='text-primary mt-1'>•</span>
@@ -330,9 +328,9 @@ export default function FoundationTrainingPage() {
             Ready to Build Your Foundation?
           </h2>
           <p className='text-lg mb-8 opacity-90'>
-            Empower your team with essential Claude Code skills to improve
-            developer efficiency. Contact us to customize your foundation
-            training program.
+            Empower your team with essential Claude skills to improve developer
+            efficiency. Contact us to customize your foundation training
+            program.
           </p>
           <Button variant='secondary' size='lg' asChild>
             <Link href='/contact'>

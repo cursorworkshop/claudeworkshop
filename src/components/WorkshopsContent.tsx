@@ -48,7 +48,7 @@ export function WorkshopsContent({ upcoming, past }: WorkshopsContentProps) {
               </h1>
               <p className='text-lg text-muted-foreground leading-relaxed'>
                 Premium offsite experiences that turn experienced developers
-                into Claude Code power-users. 5-day intensive bootcamps.
+                into Claude power-users. 5-day intensive bootcamps.
               </p>
               <div className='flex flex-wrap gap-3 pt-2'>
                 <Button asChild>

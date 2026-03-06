@@ -38,26 +38,26 @@ export default async function EventsPage() {
               </h1>
               <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
                 Join us for exciting meetups, workshops, and talks about
-                AI-powered development with Claude Code
+                AI-powered development with Claude
               </p>
             </div>
 
             {/* Quick Stats */}
             <div className='flex flex-wrap justify-center gap-8'>
               <div className='flex items-center space-x-2'>
-                <Calendar className='w-5 h-5 text-claude-blue' />
+                <Calendar className='w-5 h-5 text-cursor-blue' />
                 <span className='font-semibold text-gray-900'>
                   Monthly Meetups
                 </span>
               </div>
               <div className='flex items-center space-x-2'>
-                <Clock className='w-5 h-5 text-claude-blue' />
+                <Clock className='w-5 h-5 text-cursor-blue' />
                 <span className='font-semibold text-gray-900'>
                   Usually 18:30 CEST
                 </span>
               </div>
               <div className='flex items-center space-x-2'>
-                <Plus className='w-5 h-5 text-claude-blue' />
+                <Plus className='w-5 h-5 text-cursor-blue' />
                 <span className='font-semibold text-gray-900'>Open CFP</span>
               </div>
             </div>
@@ -219,8 +219,8 @@ export default async function EventsPage() {
                       Diverse Topics
                     </h3>
                     <p className='text-gray-600 text-sm'>
-                      AI development, Claude Code tips, product management,
-                      design, entrepreneurship, and more.
+                      AI development, Claude tips, product management, design,
+                      entrepreneurship, and more.
                     </p>
                   </div>
                 </div>

@@ -7,7 +7,9 @@ import { TrainingCards } from '@/components/TrainingCards';
 import { TrainingAccordion } from '@/components/TrainingAccordion';
 import { HeroSection } from '@/components/HeroSection';
 import Features from '@/components/features-2';
+import FAQs from '@/components/faqs-2';
 import Content from '@/components/content-3';
+import ActionsSix from '@/components/actions-6';
 import Stats from '@/components/stats-1';
 import { SpinningText } from '@/components/core/spinning-text';
 import { Button } from '@/components/ui/button';
@@ -16,7 +18,7 @@ import { InView } from '@/components/motion/in-view';
 export const metadata: Metadata = {
   title: 'Claude Workshop - In-House & Offsite Programs',
   description:
-    'Transform your team with Claude Code training. In-house sessions at your office or premium offsites in stunning locations.',
+    'Transform your team with Claude training. In-house sessions at your office or premium offsites in stunning locations.',
 };
 
 export default async function HomePage() {
@@ -25,7 +27,7 @@ export default async function HomePage() {
       {/* Hero Section */}
       <HeroSection />
 
-      {/* PROBLEM / SOLUTION - Content Section */}
+      {/* Problem */}
       <Content />
 
       {/* Divider */}
@@ -33,29 +35,19 @@ export default async function HomePage() {
         <div className='border-t border-border' />
       </div>
 
-      {/* Training Accordion - What we offer */}
-      <TrainingAccordion />
-
-      {/* NO divider here - cards flow directly from accordion */}
-
-      {/* New Cards - Stack & Worldwide */}
-      <TrainingCards />
-
-      {/* Divider */}
-      <div className='max-w-5xl mx-auto px-6'>
-        <div className='border-t border-border' />
-      </div>
-
-      {/* STATS */}
-      <Stats />
-
-      {/* Divider */}
-      <div className='max-w-5xl mx-auto px-6'>
-        <div className='border-t border-border' />
-      </div>
-
-      {/* The Framework: Delegate, Review, Own */}
+      {/* Solution */}
       <Features />
+
+      {/* Divider */}
+      <div className='max-w-5xl mx-auto px-6'>
+        <div className='border-t border-border' />
+      </div>
+
+      {/* Solution Deep Dive */}
+      <ActionsSix />
+
+      {/* Social Proof */}
+      <Stats />
 
       {/* Meet the Founders / Claude Ambassadors - WHITE background */}
       <section className='py-24 bg-white'>
@@ -174,7 +166,7 @@ export default async function HomePage() {
                 </Link>
                 <div className='flex justify-center gap-3 mt-2'>
                   <a
-                    href='https://github.com/claudeworkshop'
+                    href='https://github.com/cursorworkshop'
                     target='_blank'
                     rel='noopener noreferrer'
                     className='text-zinc-800 dark:text-zinc-300 hover:text-blue-600 transition-colors'
@@ -195,6 +187,13 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Offer */}
+      <TrainingAccordion />
+      <TrainingCards />
+
+      {/* FAQ */}
+      <FAQs />
 
       {/* Simple CTA - WHITE background */}
       <section className='py-32 bg-zinc-50'>

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The reservation system is now integrated with Stripe for processing €500 reservation fees for the Claude Code Engineering Offsite.
+The reservation system is now integrated with Stripe for processing €500 reservation fees for the Claude Engineering Offsite.
 
 ## Setup Instructions
 

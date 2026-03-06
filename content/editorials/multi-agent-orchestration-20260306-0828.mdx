@@ -1,0 +1,118 @@
+---
+title: 'What Multi‑Agent Orchestration Changes for Teams Shipping with Coding Agents'
+description: 'A practical look at how an “Opus 4.6” style orchestrator could coordinate a fleet of specialized “Codex 5.3” coding agents, what this changes for engineering teams, and how to prototype it today.'
+image: '/images/editorials/multi-agent-orchestration-20260306-0828.png'
+author: 'Rogier Muller'
+authorUrl: 'https://www.linkedin.com/in/rogyr/'
+publishedAt: '2026-03-06'
+category: 'ai-coding'
+tags:
+  - 'multi-agent'
+  - 'orchestration'
+  - 'coding-agents'
+  - 'engineering-workflows'
+  - 'agentic-coding'
+featured: false
+metaTitle: 'Multi‑Agent Orchestration for Coding Teams: From Single Agent to Agent Swarms'
+metaDescription: 'How an orchestrator model (Opus 4.6–style) can coordinate specialized coding agents (Codex 5.3–style) to change how engineering teams ship software, with concrete patterns and tradeoffs.'
+---
+# What Multi‑Agent Orchestration Changes for Teams Shipping with Coding Agents
+
+Most teams use coding models as single helpers: autocomplete, inline edits, maybe a chat tool that can touch the repo. Useful, but still a “better pair programmer” pattern.
+
+Multi‑agent orchestration changes the role of the model. A reasoning model ("Opus 4.6") acts like a lightweight lead that spins up smaller, cheaper coding agents ("Codex 5.3") to do focused work in parallel. The orchestrator decides what should happen next and when to stop; the workers write the code.
+
+This piece looks at how that setup affects engineering teams, a simple way to prototype it, and common failure points.
+
+## From single agent to orchestrated swarm
+
+Single coding agents today are usually:
+
+- Stateless or lightly stateful
+- Optimized for local edits (one file, one function)
+- Driven directly by the human prompt
+
+An orchestrated stack inserts a coordinator and shared state:
+
+- **Orchestrator agent**: plans, decomposes, routes, stops
+- **Worker agents**: narrow coders (backend, frontend, tests, migrations)
+- **Shared memory**: repo snapshot, task board, execution logs
+
+In the Opus 4.6 / Codex 5.3 split:
+
+- Opus 4.6 = high‑context reasoning, expensive, used sparingly
+- Codex 5.3 = code‑gen focused, cheaper, used in bulk
+
+## What orchestration changes
+
+Work moves from “one prompt → one answer” to “one goal → a coordinated sequence.” The system can touch multiple files, generate tests, and update docs in one flow while keeping a running sense of progress.
+
+You feel the benefit when:
+
+- The task spans layers (API + UI + tests)
+- Acceptance criteria are clear
+- The repo and conventions are stable enough for models to learn
+
+If most work is tiny, isolated fixes, a single strong agent is simpler and faster.
+
+## Minimal architecture that works
+
+You can get far with four pieces:
+
+- **Orchestrator loop**: Takes a goal plus constraints (branch, stack, time budget). Reads repo signals, drafts a short plan, assigns tasks, and decides when to re‑plan or stop.
+- **Worker templates**: Prompt patterns per role. Examples: implementation worker for focused edits, test worker for coverage, refactor worker for style alignment. Keep scopes narrow.
+- **Shared task board**: `tasks` (id, description, status, assignee, dependencies) and `artifacts` (diffs, test results, notes). Orchestrator writes; workers read only their slice plus curated context.
+- **Execution harness**: Applies patches, runs tests/linters, returns logs and exit codes to the orchestrator.
+
+You do not need a heavy framework to start; a loop plus a patch‑apply script is enough.
+
+## Practical first build
+
+Start with one repeatable workflow, not a platform.
+
+- **Pick a workflow**: e.g., “Given a failing test, fix the bug” or “Given a small feature spec, add an endpoint and tests.” Avoid cross‑repo work at first.
+- **Define worker prompts**: State the role, inputs it will see (files, tests, logs), and the required output format (diff/patch/code block).
+- **Write a tight orchestrator loop**:
+
+```python
+while not done:
+    plan = opus_46("Given goal G and state S, what is the next best task?")
+    task = create_task(plan)
+    worker = select_worker(task)
+    patch = codex_53(worker.prompt(task))
+    apply_patch(patch)
+    result = run_checks()
+    update_state(result)
+    done = opus_46("Given updated state, are we done? If not, why?")
+```
+
+- **Add guardrails**: Cap iterations, keep runs on a throwaway branch, log every plan/patch/test, and require human approval before merging.
+
+## Failure patterns to expect
+
+- **Planning brittleness**: Plans reference modules that do not exist or loop on the same failing test. Feed concrete signals (file listings, failing tests, stack traces) and keep horizons short.
+- **Context fragmentation**: Workers collide because they see different slices. Provide curated bundles (key interfaces, style guide, relevant files) instead of raw chunks.
+- **Cost and latency**: Over‑decomposed work multiplies calls and wall time. Use orchestration only when complexity warrants it; fall back to a single strong agent for small edits.
+- **Ownership drift**: It is easy to lose who owns a change. Attach runs to a ticket, emit a short change narrative, and keep a human owner in the loop.
+
+## How team time shifts
+
+With orchestration in place, humans spend less time typing code and more time steering:
+
+- Writing precise goals and constraints
+- Reviewing plans and diffs
+- Shaping abstractions and boundaries
+
+The trade‑off: planning quality and context prep now dominate outcomes. Poor inputs yield noisy runs quickly.
+
+## When to use it
+
+Use orchestration when a task touches multiple layers and has a clear definition of done. Skip it when the change is a one‑file tweak or when repo conventions are still in flux. Mixing both modes is fine: single‑agent for quick fixes, orchestrated runs for multi‑file changes with tests and docs.
+
+## Quick start checklist
+
+- Narrow workflow chosen and written down as a testable goal
+- Worker prompts scoped and versioned
+- Orchestrator loop logging plans, patches, and test results
+- Hard limits on iterations and runtime
+- Human review gate before merge

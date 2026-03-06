@@ -21,7 +21,7 @@ export default function Header() {
             <div className='w-10 h-10 relative'>
               <Image
                 src='/images/logos/CUBE_2D_LIGHT.svg'
-                alt='Claude Code Logo'
+                alt='Claude Logo'
                 fill
                 className='object-contain'
                 priority

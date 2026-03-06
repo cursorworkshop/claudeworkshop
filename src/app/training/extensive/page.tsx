@@ -25,7 +25,7 @@ import {
 export const metadata: Metadata = {
   title: 'Extensive - Advanced Training',
   description:
-    'Advanced Claude Code training for experienced teams seeking mastery and custom AI solutions.',
+    'Advanced Claude training for experienced teams seeking mastery and custom AI solutions.',
 };
 
 export default function ExtensiveTrainingPage() {

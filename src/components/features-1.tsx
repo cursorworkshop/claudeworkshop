@@ -10,8 +10,8 @@ export default function Features() {
             Why Teams Choose Us
           </h2>
           <p className='text-muted-foreground mt-4 text-balance'>
-            Most teams use less than 10% of Claude Code's capabilities. We
-            bridge the gap between tool and mastery.
+            Most teams use less than 10% of Claude's capabilities. We bridge the
+            gap between tool and mastery.
           </p>
         </div>
         <div className='@xl:grid-cols-2 mt-12 grid gap-3 *:p-6'>
@@ -40,7 +40,7 @@ export default function Features() {
             <div className='space-y-2'>
               <h3 className='text-foreground font-medium'>Context Awareness</h3>
               <p className='text-muted-foreground text-sm'>
-                Teach Claude Code your codebase architecture. Stop hallucinating
+                Teach Claude your codebase architecture. Stop hallucinating
                 imports and start generating production-ready code.
               </p>
             </div>

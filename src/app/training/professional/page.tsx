@@ -25,7 +25,7 @@ import {
 export const metadata: Metadata = {
   title: 'Professional - Advanced Training',
   description:
-    'Advanced Claude Code training to maximize developer efficiency for teams ready to optimize workflows and integrate advanced features.',
+    'Advanced Claude training to maximize developer efficiency for teams ready to optimize workflows and integrate advanced features.',
 };
 
 export default function ProfessionalTrainingPage() {
@@ -107,7 +107,7 @@ export default function ProfessionalTrainingPage() {
               What You'll Master
             </h2>
             <p className='text-lg text-muted-foreground max-w-2xl mx-auto'>
-              Dive deeper into Claude Code's capabilities, learning to leverage
+              Dive deeper into Claude's capabilities, learning to leverage
               advanced features to maximize developer efficiency for complex
               tasks, code reviews, and project management.
             </p>
@@ -139,7 +139,7 @@ export default function ProfessionalTrainingPage() {
                       CI/CD Integration
                     </h3>
                     <p className='text-muted-foreground'>
-                      Integrate Claude Code with your existing pipelines and
+                      Integrate Claude with your existing pipelines and
                       development workflows.
                     </p>
                   </div>
@@ -152,7 +152,7 @@ export default function ProfessionalTrainingPage() {
                   <CheckCircle className='w-6 h-6 text-primary flex-shrink-0 mt-1' />
                   <div>
                     <h3 className='font-semibold text-foreground mb-2'>
-                      Efficient Code Review with Claude Code
+                      Efficient Code Review with Claude
                     </h3>
                     <p className='text-muted-foreground'>
                       Implement efficient code review processes and quality

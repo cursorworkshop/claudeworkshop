@@ -25,7 +25,7 @@ import {
 export const metadata: Metadata = {
   title: 'Medium - Intermediate Training',
   description:
-    'Intermediate Claude Code training for teams ready to optimize AI workflows and integrate advanced features.',
+    'Intermediate Claude training for teams ready to optimize AI workflows and integrate advanced features.',
 };
 
 export default function MediumTrainingPage() {
@@ -96,7 +96,7 @@ export default function MediumTrainingPage() {
               What You'll Master
             </h2>
             <p className='text-lg text-muted-foreground max-w-2xl mx-auto'>
-              Dive deeper into Claude Code's capabilities, learning to leverage
+              Dive deeper into Claude's capabilities, learning to leverage
               advanced AI features for complex tasks, code reviews, and project
               management.
             </p>
@@ -128,7 +128,7 @@ export default function MediumTrainingPage() {
                       CI/CD Integration
                     </h3>
                     <p className='text-muted-foreground'>
-                      Integrate Claude Code with your existing pipelines and
+                      Integrate Claude with your existing pipelines and
                       development workflows.
                     </p>
                   </div>

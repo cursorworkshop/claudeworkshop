@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
           price_data: {
             currency,
             product_data: {
-              name: 'Claude Code Engineering Offsite - Reservation Fee',
+              name: 'Claude Engineering Offsite - Reservation Fee',
               description: `November 2025 • Mani Peninsula, Greece • ${seats} seat${seats > 1 ? 's' : ''}`,
             },
             unit_amount: 50000, // €500 per seat in cents
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       success_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'}/reserve/success?seats=${seats}&amount=${amount}`,
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'}/reserve`,
       metadata: {
-        workshop: 'claude-engineering-offsite-november-2025',
+        workshop: 'cursor-engineering-offsite-november-2025',
         type: 'reservation',
         seats: seats.toString(),
         amount_per_seat: '500',

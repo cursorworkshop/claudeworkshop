@@ -81,7 +81,7 @@ interface FooterProps {
 
 - **Social Links**: Meetup, LinkedIn, Lu.ma, Sessionize
 - **Navigation Links**: About, Code of Conduct, Founder, Contact
-- **Resource Links**: Claude Code, Learning Resources
+- **Resource Links**: Claude, Learning Resources
 - **Responsive Layout**: Mobile-first design
 - **Brand Consistency**: Milano-inspired styling
 

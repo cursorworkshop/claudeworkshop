@@ -206,7 +206,7 @@ published: true
 attendees: 0
 maxAttendees: 50
 registrationUrl: 'https://meetup.com/...'
-tags: ['AI', 'Development', 'Claude Code']
+tags: ['AI', 'Development', 'Claude']
 speakers:
   - name: 'Speaker Name'
     topic: 'Talk Title'

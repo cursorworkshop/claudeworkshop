@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 'use client';
 
 import * as AccordionPrimitive from '@radix-ui/react-accordion';

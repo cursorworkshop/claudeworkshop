@@ -1,11 +1,120 @@
-export const metadata = {
-  robots: { index: false, follow: false },
-};
+'use client';
+
+import { useState } from 'react';
+
+import { siteConfig } from '@/lib/config';
+import { OUTREACH_STEPS } from '@/lib/outreach-emails';
 
 export default function EmailPreviewPage() {
-  const downloadUrl =
-    'https://claudeworkshop.com/enterprise-guide-agentic-development.pdf';
+  const [activeEmail, setActiveEmail] = useState(0);
+  const sampleRecipient = {
+    email: 'contact@rogyr.com',
+    firstName: 'Rogier',
+    lastName: 'Muller',
+    name: 'Rogier Muller',
+  };
 
+  const downloadUrl = `${siteConfig.url}/enterprise-guide-agentic-development.pdf`;
+
+  const tabs = [
+    {
+      label: 'Day 0: Delivery',
+      subject: 'The Enterprise Guide to Agentic Development',
+    },
+    ...OUTREACH_STEPS.map(s => ({
+      label: `Day ${s.dayOffset}: Step ${s.step}`,
+      subject: s.subject,
+    })),
+  ];
+
+  return (
+    <div
+      style={{
+        fontFamily:
+          'Inter, ui-sans-serif, system-ui, -apple-system, sans-serif',
+        backgroundColor: '#f5f5f5',
+        minHeight: '100vh',
+        margin: 0,
+        padding: 0,
+      }}
+    >
+      {/* Tab bar */}
+      <div
+        style={{
+          maxWidth: '700px',
+          margin: '0 auto',
+          padding: '24px 20px 0',
+        }}
+      >
+        <p
+          style={{
+            fontSize: '11px',
+            color: '#737373',
+            margin: '0 0 8px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+          }}
+        >
+          Email preview
+        </p>
+        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+          {tabs.map((tab, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveEmail(i)}
+              style={{
+                padding: '8px 14px',
+                fontSize: '13px',
+                fontWeight: activeEmail === i ? 600 : 400,
+                backgroundColor: activeEmail === i ? '#0a0a0a' : '#ffffff',
+                color: activeEmail === i ? '#ffffff' : '#525252',
+                border: '1px solid #e5e5e5',
+                borderRadius: '6px',
+                cursor: 'pointer',
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        <p style={{ fontSize: '13px', color: '#525252', margin: '12px 0 0' }}>
+          Subject: {tabs[activeEmail].subject}
+        </p>
+      </div>
+
+      {/* Email content */}
+      <div
+        style={{
+          maxWidth: '700px',
+          margin: '16px auto 0',
+          padding: '0 20px 48px',
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '8px',
+            border: '1px solid #e5e5e5',
+            overflow: 'hidden',
+          }}
+        >
+          {activeEmail === 0 ? (
+            <DeliveryEmail downloadUrl={downloadUrl} />
+          ) : (
+            <div
+              dangerouslySetInnerHTML={{
+                __html:
+                  OUTREACH_STEPS[activeEmail - 1].renderHtml(sampleRecipient),
+              }}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DeliveryEmail({ downloadUrl }: { downloadUrl: string }) {
   return (
     <div
       style={{
@@ -21,7 +130,7 @@ export default function EmailPreviewPage() {
         style={{
           maxWidth: '560px',
           margin: '0 auto',
-          padding: '120px 20px 48px',
+          padding: '32px 20px 48px',
         }}
       >
         <h1
@@ -208,7 +317,6 @@ export default function EmailPreviewPage() {
           Founders, Claude Workshop
         </p>
 
-        {/* Urgency pill - small */}
         <div
           style={{
             display: 'inline-flex',

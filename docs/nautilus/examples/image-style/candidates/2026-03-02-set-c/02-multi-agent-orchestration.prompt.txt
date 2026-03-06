@@ -1,0 +1,31 @@
+Create a 16:9 editorial hero illustration for a technical research article.
+
+Style lock: match the canonical desk-sketch look exactly (line character + mood + roughness). Linework lock: single dark navy/charcoal ink family, scratchy thin-to-medium jittery strokes, visible construction marks, intentionally unfinished. Hatching lock: local only on hoodie/hair/chair, low-to-medium density, preserve paper whitespace. Tone lock: warm peach/salmon paper background, optional very subtle low-contrast gradient, editorial notebook mood. Hard negatives: extra people, multiple monitors, logos or branding, watermarks, floating arrows/icons/callouts outside monitor, photorealism, 3D render, polished vector illustration, comic-book finish, dense global crosshatching.
+
+Composition lock: exactly one person seated at one desk and exactly one monitor.
+
+Camera lock: over-shoulder three-quarter back view; subject on right half; monitor on left half.
+
+Subject scale lock: keep person+chair around 28% of canvas (small, not dominant).
+
+Negative-space lock: keep roughly 55% empty paper/desk/background visible.
+
+No logos, no branding, no decorative overlays, no arrows/icons/callouts outside monitor.
+
+Monitor content may contain rough pseudo-code-like marks only.
+
+Article source path: content/editorials/multi-agent-orchestration-2019564738649505882.mdx
+
+Article title: What Multi‑Agent Orchestration Changes for Teams Shipping With Coding Agents
+
+Article description: A practical look at how an "Opus 4.6" style orchestrator could coordinate a fleet of "Codex 5.3" coding agents, what this changes for engineering teams, and how to implement it without breaking your workflow.
+
+Article summary context: What Multi‑Agent Orchestration Changes for Teams Shipping With Coding Agents Teams are starting to pair one reasoning‑heavy model as a conductor ("Opus 4.6") with several faster, code‑specialized workers ("Codex 5.3"). Instead of one assistant in your editor, you get a small, structured team of agents. This guide covers: How an orchestrator + worker setup works. Workflows where multi‑agent systems help. Implementation steps you can ship. Failure modes and tradeoffs. "Opus 4.6" and "Codex 5.3" are placeholders: Orchestrator : slower, more capable reasoning model. Worker : faster, cheaper, code‑focused model. No vendor assumptions beyond that. 1. What Multi‑Agent Orchestration Actually Is Here, multi‑agent orchestration means: A control loop where one agent (the orchestrator) breaks down a coding task, assigns sub‑tasks to other agents, and stitches their outputs into a coherent change. Th
+
+Scene brief (workspace): A developer sits at a desk with a single monitor displaying a dashboard interface showing a hierarchical task breakdown: a main orchestrator agent at the top assigning subtasks to multiple coding worker agents, each with progress bars and code snippets visible.
+
+Scene grounding: Visualizes the orchestrator agent breaking down tasks and assigning them to multiple coding worker agents, illustrating the multi-agent orchestration control loop.
+
+Composition variant: Slight top-down diagonal desk angle with generous upper background whitespace.
+
+Variant index: 1

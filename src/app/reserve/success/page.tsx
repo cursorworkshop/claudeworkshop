@@ -57,7 +57,7 @@ export default async function ReserveSuccessPage({ searchParams }: Props) {
                     <Badge variant='outline'>November 9-15, 2025</Badge>
                   </div>
                   <CardTitle className='text-2xl'>
-                    Claude Code Engineering Offsite
+                    Claude Engineering Offsite
                   </CardTitle>
                   <CardDescription>
                     Kyrimai Hotel • Mani Peninsula, Greece

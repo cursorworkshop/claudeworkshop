@@ -22,7 +22,7 @@ const previousOffsites = [
     title: 'Mani Peninsula, Greece',
     date: 'September 2024',
     description:
-      '5-day intensive bootcamp on the stunning Greek coast. Historic villages, Mediterranean cuisine, and world-class Claude Code training.',
+      '5-day intensive bootcamp on the stunning Greek coast. Historic villages, Mediterranean cuisine, and world-class Claude training.',
     image: '/images/offsite-training.jpg',
     attendees: 12,
   },
@@ -50,7 +50,7 @@ export default function WorkshopsPage() {
               </h1>
               <p className='text-lg text-muted-foreground leading-relaxed mb-8'>
                 Explore our previous offsite training programs. Each offsite
-                combines intensive Claude Code training with unforgettable
+                combines intensive Claude training with unforgettable
                 experiences in stunning Mediterranean locations.
               </p>
               <div className='flex flex-wrap gap-3'>

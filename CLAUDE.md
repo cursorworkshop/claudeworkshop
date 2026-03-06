@@ -57,7 +57,7 @@ Never use these vague attributions:
 
 ## Supabase Project Restriction
 
-**CRITICAL**: Only use the `claudeworkshop` Supabase project.
+**CRITICAL**: Only use the `cursorworkshop` Supabase project.
 
 - DO NOT use `nomovu` or any other Supabase project
 - Always verify project ID before running Supabase MCP commands
@@ -76,7 +76,7 @@ Key features:
 
 ## Research Writing Rules
 
-When writing or editing research articles in `content/research/`:
+When writing or editing research articles in `content/editorials/`:
 
 1. **NO TL;DR** - Never include a tldr field or TL;DR section. We don't use these.
 2. **Key Takeaways** - Use `keyTakeaways` array in frontmatter. These render as simple text (no underline, no heading).
@@ -176,12 +176,12 @@ The admin dashboard at /admin/dashboard shows:
 
 **SYMPTOM**: Git commands (like `git status`, `git add`, `git commit`) hang indefinitely without completing.
 
-**ROOT CAUSE**: Claude Code's `gitWorker` process can interfere with git operations, causing them to hang. This happens when Claude Code's internal git worker process locks git operations.
+**ROOT CAUSE**: Claude's `gitWorker` process can interfere with git operations, causing them to hang. This happens when Claude's internal git worker process locks git operations.
 
 **FIX**:
 
 ```bash
-# Kill Claude Code's git worker processes
+# Kill Claude's git worker processes
 pkill -9 -f "gitWorker"
 
 # Wait a moment, then retry git command
@@ -194,9 +194,9 @@ git status
 1. First try killing gitWorker: `pkill -9 -f "gitWorker"`
 2. Wait 1-2 seconds
 3. Retry the git command
-4. If still hanging, restart Claude Code
+4. If still hanging, restart Claude
 
-**NOTE**: This is a known Claude Code issue and doesn't affect the codebase itself. The git repository is fine - it's just Claude Code's worker process interfering.
+**NOTE**: This is a known Claude issue and doesn't affect the codebase itself. The git repository is fine - it's just Claude's worker process interfering.
 
 ## Troubleshooting: Build Commands Hanging
 

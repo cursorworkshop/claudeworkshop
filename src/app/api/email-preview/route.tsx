@@ -1,11 +1,12 @@
 import { render } from '@react-email/components';
 
 import { LeadMagnetEmail } from '@/components/emails/LeadMagnetEmail';
+import { siteConfig } from '@/lib/config';
 
 export async function GET() {
   const html = await render(
     LeadMagnetEmail({
-      downloadUrl: 'https://claudeworkshop.com/agentic-coding-cheatsheet.pdf',
+      downloadUrl: `${siteConfig.url}/agentic-coding-cheatsheet.pdf`,
     })
   );
 

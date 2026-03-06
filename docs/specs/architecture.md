@@ -192,7 +192,7 @@ Children → Event Handlers → Callbacks
 
 ```css
 /* Primary Colors */
---claude-blue: #007acc;
+--cursor-blue: #007acc;
 --milano-gradient: linear-gradient(135deg, #00b4d8, #007acc, #ff6b9d);
 
 /* Semantic Colors */

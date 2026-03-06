@@ -48,8 +48,8 @@ function verifyImages() {
   console.log('\n🔍 Checking for image references in code...');
 
   const imageReferences = [
-    '/images/claude_milano_landscape.jpg',
-    '/images/claude_milano_square.jpg',
+    '/images/cursor_milano_landscape.jpg',
+    '/images/cursor_milano_square.jpg',
     '/images/meetup_20250916.jpg',
     '/images/ambassador.png',
   ];

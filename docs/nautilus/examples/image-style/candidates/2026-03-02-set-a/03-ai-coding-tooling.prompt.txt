@@ -1,0 +1,98 @@
+Create a 16:9 editorial hero illustration for a technical research article. Style lock: rough notebook pen sketch, dark navy ink, visibly hand-drawn and imperfect. One person only, seated at a desk; one monitor only; over-shoulder three-quarter back profile. Subject on the right half, monitor on the left half, warm peach/salmon paper background. Keep hatching light-to-medium and preserve whitespace. No logos, no watermarks, no polished UI graphics, no floating symbols outside monitor. Monitor may contain rough pseudo-code-like marks and sketchy lines. Produce a clear variation in composition details while staying in the same style family.
+
+Article source path: content/editorials/ai-coding-tooling-1977706278110765481.mdx
+
+Article title: What AI Coding Tooling Changes for Teams Shipping With Coding Agents
+
+Article description: A practical breakdown of how one developer runs their day on an AI coding agent stack, and what that implies for engineering teams adopting similar workflows.
+
+Article summary context: What AI Coding Tooling Changes for Teams Shipping With Coding Agents AI coding tools are moving from autocomplete to agents that run multi step work. This builds on a short post from a developer who: Previously used Claude Code Has now “fully moved off Claude Code to Codex” Starts the day in a web interface (Codex), plans in Linear, and kicks off 3–4 parallel tasks We do not know their full stack. The goal here is to extract likely patterns and tradeoffs for teams using coding agents. Speculative parts are flagged as such. 1. From "AI pair programmer" to "AI task owner" Most teams start with AI as autocomplete or chat in the editor. The workf
+
+Variant index: 1
+
+Reference style fingerprint:
+# Reference Style Spec (Desk Sketch v2)
+
+This file is the single source of truth for the hero-image style.  
+Goal: match the reference look as closely as possible for every generated research image.
+
+Reference asset: `target-style-reference.png` (800x600, 4:3).
+
+## 1) Visual Identity
+
+- Medium: hand-drawn pen sketch (ballpoint / fineliner vibe), not paint or vector.
+- Ink color: one dark blue-navy line color family only.
+- Rendering intent: fast editorial notebook drawing, intentionally unfinished.
+- Overall feel: human-made, rough, observational sketch.
+
+## 2) Subject & Camera
+
+- Exactly one person, seated, actively working at a desk.
+- Viewpoint: over-shoulder / rear three-quarter side profile.
+- Subject placement: right half of frame.
+- Monitor placement: left half of frame.
+- Typical silhouette: hoodie + glasses + office chair contour.
+- Keep anatomy believable but not hyper-detailed.
+
+## 3) Scene Grammar
+
+- Exactly one desk setup and one monitor.
+- Optional props: keyboard, simple lamp, minimal desk lines.
+- No secondary narrative panels, no collage, no cutaways.
+- Large negative space is required.
+
+## 4) Linework DNA
+
+- Stroke quality: jittery, broken, pressure-varying, sketchy.
+- Priority order:
+  1) expressive contour lines
+  2) local scribble hatching
+  3) sparse construction lines
+- Keep hatch density low-to-medium; leave visible paper/negative-space gaps.
+- Keep rough overlaps and slight perspective imperfections.
+- Avoid smooth vector-like contours and polished edge cleanup.
+- Avoid heavy global crosshatching; shading should stay local.
+
+## 5) Tonal & Color DNA
+
+- Background: warm peach/salmon paper tone.
+- Gradient: optional, but very subtle and low contrast.
+- Contrast strategy: dark ink subject over soft warm background.
+- No saturated neon accents, no multicolor ink.
+
+## 6) Monitor Content Rules
+
+- The monitor can include sparse pseudo-code-like marks and rough short lines.
+- Prefer sketchy, low-fidelity marks over polished UI components.
+- Semi-legible tiny text-like marks are acceptable if they stay sketchy and non-branded.
+- Never include logos, badges, product branding, or watermark text.
+- Avoid heavy box-arrow flowchart structures as dominant screen content.
+
+## 7) Hard Negatives (Must Never Appear)
+
+- Additional people or faces.
+- Photorealism, 3D rendering, glossy shading, comic-book polish.
+- Highly clean geometric/vector finish.
+- Readable text, logos, watermarks, signatures, branding.
+- Floating arrows/icons/callouts outside the monitor.
+- Futuristic UI overlays around the person.
+
+## 8) Pass/Fail Checklist
+
+An image should fail if any of these are true:
+
+- It looks "designed" or "rendered" instead of quickly sketched.
+- The screen content reads like a crisp diagram or polished UI.
+- The linework is too uniform, too clean, or too perfect.
+- The background is not warm peach/salmon or is too visually busy.
+
+An image should pass only if first impression is:
+
+> "A rough notebook pen sketch of one developer at a desk, on warm paper."
+
+## 9) Prompting Notes
+
+- Use direct style-lock language ("rough", "unfinished", "jittery strokes").
+- Repeat one-person / one-monitor constraints.
+- Repeat "no readable text" and "no floating symbols outside monitor".
+- Ask for sketch-first outcome, not polished illustration.

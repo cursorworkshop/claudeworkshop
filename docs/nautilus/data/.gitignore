@@ -1,0 +1,17 @@
+# Generated runtime data
+live/*
+!live/.gitkeep
+
+outbox/*
+!outbox/.gitkeep
+
+legacy/*
+!legacy/.gitkeep
+
+export/*
+!export/.gitkeep
+
+# Ephemeral state files
+state/X-bookmarks.next-research-candidate.json
+state/latest-publish.json
+state/latest-apply.json

@@ -1,0 +1,93 @@
+---
+title: 'Automated Research Pipeline Spec (Nightly)'
+description: 'The exact nightly order from X bookmark selection to live research post, LinkedIn publication, and founder email notification.'
+author: 'Rogier Muller'
+authorUrl: 'https://www.linkedin.com/in/rogyr/'
+publishedAt: '2026-03-03'
+category: 'methodology'
+tags:
+  - 'research automation'
+  - 'agentic workflows'
+  - 'content ops'
+featured: false
+metaTitle: 'Nightly Research Automation Pipeline Spec'
+metaDescription: 'Ordered pipeline definition for X bookmarks to /research + LinkedIn + Resend.'
+---
+
+# Automated Research Pipeline Spec
+
+```yaml
+name: research_nightly_pipeline
+schedule_utc: '0 8 * * *'
+goal: 'X bookmark -> scored candidate -> humanized article -> live /research -> LinkedIn post -> founders email'
+linkedin_safety_rule: 'NEVER POST FROM A PERSONAL PROFILE. ALWAYS POST ONLY TO THE CURSORWORKSHOP ORGANIZATION PAGE.'
+
+steps:
+  - id: 1_fetch_and_score
+    input: 'X bookmarks via Bird CLI'
+    output:
+      - 'docs/nautilus/data/live/X-bookmarks.live.scored.csv'
+      - 'docs/nautilus/data/live/X-bookmarks.live.scored.json'
+    gate: 'requires X_AUTH_TOKEN + X_CT0'
+
+  - id: 2_select_best_candidate
+    rule: 'highest unselected candidate with relevance >= 65'
+    output:
+      - 'docs/nautilus/data/state/X-bookmarks.next-research-candidate.json'
+
+  - id: 3_build_article_package
+    includes:
+      - 'article draft'
+      - 'humanizer pass'
+      - 'style-locked custom hero image generation + QA retries'
+      - 'linkedin snippet generation'
+      - 'cost accounting from API usage'
+    gate:
+      - 'custom hero image is required before package is valid'
+    output:
+      - 'docs/nautilus/data/outbox/<timestamp>-<slug>/article.mdx'
+      - 'docs/nautilus/data/outbox/<timestamp>-<slug>/image.png'
+      - 'docs/nautilus/data/outbox/<timestamp>-<slug>/linkedin.txt'
+      - 'docs/nautilus/data/outbox/<timestamp>-<slug>/package.json'
+
+  - id: 4_apply_to_site
+    output:
+      - 'content/editorials/<slug>.mdx'
+      - 'public/images/editorials/<slug>.png'
+      - 'src/components/ResearchList.tsx (image map)'
+    result:
+      - '/research/<slug> renders that same custom image as hero'
+      - 'open graph + twitter metadata use that same image'
+
+  - id: 5_commit_and_push
+    branch: 'main'
+    trigger: 'GitHub Actions Vercel Production Deployment'
+
+  - id: 6_wait_until_live
+    check: 'GET https://www.claudeworkshop.com/research/<slug> returns 200'
+    timeout_ms: 1800000
+
+  - id: 7_post_linkedin
+    action: 'LinkedIn API organization-page post with article URL'
+    output:
+      - 'LinkedIn post URL'
+    gate: 'requires LinkedIn auth secrets'
+
+  - id: 8_send_founder_email
+    provider: 'Resend API'
+    recipients:
+      - 'contact@rogyr.com'
+      - 'vasilis@vasilistsolis.com'
+    format_html: 'barebones'
+    body_template:
+      - 'Article and LI posted on {datetime}'
+      - '- X bookmark used: {x_bookmark_url}'
+      - '- Research page: {research_url}'
+      - '- Linkedin: {linkedin_url}'
+      - '- cost it took to generate all of this {estimated_generation_cost_usd}'
+
+failure_policy:
+  - 'If no candidate passes threshold: skip publish.'
+  - 'If /research URL never goes live in time: fail distribution step.'
+  - 'If LinkedIn post fails: do not send completion email.'
+```

@@ -1,0 +1,31 @@
+Create a 16:9 editorial hero illustration for a technical research article.
+
+Style lock: match the canonical desk-sketch look exactly (line character + mood + roughness). Linework lock: single dark navy/charcoal ink family, scratchy thin-to-medium jittery strokes, visible construction marks, intentionally unfinished. Hatching lock: local only on hoodie/hair/chair, low-to-medium density, preserve paper whitespace. Tone lock: warm peach/salmon paper background, optional very subtle low-contrast gradient, editorial notebook mood. Hard negatives: extra people, multiple monitors, logos or branding, watermarks, floating arrows/icons/callouts outside monitor, photorealism, 3D render, polished vector illustration, comic-book finish, dense global crosshatching.
+
+Composition lock: exactly one person seated at one desk and exactly one monitor.
+
+Camera lock: over-shoulder three-quarter back view; subject on right half; monitor on left half.
+
+Subject scale lock: keep person+chair around 28% of canvas (small, not dominant).
+
+Negative-space lock: keep roughly 55% empty paper/desk/background visible.
+
+No logos, no branding, no decorative overlays, no arrows/icons/callouts outside monitor.
+
+Monitor content may contain rough pseudo-code-like marks only.
+
+Article source path: content/editorials/ai-coding-tooling-1977706278110765481.mdx
+
+Article title: What AI Coding Tooling Changes for Teams Shipping With Coding Agents
+
+Article description: A practical breakdown of how one developer runs their day on an AI coding agent stack, and what that implies for engineering teams adopting similar workflows.
+
+Article summary context: What AI Coding Tooling Changes for Teams Shipping With Coding Agents AI coding tools are moving from autocomplete to agents that run multi step work. This builds on a short post from a developer who: Previously used Claude Code Has now “fully moved off Claude Code to Codex” Starts the day in a web interface (Codex), plans in Linear, and kicks off 3–4 parallel tasks We do not know their full stack. The goal here is to extract likely patterns and tradeoffs for teams using coding agents. Speculative parts are flagged as such. 1. From "AI pair programmer" to "AI task owner" Most teams start with AI as autocomplete or chat in the editor. The workflow in the post looks different: The developer plans their day in a project tool (Linear). They turn user feedback into small, focused tasks. They then start several tasks in parallel using an AI coding agent. 1.1. What likely changed in practice The
+
+Scene brief (workspace): A developer seated at a modern desk, focused on a widescreen monitor displaying a web-based AI coding agent interface (Codex). The desk has minimal clutter, with a notebook open showing handwritten task notes. The background includes a small whiteboard with a few sticky notes representing task priorities.
+
+Scene grounding: Reflects the developer starting their day in a web interface (Codex) to manage AI coding tasks, emphasizing the workspace setup for AI agent interaction.
+
+Composition variant: Farther camera crop: compact subject silhouette, broad empty paper margins around scene.
+
+Variant index: 1

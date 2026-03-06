@@ -28,7 +28,7 @@ const features = [
     icon: Code,
     title: 'Live Coding Sessions',
     description:
-      "Watch experts build real applications with Claude Code's AI capabilities, from idea to deployment in minutes.",
+      "Watch experts build real applications with Claude's AI capabilities, from idea to deployment in minutes.",
     highlight: 'Interactive',
   },
   {

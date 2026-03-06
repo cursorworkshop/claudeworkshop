@@ -1,0 +1,34 @@
+{
+  "selected_ids": [
+    "2019564738649505882",
+    "1977706278110765481",
+    "1961848171925278932",
+    "2020290971951391031"
+  ],
+  "history": [
+    {
+      "id": "2019564738649505882",
+      "selected_at": "2026-03-01T20:41:22.324Z",
+      "relevance_percent": 70,
+      "candidate_slug": "multi-agent-orchestration-2019564738649505882"
+    },
+    {
+      "id": "1977706278110765481",
+      "selected_at": "2026-03-01T21:22:04.765Z",
+      "relevance_percent": 69,
+      "candidate_slug": "ai-coding-tooling-1977706278110765481"
+    },
+    {
+      "id": "1961848171925278932",
+      "selected_at": "2026-03-02T09:38:23.268Z",
+      "relevance_percent": 65,
+      "candidate_slug": "mcp-and-integrations-1961848171925278932"
+    },
+    {
+      "id": "2020290971951391031",
+      "selected_at": "2026-03-02T12:44:49.353Z",
+      "relevance_percent": 58,
+      "candidate_slug": "ai-coding-tooling-2020290971951391031"
+    }
+  ]
+}

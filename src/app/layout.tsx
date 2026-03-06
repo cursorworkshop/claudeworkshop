@@ -8,29 +8,30 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { TrackingProvider } from '@/components/TrackingProvider';
 import { ExitIntentModal } from '@/components/ExitIntentModal';
 import { Toaster } from '@/components/ui/sonner';
+import { siteConfig } from '@/lib/config';
 
 const inter = Inter({ subsets: ['latin'] });
+const ogImageUrl = `${siteConfig.url}${siteConfig.images.ogImage}`;
 
 export const metadata: Metadata = {
-  title: 'Claude Workshop - AI Development Training',
-  description:
-    'Transform your engineering team with expert Claude Code training. In-house and offsite programs for enterprises.',
+  title: `${siteConfig.title} - AI Development Training`,
+  description: `Transform your engineering team with expert ${siteConfig.branding.productName} training. In-house and offsite programs for enterprises.`,
+  metadataBase: new URL(siteConfig.url),
   icons: {
-    icon: '/favicon.svg',
-    apple: '/favicon.svg',
+    icon: siteConfig.branding.favicon,
+    apple: siteConfig.branding.favicon,
   },
   openGraph: {
-    title: 'Claude Workshop - AI Development Training',
-    description:
-      'Transform your engineering team with expert Claude Code training. In-house and offsite programs for enterprises.',
-    url: 'https://claudeworkshop.com',
-    siteName: 'Claude Workshop',
+    title: `${siteConfig.title} - AI Development Training`,
+    description: `Transform your engineering team with expert ${siteConfig.branding.productName} training. In-house and offsite programs for enterprises.`,
+    url: siteConfig.url,
+    siteName: siteConfig.title,
     images: [
       {
-        url: 'https://claudeworkshop.com/og-image-figma.png',
+        url: ogImageUrl,
         width: 1200,
         height: 630,
-        alt: 'Claude Workshop - Enterprise AI Development Training',
+        alt: `${siteConfig.title} - Enterprise AI Development Training`,
       },
     ],
     locale: 'en_US',
@@ -38,10 +39,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Claude Workshop - AI Development Training',
-    description:
-      'Transform your engineering team with expert Claude Code training. In-house and offsite programs for enterprises.',
-    images: ['https://claudeworkshop.com/og-image-figma.png'],
+    title: `${siteConfig.title} - AI Development Training`,
+    description: `Transform your engineering team with expert ${siteConfig.branding.productName} training. In-house and offsite programs for enterprises.`,
+    images: [ogImageUrl],
   },
 };
 

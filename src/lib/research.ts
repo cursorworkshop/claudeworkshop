@@ -7,12 +7,13 @@ export type ResearchArticle = {
   slug: string;
   title: string;
   description: string;
+  image?: string;
   author: string;
   authorRole?: string;
   authorUrl?: string;
   publishedAt: string;
   updatedAt?: string;
-  category: 'claude-features' | 'methodology' | 'ai-coding' | 'open-source';
+  category: 'cursor-features' | 'methodology' | 'ai-coding' | 'open-source';
   tags: string[];
   readingTime: number;
   featured?: boolean;
@@ -29,7 +30,7 @@ export type ResearchArticleWithContent = ResearchArticle & {
   content: string;
 };
 
-const RESEARCH_DIR = path.join(process.cwd(), 'content', 'research');
+const RESEARCH_DIR = path.join(process.cwd(), 'content', 'editorials');
 
 const calculateReadingTime = (content: string): number => {
   const wordsPerMinute = 200;
@@ -55,6 +56,7 @@ export const getAllResearchArticles = (): ResearchArticle[] => {
         slug,
         title: data.title || slug,
         description: data.description || '',
+        image: data.image,
         author: data.author || 'Rogier Muller',
         authorRole: data.authorRole,
         authorUrl: data.authorUrl,
@@ -95,6 +97,7 @@ export const getResearchArticle = (
     slug,
     title: data.title || slug,
     description: data.description || '',
+    image: data.image,
     author: data.author || 'Rogier Muller',
     authorRole: data.authorRole,
     authorUrl: data.authorUrl,
@@ -124,7 +127,7 @@ export const getFeaturedResearchArticles = (): ResearchArticle[] => {
 };
 
 export const CATEGORY_LABELS: Record<ResearchArticle['category'], string> = {
-  'claude-features': 'Claude Code Features',
+  'cursor-features': 'Claude Features',
   methodology: 'Methodology',
   'ai-coding': 'AI-Assisted Coding',
   'open-source': 'Open Source',
@@ -134,8 +137,8 @@ export const CATEGORY_DESCRIPTIONS: Record<
   ResearchArticle['category'],
   string
 > = {
-  'claude-features':
-    'Deep dives into Claude Code IDE features like Tab completion, Composer, and Agent mode.',
+  'cursor-features':
+    'Deep dives into Claude features like Tab completion, Composer, and Agent mode.',
   methodology:
     'Our approach to teaching AI-assisted development and training methodology.',
   'ai-coding':

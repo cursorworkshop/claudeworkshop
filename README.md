@@ -1,12 +1,12 @@
 # Claude Workshops
 
-Professional AI-powered development training for engineering teams. Hands-on, intensive 5-day offsites in premium locations designed to transform experienced developers into Claude Code power-users.
+Professional AI-powered development training for engineering teams. Hands-on, intensive 5-day offsites in premium locations designed to transform experienced developers into Claude power-users.
 
 ## What We Offer
 
 **Engineering Offsites & Professional Training**
 
-- 5-day intensive Claude Code bootcamps in stunning Mediterranean locations
+- 5-day intensive Claude bootcamps in stunning Mediterranean locations
 - Expert-led curriculum delivered by official Claude ambassadors
 - Real-world AI implementation through hands-on coding sessions
 - All-inclusive experience combining technical training with luxury accommodation
@@ -61,7 +61,8 @@ claudeworkshop/
 
 **Prerequisites**
 
-- Node.js 18+ and npm/pnpm
+- Node.js 22+
+- pnpm (recommended via Corepack)
 - Git for version control
 
 **Getting Started**
@@ -72,21 +73,22 @@ git clone [repository-url]
 cd claudeworkshop
 
 # Install dependencies
-npm install
+corepack enable
+pnpm install
 
 # Start development server
-npm run dev
+pnpm dev
 
 # Build for production
-npm run build
+pnpm build
 ```
 
 **Key Scripts**
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues automatically
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm lint` - Run ESLint
+- `pnpm lint:fix` - Fix ESLint issues automatically
 
 ## Content Management
 
@@ -95,7 +97,7 @@ Create a new folder in `content/workshops/` with an `index.md` file:
 
 ```markdown
 ---
-title: 'Claude Code Deep-Dive Workshop'
+title: 'Claude Deep-Dive Workshop'
 description: '5-day intensive bootcamp in Mediterranean setting'
 date: '2025-11-09'
 startTime: '09:00'
@@ -136,10 +138,10 @@ The site is optimized for deployment on modern hosting platforms:
 
 ```bash
 # Production build
-npm run build
+pnpm build
 
 # Start production server
-npm run start
+pnpm start
 ```
 
 Environment variables:
@@ -156,6 +158,4 @@ For inquiries about Claude Workshops:
 
 ---
 
-Built for professional engineering teams seeking to master AI-powered development with Claude Code.# Updated Tue Aug 26 16:58:34 CEST 2025
-
-# Mobile UI Improvements - Tue Aug 26 17:00:03 CEST 2025
+Built for professional engineering teams seeking to master AI-powered development with Claude.

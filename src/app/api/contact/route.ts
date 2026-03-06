@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
+import { siteConfig } from '@/lib/config';
+
 // Contact form submission interface
 interface ContactFormData {
   name: string;
@@ -8,6 +10,15 @@ interface ContactFormData {
   subject: string;
   message: string;
   inquiryType: string;
+}
+
+function parseEmailList(value: string | undefined, fallback: string[]) {
+  const emails = String(value || '')
+    .split(',')
+    .map(item => item.trim())
+    .filter(Boolean);
+
+  return emails.length > 0 ? emails : fallback;
 }
 
 // Vercel Forms Integration with Email Notifications
@@ -147,7 +158,7 @@ async function sendEmailNotification(data: ContactFormData): Promise<void> {
           <!-- Footer -->
           <div style="padding: 20px; background-color: #f8f9fa; border-top: 1px solid #e9ecef; font-size: 12px; color: #6b7280;">
             <p style="margin: 0 0 8px 0;"><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
-            <p style="margin: 0;"><strong>From:</strong> Claude Workshop Contact Form</p>
+            <p style="margin: 0;"><strong>From:</strong> ${siteConfig.title} Contact Form</p>
           </div>
         </div>
       </body>
@@ -156,15 +167,15 @@ async function sendEmailNotification(data: ContactFormData): Promise<void> {
 
     // Send email using Resend
     // Use your verified domain - onboarding@resend.dev only works for the account owner
+    const recipients = parseEmailList(
+      process.env.CONTACT_NOTIFICATION_RECIPIENTS,
+      siteConfig.contact.notificationRecipients
+    );
     const result = await resend.emails.send({
       from:
         process.env.RESEND_FROM_EMAIL ||
-        'Claude Workshop <info@claudeworkshop.com>',
-      to: [
-        'vasilis@vasilistsolis.com',
-        'contact@rogyr.com',
-        'info@claudeworkshop.com',
-      ],
+        `${siteConfig.title} <${siteConfig.contact.infoEmail}>`,
+      to: recipients,
       subject: `New Contact Form: ${data.subject}`,
       html: htmlContent,
       replyTo: data.email, // Allow direct reply to the person who submitted

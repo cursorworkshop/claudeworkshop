@@ -48,7 +48,7 @@ const trainingOptions = [
     id: 'badging',
     title: 'Badging',
     description:
-      'Complete our training programs and receive recognition for your Claude Code expertise. Our badging program validates your skills and demonstrates your proficiency in AI-assisted development to employers and clients.',
+      'Complete our training programs and receive recognition for your Claude expertise. Our badging program validates your skills and demonstrates your proficiency in AI-assisted development to employers and clients.',
     features: [
       'Completion Badge',
       'Skills Validation',

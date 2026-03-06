@@ -1,0 +1,25 @@
+{
+  "style_score": 97,
+  "composition_score": 95,
+  "diversity_score_vs_others": 1,
+  "attempt_history": [
+    {
+      "attempt": 1,
+      "style_score": 97,
+      "composition_score": 95,
+      "pass": true,
+      "hard_fails": [],
+      "issues": [],
+      "retry_prompt_addendum": ""
+    }
+  ],
+  "final_review": {
+    "styleScore": 97,
+    "compositionScore": 95,
+    "pass": true,
+    "hardFails": [],
+    "issues": [],
+    "retryPromptAddendum": ""
+  },
+  "diversity_repairs": 0
+}

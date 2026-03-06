@@ -1,5 +1,8 @@
 import Link from 'next/link';
 
+import { BrandLogo } from '@/components/BrandLogo';
+import { siteConfig } from '@/lib/config';
+
 const links = {
   training: [
     { label: 'All Programs', href: '/training' },
@@ -9,7 +12,7 @@ const links = {
   company: [
     { label: 'About', href: '/about' },
     { label: 'Methodology', href: '/methodology' },
-    // { label: 'Research', href: '/research' }, // Hidden: content needs rewriting
+    { label: 'Research', href: '/research' },
   ],
 };
 
@@ -20,12 +23,15 @@ export default function VeilFooter() {
         <div className='space-y-8 md:space-y-0 md:grid md:grid-cols-3 md:gap-4'>
           {/* Brand column */}
           <div className='text-center md:text-left'>
+            <div className='mx-auto mb-4 flex h-8 w-8 items-center justify-center text-foreground md:mx-0'>
+              <BrandLogo />
+            </div>
             <p className='text-muted-foreground max-w-xs mx-auto md:mx-0 text-xs md:text-sm'>
-              Official Claude Ambassadors. Enterprise AI development training
-              for engineering teams.
+              {siteConfig.description}
             </p>
             <p className='text-muted-foreground mt-4 text-xs md:text-sm'>
-              &copy; 2026 Claude Workshop. All rights reserved.
+              &copy; {new Date().getFullYear()} {siteConfig.title}. All rights
+              reserved.
             </p>
           </div>
 

@@ -4,6 +4,31 @@ export interface SiteConfig {
   url: string;
   location: string;
   organizer: string;
+  branding: {
+    key: 'cursor' | 'claude' | 'codex';
+    productName: string;
+    workshopName: string;
+    workshopsName: string;
+    domain: string;
+    favicon: string;
+  };
+  contact: {
+    infoEmail: string;
+    privacyEmail: string;
+    notificationRecipients: string[];
+    replyForwardRecipients: string[];
+  };
+  bookings: {
+    callUrl: string;
+    callDisplayUrl: string;
+    lumaUrl: string;
+    lumaDisplayUrl: string;
+  };
+  github: {
+    orgUrl: string;
+    repoName: string;
+    repoUrl: string;
+  };
   images: {
     ogImage: string;
     heroImage: string;

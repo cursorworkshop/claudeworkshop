@@ -233,7 +233,7 @@ function SponsorCard({
           {showContent && (
             <Link
               href={`/sponsors/${sponsor.slug}`}
-              className='text-sm text-claude-blue hover:text-blue-700 transition-colors duration-200'
+              className='text-sm text-cursor-blue hover:text-blue-700 transition-colors duration-200'
             >
               Learn More
             </Link>

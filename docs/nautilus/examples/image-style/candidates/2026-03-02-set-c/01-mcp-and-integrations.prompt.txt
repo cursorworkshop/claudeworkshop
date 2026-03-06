@@ -1,0 +1,31 @@
+Create a 16:9 editorial hero illustration for a technical research article.
+
+Style lock: match the canonical desk-sketch look exactly (line character + mood + roughness). Linework lock: single dark navy/charcoal ink family, scratchy thin-to-medium jittery strokes, visible construction marks, intentionally unfinished. Hatching lock: local only on hoodie/hair/chair, low-to-medium density, preserve paper whitespace. Tone lock: warm peach/salmon paper background, optional very subtle low-contrast gradient, editorial notebook mood. Hard negatives: extra people, multiple monitors, logos or branding, watermarks, floating arrows/icons/callouts outside monitor, photorealism, 3D render, polished vector illustration, comic-book finish, dense global crosshatching.
+
+Composition lock: exactly one person seated at one desk and exactly one monitor.
+
+Camera lock: over-shoulder three-quarter back view; subject on right half; monitor on left half.
+
+Subject scale lock: keep person+chair around 28% of canvas (small, not dominant).
+
+Negative-space lock: keep roughly 55% empty paper/desk/background visible.
+
+No logos, no branding, no decorative overlays, no arrows/icons/callouts outside monitor.
+
+Monitor content may contain rough pseudo-code-like marks only.
+
+Article source path: content/editorials/mcp-and-integrations-1961848171925278932.mdx
+
+Article title: What MCP and Integrations Change for Teams Shipping with Coding Agents
+
+Article description: A practical guide to using Playwright’s MCP tool so coding agents can safely poke, click, and test your real web app instead of hallucinating it.
+
+Article summary context: What MCP and Integrations Change for Teams Shipping with Coding Agents Most teams using coding agents keep them in a sandbox. The agent reads code, writes code, and maybe runs a few unit tests. It does not touch the real app. Model Context Protocol (MCP) changes that. With MCP, an agent can call tools that talk to real systems: databases, ticketing, CI, browsers. Playwright’s MCP tool is one of the first concrete options for web apps. It lets an agent open a browser, click through flows, and run assertions. The question: how does adding Playwright’s MCP tool change what your team can do with coding agents, and how do you implement it without breaking your workflow? 1. What MCP Actually Adds to an Agent Without MCP, a coding agent can: Read files Propose code edits Run local commands (if allowed) Infer behavior from static code and tests It cannot: See your app in a real browser Interact 
+
+Scene brief (workspace): A developer sits at a desk with a single monitor displaying a real web app running in a browser, alongside a terminal window showing Playwright MCP commands being executed, highlighting live interaction with the app.
+
+Scene grounding: Reflects how MCP allows coding agents to interact with real web apps through browsers, moving beyond sandboxed code editing.
+
+Composition variant: Right-weighted silhouette and large breathing room around monitor and desk edges.
+
+Variant index: 1

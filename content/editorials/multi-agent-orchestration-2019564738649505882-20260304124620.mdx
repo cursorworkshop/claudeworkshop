@@ -1,0 +1,540 @@
+---
+title: 'What Multi‑Agent Orchestration Changes for Teams Shipping With Coding Agents'
+description: 'A practical guide for engineering teams experimenting with an “orchestrator + many coding agents” setup, including architectures, workflows, and hard tradeoffs.'
+author: 'Rogier Muller'
+authorUrl: 'https://www.linkedin.com/in/rogyr/'
+publishedAt: '2026-03-04'
+category: 'ai-coding'
+tags:
+  - 'multi-agent'
+  - 'orchestration'
+  - 'ai-coding'
+  - 'engineering-workflows'
+  - 'agents'
+featured: false
+metaTitle: 'Multi‑Agent Orchestration for Coding Teams: Architectures, Workflows, and Tradeoffs'
+metaDescription: 'How an orchestrator model coordinating multiple coding agents can change your software delivery workflow. Concrete architectures, implementation steps, and limitations.'
+keyTakeaways:
+  - 'Multi-agent orchestration is less about “more agents” and more about clear roles, interfaces, and constraints between them.'
+  - 'An orchestrator model can coordinate specialized coding agents, but only if you give it structure: task graphs, tools, and guardrails.'
+  - 'Start with narrow, high‑leverage workflows (e.g., refactors, test generation, migration scripts) before attempting whole‑repo autonomy.'
+  - 'Observability, reproducibility, and human control are non‑negotiable; treat agents like junior contractors, not magic teammates.'
+  - 'The main risks are complexity, hidden coupling, and hallucinated coordination; you need explicit protocols and evaluation loops.'
+---
+# What Multi‑Agent Orchestration Changes for Teams Shipping With Coding Agents
+
+A strong orchestrator model (call it **Opus 4.6**) manages specialized coding agents (for example **Codex 5.3** variants) to speed up a workflow.
+
+A common pattern looks like this:
+
+- One **planner/orchestrator** that understands goals, constraints, and context.
+- Several **specialist agents** that do focused work: code edits, tests, docs, analysis.
+- A **human engineer** who sets direction, reviews, and merges.
+
+This article covers what that changes for a team, how to wire it up, and where it fails.
+
+
+## 1. Why Orchestration Instead of One Big Agent?
+
+Most teams start with a single coding assistant in the editor. That works well for:
+
+- Local edits
+- Small refactors
+- Inline explanations
+
+It breaks down when you need:
+
+- **Cross‑file changes** with non‑trivial dependencies
+- **Coordinated work** (tests, docs, infra changes) from one request
+- **Long‑running tasks** that span multiple steps and checks
+
+A single agent tends to:
+
+- Lose track of earlier decisions
+- Overwrite or duplicate work
+- Struggle to keep a coherent plan over many steps
+
+An orchestrator + agents setup gives you:
+
+- **Separation of concerns**: planning vs execution
+- **Specialization**: different prompts/tools for different tasks
+- **Recoverability**: if one agent fails, the orchestrator can retry or adjust
+
+The tradeoff: more moving parts, more to debug, and more design work up front.
+
+
+## 2. Mental Model: Orchestrator + Specialists
+
+Think of your system as a small internal agency:
+
+- **Orchestrator (Opus 4.6)**
+  - Reads the human request and repo context
+  - Breaks work into steps or a task graph
+  - Assigns tasks to agents
+  - Checks results and decides next steps
+
+- **Specialist agents (Codex 5.3 variants)**
+  - Code editor agent (applies patches)
+  - Test writer agent
+  - Static analysis / review agent
+  - Migration / large‑change agent
+  - Documentation agent
+
+- **Human engineer**
+  - Defines goals and constraints
+  - Approves plans
+  - Reviews diffs
+  - Owns final merge and rollout
+
+The orchestrator is not “smarter” by default. It is prompted and tooled to:
+
+- Think in steps
+- Call tools
+- Delegate
+- Check and revise
+
+
+## 3. Core Architecture Patterns
+
+You can implement this pattern in several ways. Here are three concrete architectures teams use.
+
+## 3.1. Single Orchestrator, Tool‑Calling Agents
+
+**Shape:** One main model with tool calling; tools internally call other models.
+
+- Orchestrator receives a request and repo snapshot.
+- It calls tools like `apply_patch`, `run_tests`, `search_code`.
+- Some tools are wrappers around other models (for example, a Codex 5.3 code‑edit endpoint).
+
+**Pros**
+
+- Simple to integrate with existing tool‑calling APIs.
+- Centralized reasoning; easier to log and debug.
+- Fewer concurrency issues.
+
+**Cons**
+
+- Orchestrator becomes a bottleneck.
+- Harder to parallelize large jobs.
+- Tool surface can grow messy if not designed carefully.
+
+**When to use**
+
+- Early experiments.
+- Small teams.
+- Workflows where latency matters less than reliability.
+
+
+## 3.2. Orchestrator + Explicit Task Graph
+
+**Shape:** Orchestrator builds a DAG of tasks; workers (agents) execute nodes.
+
+- Orchestrator plans: `Plan -> [Tasks] -> [Dependencies]`.
+- Each task has:
+  - Input context (files, tests, constraints)
+  - Target agent type
+  - Expected outputs (patch, report, summary)
+- A runner executes tasks in dependency order, possibly in parallel.
+
+**Pros**
+
+- Clear structure; easier to visualize and debug.
+- Natural parallelism for independent tasks.
+- You can persist and replay task graphs.
+
+**Cons**
+
+- More infra: task runner, queue, storage.
+- Planning quality is critical; bad graphs waste tokens and time.
+- Harder to keep the graph in sync with a changing repo.
+
+**When to use**
+
+- Larger teams.
+- Multi‑step flows (for example, migrations, complex refactors).
+- When you want auditability and replay.
+
+
+## 3.3. Human‑in‑the‑Loop Orchestrator
+
+**Shape:** Same as above, but the human approves key steps.
+
+- Orchestrator proposes a plan.
+- Human approves or edits the plan.
+- Orchestrator executes, pausing at checkpoints for review.
+
+**Pros**
+
+- Better safety for high‑risk changes.
+- Useful for onboarding teams to agents.
+- Lets humans correct course early.
+
+**Cons**
+
+- Slower end‑to‑end.
+- Requires UI or CLI for approvals.
+
+**When to use**
+
+- Production‑critical services.
+- Schema migrations, security‑sensitive changes.
+- Teams new to this style of workflow.
+
+
+## 4. Designing Agent Roles and Interfaces
+
+Multiple agents only help if each agent has a **clear contract**.
+
+## 4.1. Define Roles Narrowly
+
+Examples of concrete roles:
+
+- **CodeEditAgent**
+  - Input: file path(s), current content, change description.
+  - Output: unified diff or patch.
+  - Constraints: must compile syntactically; no unrelated edits.
+
+- **TestWriterAgent**
+  - Input: target function/module, behavior description, existing tests.
+  - Output: new test file or test cases.
+  - Constraints: follow project’s test framework and style.
+
+- **RefactorAgent**
+  - Input: refactor goal (for example, extract module, rename API), affected files.
+  - Output: patches + migration notes.
+  - Constraints: preserve behavior; keep changes scoped.
+
+- **DocAgent**
+  - Input: code diff or module, audience, doc format.
+  - Output: doc snippet, comments, or changelog entry.
+
+Narrow roles reduce:
+
+- Prompt bloat
+- Conflicting behaviors
+- Surprising side effects
+
+
+## 4.2. Standardize I/O Formats
+
+Pick simple, machine‑friendly formats:
+
+- **Requests**
+  - `task_id`
+  - `role` (for example, `code_edit`)
+  - `inputs` (paths, code snippets, descriptions)
+  - `constraints` (language, style, limits)
+
+- **Responses**
+  - `status` (`ok`, `failed`, `needs_clarification`)
+  - `patches` (unified diff or structured edits)
+  - `notes` (rationale, caveats)
+
+Avoid using only free‑form text. You can still include natural language, but the orchestrator should rely on structured fields for control.
+
+
+## 4.3. Guardrails at the Interface
+
+Examples of guardrails that are practical to implement:
+
+- **Path allowlists**: agent can only touch certain directories.
+- **Max diff size**: reject or split changes above a threshold.
+- **Language/stack hints**: pin agent behavior to your stack.
+- **Validation hooks**: run `lint`, `format`, or `typecheck` automatically.
+
+These are cheap to add and catch many failure modes early.
+
+
+## 5. Example Workflow: Multi‑Agent Feature Implementation
+
+Here is a concrete, minimal workflow you can implement with an orchestrator + a few agents.
+
+## 5.1. Setup
+
+Assume you have:
+
+- Orchestrator model with tool calling.
+- Tools:
+  - `search_code(query)`
+  - `read_files(paths)`
+  - `apply_patch(patch)`
+  - `run_tests(pattern)`
+  - `run_lint()`
+- Agents:
+  - `CodeEditAgent`
+  - `TestWriterAgent`
+  - `DocAgent`
+
+## 5.2. Step‑by‑Step Flow
+
+1. **Human request**
+   - “Add a `GET /health` endpoint that returns build info and a simple status, with tests and docs.”
+
+2. **Orchestrator: understand and scope**
+   - Uses `search_code` to find routing, controllers, and existing health checks.
+   - Summarizes current patterns (for example, how endpoints are structured).
+
+3. **Orchestrator: plan**
+   - Plan might look like:
+     1. Add endpoint handler.
+     2. Wire handler into router.
+     3. Add tests.
+     4. Update API docs or README.
+
+4. **Orchestrator: delegate code edits**
+   - For each code step, call `CodeEditAgent` with:
+     - Target files
+     - Desired behavior
+     - Constraints (style, framework)
+   - Receive patches; apply via `apply_patch`.
+
+5. **Orchestrator: delegate tests**
+   - Call `TestWriterAgent` with:
+     - Endpoint behavior
+     - Existing test patterns
+   - Apply patches; then `run_tests`.
+
+6. **Orchestrator: delegate docs**
+   - Call `DocAgent` with:
+     - Summary of change
+     - Where docs live
+   - Apply patches.
+
+7. **Orchestrator: validation**
+   - Run `run_lint`, `run_tests`.
+   - If failures, either:
+     - Ask `CodeEditAgent` to fix specific errors, or
+     - Surface to human with context.
+
+8. **Human review**
+   - Inspect diffs.
+   - Ask orchestrator for a summary of changes and risk areas.
+   - Approve and merge.
+
+This is not fully autonomous, but it:
+
+- Reduces manual glue work.
+- Keeps changes coherent.
+- Makes it easier to scale similar tasks.
+
+
+## 6. Practical Implementation Steps
+
+Here is a pragmatic sequence for teams starting from a single coding assistant.
+
+## 6.1. Phase 1 – Wrap Your Existing Tools
+
+1. **Expose repo operations as tools**
+   - `search_code`, `read_files`, `apply_patch`, `run_tests`, `run_lint`, `run_build`.
+   - Keep them deterministic and side‑effect aware.
+
+2. **Add a simple orchestrator prompt**
+   - Give it:
+     - Project description
+     - Tool descriptions
+     - A step‑by‑step reasoning instruction
+
+3. **Start with one agent**
+   - Use a single code‑editing model behind `apply_patch`.
+   - Let the orchestrator call it indirectly.
+
+4. **Log everything**
+   - Requests, tool calls, patches, test results.
+   - You will need this for debugging.
+
+
+## 6.2. Phase 2 – Introduce Specialized Agents
+
+1. **Split code editing vs tests**
+   - Create `CodeEditAgent` and `TestWriterAgent` with different prompts.
+   - Route calls based on task type.
+
+2. **Add a review step**
+   - After patches, call a `ReviewAgent` to:
+     - Look for obvious bugs.
+     - Flag risky changes.
+
+3. **Add simple policies**
+   - For example: “Any change touching `auth/` requires human approval before tests run.”
+
+4. **Measure**
+   - Track:
+     - Time from request to ready‑for‑review.
+     - Number of failed test runs per task.
+     - Human edit distance from agent diff to final merged diff.
+
+
+## 6.3. Phase 3 – Task Graphs and Parallelism
+
+1. **Represent plans explicitly**
+   - Let the orchestrator output a JSON task graph.
+   - Example nodes: `edit_code`, `write_tests`, `update_docs`, `run_tests`.
+
+2. **Build a small task runner**
+   - Execute tasks in dependency order.
+   - Allow parallel execution for independent nodes.
+
+3. **Add checkpoints**
+   - Let humans approve:
+     - The plan.
+     - Patches above a size threshold.
+
+4. **Refine prompts based on failures**
+   - When tasks fail, capture examples.
+   - Tighten role definitions and constraints.
+
+
+## 7. Tradeoffs and Limitations
+
+Multi‑agent orchestration is not an automatic speedup. It shifts where the work happens.
+
+## 7.1. Complexity and Operational Overhead
+
+- More components: orchestrator, agents, tools, runner.
+- More logs and traces to inspect.
+- More failure modes: partial plans, stuck tasks, conflicting edits.
+
+Mitigation:
+
+- Start small.
+- Use feature flags.
+- Keep a manual fallback path.
+
+
+## 7.2. Coordination Failures
+
+Agents can:
+
+- Make incompatible assumptions about the codebase.
+- Overwrite each other’s changes.
+- Drift from the original goal.
+
+Mitigation:
+
+- Centralize repo writes through a single `apply_patch` tool.
+- Re‑read affected files before each patch.
+- Run quick checks (lint, typecheck) after each major step.
+
+
+## 7.3. Hallucinated Structure and Over‑Planning
+
+Orchestrators can:
+
+- Invent non‑existent modules or APIs.
+- Over‑decompose simple tasks into many steps.
+
+Mitigation:
+
+- Ground planning in `search_code` and `read_files` results.
+- Cap plan depth and breadth.
+- Prefer fewer, larger tasks over many tiny ones until you see real bottlenecks.
+
+
+## 7.4. Latency and Cost
+
+Multiple agents and steps mean:
+
+- More API calls.
+- Longer wall‑clock times for some tasks.
+
+Mitigation:
+
+- Parallelize independent tasks.
+- Cache repo context and analysis where safe.
+- Use cheaper models for low‑risk tasks (for example, doc generation).
+
+
+## 7.5. Evaluation Is Hard
+
+It’s non‑trivial to answer:
+
+- “Is this better than a single strong assistant?”
+- “Are we actually shipping faster?”
+
+Mitigation:
+
+- Compare against a baseline:
+  - Same tasks done by a single coding assistant.
+  - Same tasks done manually.
+- Track:
+  - Time to first working version.
+  - Number of human review comments.
+  - Post‑merge bug rate.
+
+
+## 8. Where Multi‑Agent Orchestration Helps Most
+
+The most useful areas are:
+
+- **Large, repetitive refactors**
+  - For example, API renames, logging standardization, framework upgrades.
+  - Orchestrator can fan out tasks across modules and coordinate tests.
+
+- **Test coverage improvements**
+  - Orchestrator identifies low‑coverage areas.
+  - Test agents generate candidates; humans review.
+
+- **Documentation and changelog generation**
+  - Orchestrator summarizes diffs.
+  - Doc agents produce targeted updates.
+
+- **Migration scaffolding**
+  - Orchestrator plans steps.
+  - Agents generate migration scripts and checks.
+
+These are areas where:
+
+- Requirements are clear.
+- Success is measurable.
+- Risk can be bounded.
+
+
+## 9. How This Changes Team Workflow
+
+If you adopt an orchestrator + agents model, expect these shifts:
+
+- **Engineers spend more time on goals and constraints**
+  - Less time on mechanical edits.
+  - More time on defining what “good” looks like.
+
+- **Code review becomes system review**
+  - You review both the diff and the process that produced it.
+  - You may add checks for “did the orchestrator follow policy?”
+
+- **New roles emerge**
+  - Someone owns prompts, tools, and policies.
+  - Someone monitors agent performance and drift.
+
+- **Onboarding changes**
+  - New engineers learn how to work with the orchestrator.
+  - They learn when to trust it and when to take over.
+
+
+## 10. A Minimal Checklist to Get Started
+
+If you want to try a multi‑agent orchestration pattern in your team, a practical starting checklist:
+
+1. **Define one narrow workflow**
+   - Example: “Add endpoint + tests + docs for simple APIs.”
+
+2. **Wrap repo operations as tools**
+   - `search_code`, `read_files`, `apply_patch`, `run_tests`, `run_lint`.
+
+3. **Introduce an orchestrator model**
+   - Give it a clear prompt and access to tools.
+
+4. **Create 2–3 specialist agents**
+   - `CodeEditAgent`, `TestWriterAgent`, `DocAgent`.
+
+5. **Log and review the first 20 runs**
+   - Manually inspect plans, patches, and failures.
+
+6. **Add guardrails**
+   - Path allowlists, diff size limits, mandatory tests.
+
+7. **Measure against a baseline**
+   - Compare to your current coding assistant or manual workflow.
+
+From there, you can decide whether to invest in more complex orchestration (task graphs, parallelism, richer policies) or keep the system simple.
+
+Treat multi‑agent orchestration as **workflow design**, not just model selection. The orchestrator and its agents are only as effective as the structure, constraints, and feedback loops you build around them.

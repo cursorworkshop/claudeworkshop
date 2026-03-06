@@ -72,7 +72,7 @@ If you experience or witness behavior that violates this Code of Conduct, please
 ### **How to Report**
 
 1. **Immediate Safety Concerns**: Contact venue security or local authorities
-2. **Community Issues**: Email the organizers at [workshops@claude.ai]
+2. **Community Issues**: Email the organizers at [workshops@cursor.sh]
 3. **Anonymous Reports**: Use our anonymous reporting form [link to be added]
 
 ### **What to Include**
@@ -122,7 +122,7 @@ This Code of Conduct is adapted from:
 
 ## Questions?
 
-If you have questions about this Code of Conduct, please contact the organizers at [workshops@claude.ai] or reach out to **Luca Bianchi** via LinkedIn.
+If you have questions about this Code of Conduct, please contact the organizers at [workshops@cursor.sh] or reach out to **Luca Bianchi** via LinkedIn.
 
 ---
 

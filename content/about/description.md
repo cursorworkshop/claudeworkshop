@@ -4,9 +4,9 @@ description: 'Professional AI development training for engineering teams'
 lastUpdated: '2024-12-31'
 ---
 
-# Professional Claude Code Training Programs
+# Professional Claude Training Programs
 
-We organize premium engineering offsites and intensive training programs that help teams master AI-powered development with Claude Code.
+We organize premium engineering offsites and intensive training programs that help teams master AI-powered development with Claude.
 
 **For engineering teams ready to accelerate their development capabilities**, our expert-led workshops combine hands-on learning with proven methodologies in stunning, distraction-free environments.
 

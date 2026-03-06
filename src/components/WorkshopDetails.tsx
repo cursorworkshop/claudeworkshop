@@ -35,8 +35,8 @@ export default function WorkshopDetails() {
           <CardTitle className='text-2xl'>Workshop Overview</CardTitle>
           <CardDescription>
             This isn't just another offsite, your engineers will master Claude
-            Code through hands-on, expert-guided training while experiencing
-            curated leisure activities.
+            through hands-on, expert-guided training while experiencing curated
+            leisure activities.
           </CardDescription>
         </CardHeader>
         <CardContent className='space-y-6'>
@@ -44,9 +44,7 @@ export default function WorkshopDetails() {
             <Card className='border-dashed'>
               <CardContent className='p-4 text-center'>
                 <Code className='w-8 h-8 text-primary mx-auto mb-2' />
-                <CardTitle className='text-sm mb-1'>
-                  Master Claude Code
-                </CardTitle>
+                <CardTitle className='text-sm mb-1'>Master Claude</CardTitle>
                 <CardDescription className='text-xs'>
                   Expert-guided training
                 </CardDescription>
@@ -105,7 +103,7 @@ export default function WorkshopDetails() {
                   <ul className='space-y-2 text-sm'>
                     <li className='flex items-center gap-2'>
                       <CheckCircle className='w-4 h-4 text-primary' />
-                      .claude/rules, ignore, privacy, time-tracking setup
+                      .cursor/rules, ignore, privacy, time-tracking setup
                     </li>
                     <li className='flex items-center gap-2'>
                       <CheckCircle className='w-4 h-4 text-primary' />
@@ -125,7 +123,7 @@ export default function WorkshopDetails() {
                 <CardHeader>
                   <CardTitle className='flex items-center gap-2'>
                     <BookOpen className='w-5 h-5' />
-                    Day 1 - Claude Code Fundamentals
+                    Day 1 - Claude Fundamentals
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -164,7 +162,7 @@ export default function WorkshopDetails() {
                     </li>
                     <li className='flex items-center gap-2'>
                       <CheckCircle className='w-4 h-4 text-primary' />
-                      Claude Code Agent Mode for CI/CD, multi-file changes
+                      Claude Agent Mode for CI/CD, multi-file changes
                     </li>
                     <li className='flex items-center gap-2'>
                       <CheckCircle className='w-4 h-4 text-primary' />
@@ -191,8 +189,7 @@ export default function WorkshopDetails() {
                     </li>
                     <li className='flex items-center gap-2'>
                       <CheckCircle className='w-4 h-4 text-primary' />
-                      Shared context, Claude Code Control Plane, chat-based
-                      reviews
+                      Shared context, Claude Control Plane, chat-based reviews
                     </li>
                     <li className='flex items-center gap-2'>
                       <CheckCircle className='w-4 h-4 text-primary' />
@@ -281,7 +278,7 @@ export default function WorkshopDetails() {
               <CardContent>
                 <CardDescription>
                   Real-world data shows engineers using AI tools like Claude
-                  Code deliver faster, shipping more features, saving weeks per
+                  deliver faster, shipping more features, saving weeks per
                   quarter.
                 </CardDescription>
               </CardContent>
@@ -311,8 +308,8 @@ export default function WorkshopDetails() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  New hires reach full speed up to 60% sooner with Claude Code
-                  best practices and in-tool help.
+                  New hires reach full speed up to 60% sooner with Claude best
+                  practices and in-tool help.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -463,11 +460,11 @@ export default function WorkshopDetails() {
       <Card>
         <CardHeader>
           <CardTitle className='text-2xl'>
-            Why Proper Claude Code Training Matters
+            Why Proper Claude Training Matters
           </CardTitle>
           <CardDescription>
             Without focused training, even experienced engineers struggle to
-            unlock Claude Code's full value.
+            unlock Claude's full value.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -534,7 +531,7 @@ export default function WorkshopDetails() {
                     Multiplier Effect
                   </h4>
                   <p className='text-xs text-muted-foreground'>
-                    Trained engineers become in-house Claude Code champions,
+                    Trained engineers become in-house Claude champions,
                     spreading value team-wide.
                   </p>
                 </div>

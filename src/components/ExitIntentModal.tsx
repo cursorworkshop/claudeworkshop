@@ -25,6 +25,8 @@ export function ExitIntentModal({
 }: ExitIntentModalProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(forceOpen);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<
     'idle' | 'loading' | 'success' | 'error'
@@ -74,7 +76,7 @@ export function ExitIntentModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || !firstName || !lastName) return;
 
     setStatus('loading');
 
@@ -82,7 +84,12 @@ export function ExitIntentModal({
       const res = await fetch('/api/lead-magnet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'exit_intent' }),
+        body: JSON.stringify({
+          email,
+          firstName,
+          lastName,
+          source: 'exit_intent',
+        }),
       });
 
       if (!res.ok) throw new Error('Failed to submit');
@@ -213,6 +220,24 @@ export function ExitIntentModal({
                       onSubmit={handleSubmit}
                       className='space-y-3'
                     >
+                      <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+                        <Input
+                          type='text'
+                          placeholder='First name'
+                          value={firstName}
+                          onChange={e => setFirstName(e.target.value)}
+                          className='h-12 bg-zinc-100 border-0 rounded-full pl-6 focus:bg-zinc-50 transition-colors'
+                          required
+                        />
+                        <Input
+                          type='text'
+                          placeholder='Last name'
+                          value={lastName}
+                          onChange={e => setLastName(e.target.value)}
+                          className='h-12 bg-zinc-100 border-0 rounded-full pl-6 focus:bg-zinc-50 transition-colors'
+                          required
+                        />
+                      </div>
                       <Input
                         type='email'
                         placeholder='your@email.com'

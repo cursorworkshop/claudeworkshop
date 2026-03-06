@@ -4,12 +4,13 @@
 
 ### Prerequisites
 
-- Node.js 20+
-- pnpm 8+
+- Node.js 22+
+- pnpm 10+ (recommended via Corepack)
 
 ### Installation
 
 ```bash
+corepack enable
 pnpm install
 ```
 

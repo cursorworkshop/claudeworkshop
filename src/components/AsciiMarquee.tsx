@@ -12,7 +12,7 @@ interface AsciiMarqueeProps {
 export default function AsciiMarquee({ className }: AsciiMarqueeProps) {
   const innerRef = useRef<HTMLDivElement | null>(null);
   const text =
-    '>> offsite • claude • ai • mani • kyrimai • training • shipping • teamwork • focus • code • learn • build ';
+    '>> offsite • cursor • ai • mani • kyrimai • training • shipping • teamwork • focus • code • learn • build ';
 
   useEffect(() => {
     const handleScroll = () => {

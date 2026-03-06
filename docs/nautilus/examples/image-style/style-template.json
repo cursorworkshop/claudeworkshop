@@ -1,0 +1,93 @@
+{
+  "template_id": "nautilus-editorial-black-pencil-v3",
+  "version": "1.1.0",
+  "canonical_reference": {
+    "name": "multi-agent-orchestration-approved-02",
+    "path": "docs/nautilus/examples/image-style/target-style-reference.png",
+    "notes": "Canonical reference for rough black-pencil line quality and high-white-space editorial composition."
+  },
+  "style_dna": {
+    "medium": "hand-drawn black-pencil sketch",
+    "linework": [
+      "single black graphite/pencil family only",
+      "scratchy thin-to-medium jittery strokes",
+      "visible construction marks",
+      "intentionally unfinished"
+    ],
+    "hatching": [
+      "local only and sparse",
+      "low density",
+      "preserve large white-paper whitespace"
+    ],
+    "tone": [
+      "plain white paper background",
+      "no gradient",
+      "strict monochrome (black marks only)"
+    ]
+  },
+  "composition_lock": {
+    "primary_subject_mode": "single focal subject or object",
+    "human_presence": "optional",
+    "monitor_presence": "disallowed-by-default",
+    "camera": "pulled-back editorial framing with clear focal hierarchy",
+    "layout": "small focal subject with very large breathing room",
+    "subject_scale_target": 0.22,
+    "subject_scale_range": [0.16, 0.28],
+    "negative_space_target": 0.70,
+    "negative_space_range": [0.60, 0.80],
+    "allowed_props": [
+      "minimal technical artifacts",
+      "abstract workflow marks",
+      "symbolic geometry"
+    ],
+    "anti_trope": "do not default to a person sitting behind a computer; prefer non-device symbolic scenes"
+  },
+  "hard_negatives": [
+    "extra people",
+    "any computer, monitor, laptop, screen, tablet, phone, browser window, terminal window, or literal UI panel",
+    "logos or branding",
+    "watermarks",
+    "any readable text, letters, words, or numbers in the image",
+    "labels inside or outside objects",
+    "floating arrows/icons/callouts",
+    "photorealism",
+    "3D render",
+    "polished vector illustration",
+    "comic-book finish",
+    "dense global crosshatching",
+    "any non-black color accents or fills",
+    "colored or pastel background washes"
+  ],
+  "allowed_variation": {
+    "scene_rule": "scene must be grounded in the article",
+    "scene_must_be_non_repetitive": true,
+    "required_archetypes_for_three_variants": [
+      "workspace",
+      "artifact_focus",
+      "workflow_moment"
+    ],
+    "at_least_one_non_human_scene": true,
+    "context_types": ["workspace", "artifact_focus", "workflow_moment"],
+    "vary": [
+      "camera distance",
+      "scene type and focal object",
+      "composition structure",
+      "symbolic abstraction level",
+      "minimal prop choice"
+    ],
+    "keep_constant": [
+      "core line style",
+      "black pencil family",
+      "single focal subject/object grammar",
+      "rough editorial sketch identity",
+      "high negative-space layout"
+    ]
+  },
+  "quality_thresholds": {
+    "style_score_min": 97,
+    "composition_score_min": 95,
+    "diversity_score_min": 0.70,
+    "max_style_attempts": 8,
+    "max_diversity_repairs_per_variant": 3
+  }
+}

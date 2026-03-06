@@ -26,7 +26,7 @@ const companies = [
 ];
 
 export function HeroSection() {
-  const words = ['Claude Code', 'AI IDEs', 'AI CLIs'];
+  const words = ['Claude', 'AI IDEs', 'AI CLIs'];
 
   return (
     <section className='min-h-[100svh] flex flex-col justify-center items-center overflow-hidden relative pb-8 bg-white'>
@@ -51,8 +51,7 @@ export function HeroSection() {
           </h1>
 
           <p className='text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-light'>
-            Tailored trainings for your
-            <br className='md:hidden' /> engineering team.
+            Team trainings for safe, high-leverage agentic development.
           </p>
 
           <div className='flex flex-row gap-3 justify-center pt-8'>

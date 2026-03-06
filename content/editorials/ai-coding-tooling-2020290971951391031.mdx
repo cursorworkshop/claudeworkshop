@@ -1,0 +1,447 @@
+---
+title: 'You’re Vibe Coding When You Should Be Vibe Marketing: How AI Coding Tooling Changes Team Workflows'
+description: 'A practical guide for engineering teams using coding agents (Claude Code, OpenAI-based agents, OpenClaw-style orchestrators) to stop "vibe coding" and start shipping products that actually get used.'
+author: 'Rogier Muller'
+authorUrl: 'https://www.linkedin.com/in/rogyr/'
+publishedAt: '2026-03-02'
+category: 'ai-coding'
+tags:
+  - 'ai coding tooling'
+  - 'coding agents'
+  - 'agentic workflows'
+  - 'developer productivity'
+  - 'engineering management'
+  - 'product engineering'
+featured: false
+metaTitle: 'You’re Vibe Coding When You Should Be Vibe Marketing: AI Coding Tooling for Teams'
+metaDescription: 'Engineering teams are shipping more code with AI agents—but often solving the wrong problems. This article shows how to structure workflows, metrics, and team roles so Claude Code, OpenAI agents, and similar tools help you ship products people actually use.'
+keyTakeaways:
+  - 'AI coding agents make it cheap to generate code, so the bottleneck moves to choosing the right problems and validating them with users.'
+  - '“Vibe coding” is when teams let agents generate large amounts of code without clear hypotheses, constraints, or success metrics.'
+  - 'To avoid vibe coding, teams need lightweight product discovery loops, explicit problem statements, and guardrails around what agents are allowed to build.'
+  - 'Practical implementation means changing rituals (tickets, PRs, standups), not just adding tools like Claude Code or OpenClaw-style orchestrators.'
+  - 'Measure value in terms of user impact and cycle time from idea to validated learning, not just lines of code or tickets closed.'
+---
+# You’re Vibe Coding When You Should Be Vibe Marketing
+
+AI coding agents (Claude Code, OpenAI-based agents, OpenClaw-style orchestrators, etc.) make it easy to produce working code. Shipping changes.
+
+When code is cheap, the hard part is no longer *writing* it. The hard part is:
+
+- Picking the right problems.
+- Getting real users to care.
+- Iterating based on feedback instead of vibes.
+
+Many teams have already hit this wall: they’re **vibe coding**.
+
+Agents generate features, refactors, and microservices fast, but nobody is sure any of it matters.
+
+Use this to move from **vibe coding** to **evidence-led shipping**.
+
+We’ll cover:
+
+- What changes when you add coding agents to a team.
+- How to spot vibe coding in your workflow.
+- Process changes that align agents with user value.
+- Tradeoffs and limitations of current tools.
+
+---
+
+## 1. What AI Coding Tooling Actually Changes
+
+Coding agents don’t just make you faster; they change the shape of the work.
+
+## 1.1. New cost structure
+
+Before agents:
+
+- Writing production-quality code was expensive.
+- Refactors and experiments were costly.
+- You had to be selective about what you built.
+
+With agents:
+
+- Generating a first implementation is cheap.
+- Large refactors are more feasible.
+- You can try more approaches in the same time.
+
+**Implication:** The bottleneck moves from *implementation* to *decision-making* and *validation*.
+
+## 1.2. New failure modes
+
+You gain speed and new ways to waste time:
+
+- **Overbuilding**: Shipping full features before you know anyone wants them.
+- **Spec drift**: Agents build something plausible but misaligned with the real need.
+- **Complexity inflation**: Agents add layers, patterns, and abstractions that look “clean” but don’t earn their keep.
+
+These are all forms of **vibe coding**: building because you can, not because you should.
+
+## 1.3. New roles for engineers
+
+When agents handle more of the typing, engineers spend more time on:
+
+- Framing problems precisely.
+- Designing constraints and interfaces.
+- Reviewing and curating agent output.
+- Talking to users or people who represent users.
+
+If your team doesn’t lean into these roles on purpose, the extra capacity just turns into more unvalidated code.
+
+---
+
+## 2. What “Vibe Coding” Looks Like in Practice
+
+You’re vibe coding when work is driven by internal aesthetics and tooling excitement, not external signals.
+
+## 2.1. Common symptoms
+
+Watch for these patterns:
+
+1. **Agent-driven roadmaps**
+   - You add features because they’re “easy with Claude Code” or “perfect for an agent chain”.
+   - You pick projects that showcase the tool, not solve a user’s urgent problem.
+
+2. **Spec-free generation**
+   - Prompts like: “Build a full onboarding flow with email verification and profile setup.”
+   - No explicit success criteria, constraints, or user story.
+
+3. **PRs with no user story**
+   - Large agent-generated PRs with detailed code but vague descriptions: “Refactored auth module for clarity.”
+   - No linked metric, bug, or user request.
+
+4. **Demo-first culture**
+   - Internal demos look impressive.
+   - Nobody can tie them to a metric or a real user segment.
+
+5. **Backlog inflation**
+   - Because agents can implement fast, you keep saying “we might as well build it”.
+   - The product surface area grows faster than your ability to maintain or validate it.
+
+If 2–3 of these are true, you’re probably vibe coding.
+
+---
+
+## 3. Reframing the Goal: From Code Output to Validated Learning
+
+With agents, the unit of progress should shift from **code shipped** to **validated learning**.
+
+## 3.1. A simple mental model
+
+For each initiative, ask:
+
+1. **Hypothesis**: What do we believe will change, and for which users?
+2. **Evidence**: How will we know if that happened?
+3. **Cheapest test**: What is the smallest thing we can build or run to test this?
+
+Then use agents to:
+
+- Generate the smallest test quickly.
+- Iterate based on real data.
+
+## 3.2. Example: from vibe feature to testable hypothesis
+
+Vibe coding version:
+
+> “Let’s build an AI-powered onboarding assistant. Claude can handle the flows.”
+
+Evidence-led version:
+
+- Hypothesis: “If new users can ask natural-language questions during onboarding, 7-day activation rate will increase by 10%.”
+- Evidence: Activation rate for new users in the next 2 weeks vs. a control group.
+- Cheapest test: A simple chat widget on one key onboarding screen, limited to FAQs.
+
+Agents are then tasked with:
+
+- Implementing the minimal chat widget.
+- Wiring it into analytics.
+- Generating tests and basic logging.
+
+---
+
+## 4. Practical Implementation: How to Use Agents Without Vibe Coding
+
+This section assumes you have at least one of:
+
+- Claude Code or a similar in-editor assistant.
+- An OpenAI/Anthropic-based coding agent wired into your repo.
+- An orchestrator (OpenClaw-style, custom tools, or homegrown) that can run multi-step coding tasks.
+
+## 4.1. Change your ticket template
+
+Add three required fields to any ticket that will use an agent for implementation.
+
+**Before (typical):**
+
+- Description
+- Acceptance criteria
+
+**After (agent-aware):**
+
+- **User / stakeholder**: Who is this for? (Be specific.)
+- **Hypothesis**: What do we expect to change and how would we measure it?
+- **Agent scope**: What is the agent allowed to change? (Files, services, limits.)
+
+Example ticket:
+
+- User: “New team admins creating their first project.”
+- Hypothesis: “A guided template will reduce time-to-first-project by 30%.”
+- Agent scope: “Only touch `frontend/onboarding/*` and `api/onboarding/*`. No changes to auth.”
+
+You can then paste this into your agent prompt.
+
+## 4.2. Standardize agent prompts for implementation
+
+Instead of ad-hoc prompts, define a **team-standard implementation prompt**.
+
+Example skeleton (adapt to your stack):
+
+```text
+You are assisting with a production code change.
+
+Context:
+- Repo: [brief description]
+- Tech stack: [languages, frameworks]
+
+User & hypothesis:
+- User: [who]
+- Hypothesis: [what we expect to change]
+- Success metric: [how we’d measure]
+
+Task:
+- Implement the smallest change that can test this hypothesis.
+- Scope: Only modify [directories/files]. Do NOT touch [forbidden areas].
+
+Constraints:
+- Follow existing patterns in [paths].
+- Add or update tests in [test paths].
+- Add minimal logging/analytics needed to observe impact.
+
+Output format:
+1. Plan: list files to touch and steps.
+2. Patch: concrete diffs.
+3. Notes: risks, follow-ups, and how to revert.
+```
+
+This keeps the agent tied to the hypothesis and the scope.
+
+## 4.3. Use agents for “marketing” tasks too
+
+If you only use agents for code, you bias toward building.
+
+Use them for:
+
+- Drafting user interview guides.
+- Summarizing support tickets into themes.
+- Turning raw logs into candidate hypotheses.
+- Generating copy variants for onboarding or empty states.
+
+Example prompt for support analysis:
+
+```text
+You are helping a product engineer understand user pain.
+
+Input: A list of recent support tickets (anonymized).
+
+Task:
+1. Cluster tickets into 5–10 themes.
+2. For each theme, propose 1–2 hypotheses we could test with minimal product changes.
+3. Rank themes by potential impact and ease of testing.
+
+Output in a markdown table.
+```
+
+This turns “vibe marketing” into structured discovery.
+
+## 4.4. Guardrails for orchestrators (OpenClaw-style, custom, etc.)
+
+If you have an agent that can:
+
+- Read the repo.
+- Plan multi-step changes.
+- Open PRs.
+
+You need explicit guardrails.
+
+Practical guardrails:
+
+1. **Max diff size**
+   - Limit lines changed per run.
+   - Force multi-PR refactors instead of one giant change.
+
+2. **Protected areas**
+   - Disallow writes to certain directories (e.g., auth, billing) without human override.
+
+3. **Mandatory plan step**
+   - Require the agent to output a plan and get human approval before applying changes.
+
+4. **Experiment flags**
+   - Require new behavior to be behind feature flags or config toggles.
+
+Enforce these in your orchestrator code, not just in natural language prompts.
+
+## 4.5. Change PR review norms
+
+When reviewing agent-generated PRs, don’t just check for correctness.
+
+Add these review questions:
+
+1. **Alignment**: Does this PR clearly tie back to a user and hypothesis?
+2. **Scope**: Is this the smallest change that could test the hypothesis?
+3. **Observability**: Can we see if it worked? (Logs, metrics, flags.)
+4. **Maintenance**: Did the agent introduce unnecessary abstractions or complexity?
+
+If (1) is unclear, send it back.
+
+---
+
+## 5. Example: Reworking a Team Workflow Around Agents
+
+Here’s a concrete, minimal process to try for 2–4 weeks.
+
+## 5.1. Roles
+
+You don’t need new job titles, but you do need clear hats:
+
+- **Problem Framer** (often PM or senior engineer): Owns user, hypothesis, and success metric.
+- **Agent Driver** (engineer): Owns prompts, constraints, and code integration.
+- **Validator** (engineer or PM): Owns measurement and the keep/rollback call.
+
+On a small team, one person can wear all three hats, but call them out explicitly.
+
+## 5.2. Weekly cadence
+
+1. **Discovery block (1–2 hours)**
+   - Review metrics, support tickets, and user feedback.
+   - Use agents to cluster issues and propose hypotheses.
+   - Select 1–3 hypotheses to test.
+
+2. **Implementation block (per hypothesis)**
+   - Create a ticket with user, hypothesis, metric, and agent scope.
+   - Agent Driver uses standardized prompts to generate a minimal change.
+   - A human reviews for alignment and complexity.
+
+3. **Validation block**
+   - After deployment, Validator checks metrics or qualitative feedback.
+   - Decide: scale up, iterate, or revert.
+
+## 5.3. What changes for the team
+
+- Standups move from “what code did you write?” to “what hypotheses are we testing?”
+- Backlog grooming becomes “which hypotheses are worth testing next?”
+- Agents are used across the loop: discovery, implementation, and analysis.
+
+---
+
+## 6. Metrics That Matter in an Agentic World
+
+Traditional engineering metrics (velocity, story points, LOC) get noisy when agents can inflate them.
+
+Consider tracking:
+
+1. **Idea-to-test cycle time**
+   - Time from first articulation of a hypothesis to a live test.
+   - Agents should cut this down.
+
+2. **Tests per week**
+   - Number of distinct hypotheses you run experiments on.
+
+3. **Validated wins per quarter**
+   - Count of experiments that showed a clear positive impact on a user or business metric.
+
+4. **Code surface vs. active usage**
+   - Rough ratio of features shipped to features actively used.
+   - If this drifts apart, you’re likely vibe coding.
+
+These are pragmatic proxies, not standard industry metrics. Adjust them to your context.
+
+---
+
+## 7. Tradeoffs and Limitations
+
+AI coding tools help, but they have real limits.
+
+## 7.1. Context and spec limits
+
+- Agents still struggle with incomplete or ambiguous specs.
+- They can’t infer your business model or internal politics.
+- Long-range architectural intent is hard to encode in a single prompt.
+
+**Mitigation:**
+
+- Keep tasks small and local.
+- Maintain concise architecture docs and patterns you can paste into prompts.
+
+## 7.2. Hidden complexity costs
+
+- Agents can introduce abstractions that look clean but don’t match real usage.
+- They may over-generalize or over-parameterize.
+
+**Mitigation:**
+
+- Enforce “smallest change that could work” as a review rule.
+- Periodically run “complexity audits” on agent-heavy areas.
+
+## 7.3. Validation is still human work
+
+- Agents can help analyze data, but they don’t own the decision.
+- Tradeoffs between metrics (e.g., activation vs. support load) are contextual.
+
+**Mitigation:**
+
+- Keep a human explicitly responsible for each keep/kill decision.
+
+## 7.4. Tooling uncertainty
+
+- Specific tools (Claude Code, OpenClaw, etc.) evolve quickly.
+- Capabilities and APIs change; some features may be unstable.
+
+**Mitigation:**
+
+- Design your process to be **tool-agnostic**. Prompts, guardrails, and rituals should work across providers.
+- Treat each tool as a replaceable component.
+
+---
+
+## 8. A Minimal Playbook You Can Adopt This Week
+
+If you want something concrete to try without a big re-org, use this 5-step playbook.
+
+1. **Add hypothesis fields to tickets**
+   - User, hypothesis, success metric, agent scope.
+
+2. **Standardize one implementation prompt**
+   - Use it for all agent-driven code changes for 1–2 weeks.
+
+3. **Introduce a "no orphan PRs" rule**
+   - Every PR must link to a ticket with a hypothesis.
+
+4. **Schedule a weekly 60-minute discovery session**
+   - Use agents to mine support tickets and metrics for new hypotheses.
+
+5. **Track one new metric**
+   - Idea-to-test cycle time, even if you measure it roughly.
+
+Run this for a sprint or two. Then ask:
+
+- Are you shipping fewer but more targeted changes?
+- Are you killing ideas faster when they don’t work?
+- Are agents being used outside of “write this function”?
+
+If any of these shift in the right direction, you’re moving away from vibe coding and toward evidence-led shipping.
+
+---
+
+## 9. Summary
+
+AI coding agents make it cheap to produce code. That alone doesn’t make your product better.
+
+The real leverage comes from:
+
+- Treating code as a way to test hypotheses, not an end in itself.
+- Using agents across the whole loop: discovery, implementation, and validation.
+- Putting simple guardrails and rituals in place so you don’t drift into vibe coding.
+
+You don’t need a perfect system. You need a **slightly more disciplined loop** than “this would be cool to build with an agent”.
+
+Once that loop exists, tools like Claude Code, OpenAI-based agents, and OpenClaw-style orchestrators can compound your team’s judgment instead of just amplifying your vibes.

@@ -34,12 +34,20 @@ export async function MDXContent({ content }: Props) {
           scroll-margin-top: 5rem;
         }
         
-        .mdx-content h1 { font-size: 2rem; }
+        .mdx-content h1 {
+          font-size: 2.4rem;
+          margin-top: 3.5rem;
+          margin-bottom: 1.5rem;
+        }
         .mdx-content h2 { 
           font-size: 1.5rem; 
           border-bottom: 1px solid #e5e5e5; 
           padding-bottom: 0.75rem; 
           margin-top: 3rem;
+        }
+
+        @media (min-width: 768px) {
+          .mdx-content h1 { font-size: 3rem; }
         }
         
         /* h3 and h4 render as bold text, not separate headings */

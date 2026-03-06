@@ -22,7 +22,7 @@ export default function Footer() {
               <div className='w-8 h-8 relative'>
                 <Image
                   src='/images/logos/CUBE_2D_LIGHT.svg'
-                  alt='Claude Code Logo'
+                  alt='Claude Logo'
                   fill
                   className='object-contain'
                 />

@@ -36,7 +36,7 @@ const faqItems = [
     id: 'item-5',
     question: 'What makes you different from other training providers?',
     answer:
-      'We are Official Claude Ambassadors with direct access to the Claude Code team. Our training is based on real-world enterprise implementations, not generic tutorials.',
+      'We are Official Claude Ambassadors with direct access to the Claude team. Our training is based on real-world enterprise implementations, not generic tutorials.',
   },
 ];
 

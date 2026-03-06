@@ -1,0 +1,36 @@
+graph TD
+  S["Scheduler (runs every 2 days)"] --> A
+
+  subgraph P[Minimal Viable Pipeline]
+    direction TB
+
+    subgraph G1[Signal Processing]
+      direction LR
+      A[Fetch newest X bookmarks] --> B[Score relevance]
+      B --> C[Select top topic]
+    end
+
+    subgraph G2[Article Production]
+      direction LR
+      D[Draft /research article] --> E[Run humanizer pass]
+      E --> H{Quality gate}
+      H -- Pass --> I[Publish on /research]
+      H -- Fail --> R[Retry article revision]
+      R --> E
+    end
+
+    subgraph G3[LinkedIn Distribution]
+      direction LR
+      F[Generate LinkedIn snippet from published article]
+      G[Generate hero image from published article]
+      L[Assemble final LinkedIn post]
+      J[Publish on LinkedIn with article link]
+      F --> L
+      G --> L
+      L --> J
+    end
+  end
+
+  C --> D
+  I --> F
+  I --> G

@@ -76,7 +76,7 @@ content/
 │       ├── index.md          # Event content
 │       └── images/           # Event images
 ├── sponsors/
-│   ├── claude.md            # Sponsor content
+│   ├── cursor.md            # Sponsor content
 │   └── [sponsor-slug].md    # Additional sponsors
 └── about/
     ├── description.md        # About page content
@@ -239,7 +239,7 @@ published: true
 attendees: 0
 maxAttendees: 50
 registrationUrl: 'https://meetup.com/...'
-tags: ['AI', 'Development', 'Claude Code']
+tags: ['AI', 'Development', 'Claude']
 speakers:
   - name: 'Speaker Name'
     topic: 'Talk Title'
@@ -251,7 +251,7 @@ speakers:
       linkedin: 'linkedin.com/in/speaker'
       github: 'github.com/speaker'
 sponsors:
-  - slug: 'claude'
+  - slug: 'cursor'
     tier: 'main'
 ---
 
@@ -343,15 +343,15 @@ export const siteConfig: SiteConfig = {
   location: 'Global',
   organizer: 'Luca Bianchi',
   images: {
-    ogImage: '/images/claude_milano_square.jpg',
-    heroImage: '/images/claude_milano_landscape.jpg',
+    ogImage: '/images/cursor_milano_square.jpg',
+    heroImage: '/images/cursor_milano_landscape.jpg',
     defaultEventImage: '/images/meetup_20250916.jpg',
   },
   social: {
-    meetup: 'https://www.meetup.com/claude-workshop/',
-    linkedin: 'https://linkedin.com/company/claude-workshop',
-    luma: 'https://lu.ma/claude-milano-settembre',
-    sessionize: 'https://sessionize.com/claude-workshop',
+    meetup: 'https://www.meetup.com/cursor-workshop/',
+    linkedin: 'https://linkedin.com/company/cursor-workshop',
+    luma: 'https://lu.ma/cursor-milano-settembre',
+    sessionize: 'https://sessionize.com/cursor-workshop',
   },
 };
 ```

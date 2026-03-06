@@ -1,0 +1,36 @@
+.node rect,
+.node circle,
+.node ellipse,
+.node polygon,
+.node path {
+  fill: #ffffff !important;
+  stroke: #111111 !important;
+}
+
+.cluster rect {
+  fill: #ffffff !important;
+  stroke: #111111 !important;
+}
+
+.edgePath .path,
+.flowchart-link {
+  stroke: #111111 !important;
+}
+
+.arrowheadPath,
+.marker {
+  fill: #111111 !important;
+  stroke: #111111 !important;
+}
+
+.label text,
+.cluster-label text,
+.edgeLabel text {
+  fill: #111111 !important;
+}
+
+.edgeLabel rect,
+.labelBkg {
+  fill: #ffffff !important;
+  background-color: #ffffff !important;
+}

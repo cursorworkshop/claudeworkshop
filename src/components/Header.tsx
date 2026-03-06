@@ -3,15 +3,15 @@
 import { useState, useEffect } from 'react';
 import { Menu } from 'lucide-react';
 import Link from 'next/link';
-import { Claude } from '@/components/ui/svgs/claude';
 
+import { BrandLogo } from '@/components/BrandLogo';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { navigation } from '@/lib/config';
+import { navigation, siteConfig } from '@/lib/config';
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -38,9 +38,11 @@ export default function Header() {
         <div className='flex items-center justify-between h-16'>
           {/* Logo */}
           <Link href='/' className='flex items-center space-x-2'>
-            <Claude className='w-6 h-6' />
+            <div className='w-6 h-6 relative text-foreground'>
+              <BrandLogo priority />
+            </div>
             <span className='font-medium text-foreground text-sm'>
-              claudeworkshop.com
+              {siteConfig.branding.domain}
             </span>
           </Link>
 

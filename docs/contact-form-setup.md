@@ -94,7 +94,7 @@ If you don't set up Resend or SMTP, the form still works perfectly! You'll just 
 
 ### Local Development
 
-1. Start your development server: `npm run dev`
+1. Start your development server: `pnpm dev`
 2. Go to `/contact` or click any contact button on the site
 3. Fill out and submit the form
 4. Check the console for logged submissions

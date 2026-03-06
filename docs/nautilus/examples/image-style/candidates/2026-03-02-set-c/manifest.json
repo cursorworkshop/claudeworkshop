@@ -1,0 +1,211 @@
+{
+  "generatedAt": "2026-03-02T15:31:22.139Z",
+  "models": {
+    "image": "gpt-image-1",
+    "sceneExtractor": "gpt-4.1-mini",
+    "reviewer": "gpt-4.1-mini"
+  },
+  "config": {
+    "useReferenceEdit": true,
+    "styleTemplate": "docs/nautilus/examples/image-style/style-template.json",
+    "subjectScale": 0.28,
+    "negativeSpace": 0.55,
+    "diversityMin": 0.7,
+    "styleScoreMin": 96,
+    "compositionScoreMin": 94,
+    "maxStyleAttempts": 8,
+    "maxDiversityRepairsPerVariant": 3,
+    "countPerArticle": 1
+  },
+  "articles": [
+    {
+      "articlePath": "content/editorials/mcp-and-integrations-1961848171925278932.mdx",
+      "title": "What MCP and Integrations Change for Teams Shipping with Coding Agents",
+      "description": "A practical guide to using Playwright’s MCP tool so coding agents can safely poke, click, and test your real web app instead of hallucinating it.",
+      "scene_briefs": [
+        {
+          "id": "scene-1",
+          "context_type": "workspace",
+          "headline": "Developer at Desk Using MCP-Enabled Browser",
+          "scene": "A developer sits at a desk with a single monitor displaying a real web app running in a browser, alongside a terminal window showing Playwright MCP commands being executed, highlighting live interaction with the app.",
+          "article_grounding": "Reflects how MCP allows coding agents to interact with real web apps through browsers, moving beyond sandboxed code editing."
+        },
+        {
+          "id": "scene-2",
+          "context_type": "artifact_focus",
+          "headline": "Code Editor Showing Agent’s MCP Calls",
+          "scene": "Close-up of a developer’s monitor displaying a code editor with a script where a coding agent’s code includes explicit MCP tool calls to open browsers, click UI elements, and run assertions, with inline comments explaining each step.",
+          "article_grounding": "Illustrates the new artifact type—code enhanced with MCP calls—that enables agents to control real systems as described in the article."
+        },
+        {
+          "id": "scene-3",
+          "context_type": "workflow_moment",
+          "headline": "Developer Reviewing Test Results from MCP Interaction",
+          "scene": "A developer at their desk reviewing a dashboard on their monitor showing test results and logs from Playwright MCP-driven UI tests, with a terminal window open displaying agent feedback and a checklist of integration steps completed.",
+          "article_grounding": "Captures the workflow moment of implementing MCP without breaking existing processes, focusing on validation and integration feedback."
+        }
+      ],
+      "variants": [
+        {
+          "index": 1,
+          "image": "mcp-and-integrations-1961848171925278932/variant-01.png",
+          "prompt": "mcp-and-integrations-1961848171925278932/variant-01.prompt.txt",
+          "review": "mcp-and-integrations-1961848171925278932/variant-01.review.json",
+          "scene_brief_file": "mcp-and-integrations-1961848171925278932/variant-01.scene-brief.json",
+          "style_score": 97,
+          "composition_score": 95,
+          "diversity_score_vs_others": 1,
+          "scene_brief": {
+            "id": "scene-1",
+            "context_type": "workspace",
+            "headline": "Developer at Desk Using MCP-Enabled Browser",
+            "scene": "A developer sits at a desk with a single monitor displaying a real web app running in a browser, alongside a terminal window showing Playwright MCP commands being executed, highlighting live interaction with the app.",
+            "article_grounding": "Reflects how MCP allows coding agents to interact with real web apps through browsers, moving beyond sandboxed code editing."
+          }
+        }
+      ],
+      "comparison_report": {
+        "style_consistency_goal": "Keep canonical style DNA identical while varying scene content.",
+        "diversity_threshold": 0.7,
+        "distinctness_notes": [
+          {
+            "variant_index": 1,
+            "context_type": "workspace",
+            "rationale": "Distinct by context (workspace) and scene intent: A developer sits at a desk with a single monitor displaying a real web app running in a browser, alongside a terminal window showing Playwright MCP commands being executed, highlighting live interaction with the app."
+          }
+        ],
+        "pairwise": [],
+        "summary": {
+          "pass": true,
+          "failing_pairs": []
+        }
+      }
+    },
+    {
+      "articlePath": "content/editorials/multi-agent-orchestration-2019564738649505882.mdx",
+      "title": "What Multi‑Agent Orchestration Changes for Teams Shipping With Coding Agents",
+      "description": "A practical look at how an \"Opus 4.6\" style orchestrator could coordinate a fleet of \"Codex 5.3\" coding agents, what this changes for engineering teams, and how to implement it without breaking your workflow.",
+      "scene_briefs": [
+        {
+          "id": "scene-1",
+          "context_type": "workspace",
+          "headline": "Engineer Monitoring Multi-Agent Coordination",
+          "scene": "A developer sits at a desk with a single monitor displaying a dashboard interface showing a hierarchical task breakdown: a main orchestrator agent at the top assigning subtasks to multiple coding worker agents, each with progress bars and code snippets visible.",
+          "article_grounding": "Visualizes the orchestrator agent breaking down tasks and assigning them to multiple coding worker agents, illustrating the multi-agent orchestration control loop."
+        },
+        {
+          "id": "scene-2",
+          "context_type": "artifact_focus",
+          "headline": "Composite Code Output from Multiple Agents",
+          "scene": "A close-up view of a developer’s monitor showing a code editor window where code segments from different agents are highlighted in distinct colors, stitched together seamlessly into a single coherent function or module.",
+          "article_grounding": "Represents how outputs from multiple coding agents are integrated into a coherent code change by the orchestrator."
+        },
+        {
+          "id": "scene-3",
+          "context_type": "workflow_moment",
+          "headline": "Engineer Handling a Failure Mode in Multi-Agent Workflow",
+          "scene": "A developer at their desk with a monitor displaying an error notification linked to one coding agent’s output, while the orchestrator agent’s interface suggests a retry or reassignment of the subtask, showing the human in the loop managing failure recovery.",
+          "article_grounding": "Depicts the failure modes and tradeoffs in multi-agent orchestration and how engineers intervene to maintain workflow continuity."
+        }
+      ],
+      "variants": [
+        {
+          "index": 1,
+          "image": "multi-agent-orchestration-2019564738649505882/variant-01.png",
+          "prompt": "multi-agent-orchestration-2019564738649505882/variant-01.prompt.txt",
+          "review": "multi-agent-orchestration-2019564738649505882/variant-01.review.json",
+          "scene_brief_file": "multi-agent-orchestration-2019564738649505882/variant-01.scene-brief.json",
+          "style_score": 97,
+          "composition_score": 95,
+          "diversity_score_vs_others": 1,
+          "scene_brief": {
+            "id": "scene-1",
+            "context_type": "workspace",
+            "headline": "Engineer Monitoring Multi-Agent Coordination",
+            "scene": "A developer sits at a desk with a single monitor displaying a dashboard interface showing a hierarchical task breakdown: a main orchestrator agent at the top assigning subtasks to multiple coding worker agents, each with progress bars and code snippets visible.",
+            "article_grounding": "Visualizes the orchestrator agent breaking down tasks and assigning them to multiple coding worker agents, illustrating the multi-agent orchestration control loop."
+          }
+        }
+      ],
+      "comparison_report": {
+        "style_consistency_goal": "Keep canonical style DNA identical while varying scene content.",
+        "diversity_threshold": 0.7,
+        "distinctness_notes": [
+          {
+            "variant_index": 1,
+            "context_type": "workspace",
+            "rationale": "Distinct by context (workspace) and scene intent: A developer sits at a desk with a single monitor displaying a dashboard interface showing a hierarchical task breakdown: a main orchestrator agent at the top assigning subtasks to multiple coding worker agents, each with progress bars and code snippets visible."
+          }
+        ],
+        "pairwise": [],
+        "summary": {
+          "pass": true,
+          "failing_pairs": []
+        }
+      }
+    },
+    {
+      "articlePath": "content/editorials/ai-coding-tooling-1977706278110765481.mdx",
+      "title": "What AI Coding Tooling Changes for Teams Shipping With Coding Agents",
+      "description": "A practical breakdown of how one developer runs their day on an AI coding agent stack, and what that implies for engineering teams adopting similar workflows.",
+      "scene_briefs": [
+        {
+          "id": "scene-1",
+          "context_type": "workspace",
+          "headline": "Developer at Web Interface Managing AI Tasks",
+          "scene": "A developer seated at a modern desk, focused on a widescreen monitor displaying a web-based AI coding agent interface (Codex). The desk has minimal clutter, with a notebook open showing handwritten task notes. The background includes a small whiteboard with a few sticky notes representing task priorities.",
+          "article_grounding": "Reflects the developer starting their day in a web interface (Codex) to manage AI coding tasks, emphasizing the workspace setup for AI agent interaction."
+        },
+        {
+          "id": "scene-2",
+          "context_type": "artifact_focus",
+          "headline": "Task Planning in Project Management Tool",
+          "scene": "A close-up view of a developer’s desk showing a single monitor displaying the Linear project management interface. The screen highlights a list of small, focused tasks derived from user feedback. The developer’s hand is visible, using a mouse to prioritize or reorder tasks.",
+          "article_grounding": "Captures the moment of planning the day in Linear, turning user feedback into actionable, focused tasks as described in the article."
+        },
+        {
+          "id": "scene-3",
+          "context_type": "workflow_moment",
+          "headline": "Parallel AI Coding Tasks in Progress",
+          "scene": "A developer at their desk with a monitor split into multiple windows, each running a different AI coding agent task in parallel. The developer is actively typing or reviewing code on one window while monitoring progress on others. The desk includes a coffee cup and a smartphone showing notifications, indicating multitasking and workflow management.",
+          "article_grounding": "Illustrates the workflow moment where the developer kicks off and manages 3–4 parallel tasks using AI coding agents, highlighting multitasking and AI-driven work."
+        }
+      ],
+      "variants": [
+        {
+          "index": 1,
+          "image": "ai-coding-tooling-1977706278110765481/variant-01.png",
+          "prompt": "ai-coding-tooling-1977706278110765481/variant-01.prompt.txt",
+          "review": "ai-coding-tooling-1977706278110765481/variant-01.review.json",
+          "scene_brief_file": "ai-coding-tooling-1977706278110765481/variant-01.scene-brief.json",
+          "style_score": 97,
+          "composition_score": 95,
+          "diversity_score_vs_others": 1,
+          "scene_brief": {
+            "id": "scene-1",
+            "context_type": "workspace",
+            "headline": "Developer at Web Interface Managing AI Tasks",
+            "scene": "A developer seated at a modern desk, focused on a widescreen monitor displaying a web-based AI coding agent interface (Codex). The desk has minimal clutter, with a notebook open showing handwritten task notes. The background includes a small whiteboard with a few sticky notes representing task priorities.",
+            "article_grounding": "Reflects the developer starting their day in a web interface (Codex) to manage AI coding tasks, emphasizing the workspace setup for AI agent interaction."
+          }
+        }
+      ],
+      "comparison_report": {
+        "style_consistency_goal": "Keep canonical style DNA identical while varying scene content.",
+        "diversity_threshold": 0.7,
+        "distinctness_notes": [
+          {
+            "variant_index": 1,
+            "context_type": "workspace",
+            "rationale": "Distinct by context (workspace) and scene intent: A developer seated at a modern desk, focused on a widescreen monitor displaying a web-based AI coding agent interface (Codex). The desk has minimal clutter, with a notebook open showing handwritten task notes. The background includes a small whiteboard with a few sticky notes representing task priorities."
+          }
+        ],
+        "pairwise": [],
+        "summary": {
+          "pass": true,
+          "failing_pairs": []
+        }
+      }
+    }
+  ]
+}

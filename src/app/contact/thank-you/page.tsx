@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 
 import { Button } from '@/components/ui/button';
 import { LightRays } from '@/components/ui/light-rays';
+import { siteConfig } from '@/lib/config';
 
 declare global {
   interface Window {
@@ -93,10 +94,10 @@ export default function ContactThankYouPage() {
               Need to reach us directly?
             </p>
             <a
-              href='mailto:info@claudeworkshop.com'
+              href={`mailto:${siteConfig.contact.infoEmail}`}
               className='text-base text-foreground hover:underline'
             >
-              info@claudeworkshop.com
+              {siteConfig.contact.infoEmail}
             </a>
           </motion.div>
 

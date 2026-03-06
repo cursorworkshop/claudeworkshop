@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 
+import { brandConfig } from './brand';
 import { siteConfig } from './config';
 import { SeoProps } from './types';
 
@@ -29,7 +30,7 @@ export function generateMetadata(props: SeoProps): Metadata {
     title: fullTitle,
     description: fullDescription,
     keywords: [
-      'Claude Code',
+      brandConfig.productName,
       'AI Development',
       'IDE',
       'Milano',
@@ -82,8 +83,8 @@ export function generateMetadata(props: SeoProps): Metadata {
           ? fullImage
           : `${siteConfig.url}${fullImage}`,
       ],
-      creator: '@claude_workshop', // Update with actual Twitter handle
-      site: '@claude_workshop', // Update with actual Twitter handle
+      creator: '@cursor_workshop',
+      site: '@cursor_workshop',
     },
     robots: {
       index: true,
@@ -103,7 +104,7 @@ export function generateMetadata(props: SeoProps): Metadata {
       // yahoo: 'your-yahoo-verification-code',
     },
     other: {
-      'theme-color': '#3B82F6', // Claude Code blue
+      'theme-color': '#3B82F6',
       'color-scheme': 'light',
     },
   };

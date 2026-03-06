@@ -21,7 +21,6 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card';
-import { siteConfig } from '@/lib/config';
 import { getEventBySlug, getAllEvents } from '@/lib/markdown';
 
 interface EventPageProps {
@@ -52,6 +51,9 @@ export async function generateMetadata({
   return {
     title: `${event.title} - Claude Workshops`,
     description: event.description,
+    alternates: {
+      canonical: `/events/${event.slug}`,
+    },
     openGraph: {
       title: event.title,
       description: event.description,
@@ -85,7 +87,7 @@ export default async function EventPage({ params }: EventPageProps) {
                   className='p-0 h-auto text-primary hover:text-primary/80 mb-6'
                   asChild
                 >
-                  <Link href='/workshops'>
+                  <Link href='/events'>
                     <ArrowLeft className='w-4 h-4 mr-2' />
                     Back to Events
                   </Link>
@@ -103,7 +105,7 @@ export default async function EventPage({ params }: EventPageProps) {
               {/* Event Details */}
               <div className='space-y-4'>
                 <div className='flex items-center space-x-3'>
-                  <Calendar className='w-5 h-5 text-claude-blue' />
+                  <Calendar className='w-5 h-5 text-cursor-blue' />
                   <span className='text-gray-700'>
                     <span suppressHydrationWarning>
                       {eventDate.toLocaleDateString('en-US', {
@@ -117,19 +119,19 @@ export default async function EventPage({ params }: EventPageProps) {
                 </div>
 
                 <div className='flex items-center space-x-3'>
-                  <Clock className='w-5 h-5 text-claude-blue' />
+                  <Clock className='w-5 h-5 text-cursor-blue' />
                   <span className='text-gray-700'>
                     {event.startTime} - {event.endTime} {event.timezone}
                   </span>
                 </div>
 
                 <div className='flex items-center space-x-3'>
-                  <MapPin className='w-5 h-5 text-claude-blue' />
+                  <MapPin className='w-5 h-5 text-cursor-blue' />
                   <span className='text-gray-700'>{event.location}</span>
                 </div>
 
                 <div className='flex items-center space-x-3'>
-                  <Users className='w-5 h-5 text-claude-blue' />
+                  <Users className='w-5 h-5 text-cursor-blue' />
                   <span className='text-gray-700'>
                     {event.attendees} / {event.maxAttendees} attendees
                   </span>
@@ -229,13 +231,15 @@ export default async function EventPage({ params }: EventPageProps) {
                 Interested in an Offsite?
               </h2>
               <p className='text-lg text-gray-600'>
-                We host regular Claude Code engineering offsites for teams.
+                We host regular Claude engineering offsites for teams.
               </p>
             </div>
 
             <div className='flex flex-wrap justify-center gap-4'>
               <Button variant='secondary' asChild>
-                <Link href='/corporates'>Learn about Corporate Offsites</Link>
+                <Link href='/training/enterprise'>
+                  Learn about Corporate Offsites
+                </Link>
               </Button>
             </div>
           </div>

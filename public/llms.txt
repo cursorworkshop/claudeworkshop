@@ -1,34 +1,43 @@
-# claudeworkshop.com
+# Claude Workshop
 
-> Professional Claude Code training for engineering teams.
+> Professional AI development training for engineering teams. Official Claude Ambassadors teaching the DRO (Delegate, Review, Own) framework to Fortune 100 and DAX 40 companies.
+
+Claude Workshop provides in-house and offsite training programs that help engineering teams master AI-assisted development with Claude. We train teams to decide what to delegate to AI, what to review, and what to keep under human control.
+
+- The DRO Framework splits development tasks into three categories: Delegate (hand off boilerplate, tests, docs to AI), Review (AI proposes changes to bug fixes and refactoring, you decide), Own (architecture, security, and business logic stay human)
+- Training is delivered on-site at client locations or as premium offsite programs
+- Programs range from 1-day foundation workshops to multi-week enterprise transformations
+
+## Training programs
+
+- [Training overview](https://claudeworkshop.com/training): All available training formats and pricing
+- [Foundation](https://claudeworkshop.com/training/foundation): 1-day introduction to AI-assisted development
+- [Professional](https://claudeworkshop.com/training/professional): Advanced workflows and team integration
+- [Enterprise](https://claudeworkshop.com/training/enterprise): Organization-wide AI transformation
+- [Extensive program](https://claudeworkshop.com/training/extensive): Deep multi-day immersion
+- [Medium program](https://claudeworkshop.com/training/medium): Focused 2-day workshop
+- [Small program](https://claudeworkshop.com/training/small): Compact team session
+
+## Methodology
+
+- [DRO Framework](https://claudeworkshop.com/methodology): The Delegate, Review, Own framework applied across Plan, Design, Build, Test, Deploy, and Maintain phases
+
+## Research
+
+- [Claude 2.4: Subagents, Skills, and What They Mean for Your Workflow](https://claudeworkshop.com/research/claude-2-4-subagents-skills): How subagents, skills, and image generation fit into structured AI development
+- [Claude Gas Town: Multi-Agent Orchestration for Claude CLI](https://claudeworkshop.com/research/claude-gastown-multi-agent-orchestration): A Claude CLI implementation of multi-agent orchestration with persistent work tracking
+- [Gas Town: Steve Yegge's Multi-Agent Orchestrator](https://claudeworkshop.com/research/gas-town-multi-agent-orchestration): How running 20-30 Claude Code agents in parallel changes AI-assisted development
+- [Designing Codebases for AI Agents](https://claudeworkshop.com/research/designing-codebases-for-ai-agents): How to structure code so AI agents like Claude and Claude Code work efficiently
+- [Job vs Gym: Which Skills Should You Protect from AI?](https://claudeworkshop.com/research/job-vs-gym-ai-skills-framework): A framework for deciding when to use AI and when to maintain skills yourself
+- [Why Senior Engineers Accept More AI Suggestions Than Juniors](https://claudeworkshop.com/research/senior-vs-junior-ai-acceptance-rates): Research showing AI coding tools amplify existing engineering skill
+- [How Y Combinator Founders Ship with AI Coding Tools](https://claudeworkshop.com/research/yc-founders-ai-coding-patterns): Patterns from YC founders on using AI tools effectively
 
 ## About
 
-Claude Workshop provides in-house and offsite training programs to help engineering teams master AI-assisted development with Claude Code. We train teams at Fortune 100 and DAX 40 companies.
-
-## Training Programs
-
-- Foundation: Introduction to AI-assisted development with Claude Code
-- Professional: Advanced workflows and team integration
-- Enterprise: Organization-wide AI transformation with custom solutions
-
-## Key Pages
-
-- /training - All training programs
-- /training/foundation - Foundation program details
-- /training/professional - Professional program details
-- /training/enterprise - Enterprise program details
-- /methodology - Our DRO (Delegate, Review, Own) framework
-- /about - About the founders and company
-- /contact - Get in touch
-
-## Framework
-
-We teach the DRO Framework:
-- Delegate: Hand off repetitive tasks to AI (boilerplate, tests, docs)
-- Review: AI proposes, you decide (bug fixes, refactoring)
-- Own: Human judgment required (architecture, security, business logic)
+- [About](https://claudeworkshop.com/about): Company background and team
+- [Founder](https://claudeworkshop.com/founder): About the founder, Rogier Muller
+- [White paper](https://claudeworkshop.com/white-paper): Download the enterprise AI development guide (PDF, 24 pages)
 
 ## Contact
 
-For training inquiries: /contact
+- [Contact](https://claudeworkshop.com/contact): Training inquiries and partnership requests

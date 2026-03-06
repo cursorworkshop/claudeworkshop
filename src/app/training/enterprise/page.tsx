@@ -25,7 +25,7 @@ import {
 export const metadata: Metadata = {
   title: 'Enterprise - Comprehensive On-Site Training',
   description:
-    'Comprehensive on-site Claude Code training for organizations seeking mastery and custom AI solutions.',
+    'Comprehensive on-site Claude training for organizations seeking mastery and custom AI solutions.',
 };
 
 export default function EnterpriseTrainingPage() {
@@ -110,9 +110,9 @@ export default function EnterpriseTrainingPage() {
               What You'll Achieve
             </h2>
             <p className='text-lg text-muted-foreground max-w-2xl mx-auto'>
-              This program focuses on advanced Claude Code integration, custom
-              tool development, and strategic implementation to transform
-              developer efficiency and solve complex engineering challenges.
+              This program focuses on advanced Claude integration, custom tool
+              development, and strategic implementation to transform developer
+              efficiency and solve complex engineering challenges.
             </p>
           </div>
 

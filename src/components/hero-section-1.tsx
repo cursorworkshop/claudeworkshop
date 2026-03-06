@@ -31,7 +31,7 @@ export default function HeroSection() {
             </h1>
             <p className='text-muted-foreground mt-6 text-balance text-lg'>
               Enterprise training for engineering teams. Transform how your
-              developers work with Claude Code and AI coding tools.
+              developers work with Claude and AI coding tools.
             </p>
 
             <div className='mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row'>
