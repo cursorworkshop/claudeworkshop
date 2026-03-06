@@ -197,16 +197,22 @@ three workshop sites as one shared Vercel target.
    - `VERCEL_ORG_ID`
    - `VERCEL_PROJECT_ID`
 
-### Required Vercel Git linkage
+### Vercel Git linkage and plan limits
 
-1. Vercel project `cursorworkshop` must be linked to GitHub repo
-   `cursorworkshop/claudeworkshop` on branch `main`.
-2. Vercel project `claudeworkshop` must be linked to GitHub repo
-   `cursorworkshop/claudeworkshop` on branch `main`.
-3. Vercel project `codexworkshop` must be linked to GitHub repo
-   `cursorworkshop/codexworkshop` on branch `main`.
-4. If the Git link is wrong, pushes may succeed while the live site stays old.
-   Fix the Git link first, then re-run deploys.
+1. `cursorworkshop/claudeworkshop` is currently a private GitHub organization
+   repo, while Vercel project `cursorworkshop` is on the Hobby plan.
+2. On Hobby, Vercel cannot use Git-based deploys from a private organization
+   repo. Do not assume native Git linkage is available for the source repo.
+3. Therefore `claudeworkshop.com` currently deploys through the GitHub Actions
+   Vercel CLI workflow, not through native Vercel Git integration.
+4. `cursorworkshop/claudeworkshop` and `cursorworkshop/codexworkshop` are
+   public repos, so they can use native Vercel Git linkage if the Vercel
+   GitHub App has access to those repos.
+5. If Git linkage is desired for any repo, verify that the Vercel GitHub App
+   is installed for the `cursorworkshop` GitHub organization and that the
+   specific repo is included in the installation access list.
+6. If a Git link is wrong or missing, pushes may succeed while the live site
+   stays old. Fix the linkage or fall back to the CLI deploy workflow.
 
 ### Standard production flow
 
@@ -232,8 +238,7 @@ three workshop sites as one shared Vercel target.
    - deploys only the `cursorworkshop` Vercel project
    - uses:
      - `vercel pull --environment=production`
-     - `vercel build --prod`
-     - `vercel deploy --prebuilt --prod --archive=tgz`
+     - `vercel deploy --prod --archive=tgz`
 2. `.github/workflows/sync-brand-sites.yml`
    - runs on push to `main`
    - pushes mirrored commits into the Claude and Codex repos
@@ -269,7 +274,8 @@ three workshop sites as one shared Vercel target.
 1. Push succeeded but site did not change:
    - check the repo's GitHub Action run
    - check the repo's `VERCEL_PROJECT_ID`
-   - check that the Vercel project is linked to the matching GitHub repo
+   - for `cursorworkshop`, remember the source repo does not rely on native
+     Git linkage while it stays private on Hobby
 2. Source site updated but Claude/Codex did not:
    - check `sync-brand-sites.yml`
    - check whether mirrored commits landed in the sibling repos
@@ -280,6 +286,13 @@ three workshop sites as one shared Vercel target.
 4. Local Vercel deploy fails with upload/rate-limit errors:
    - prefer GitHub Actions or a fresh non-rate-limited token
    - do not keep retrying uploads blindly
+   - if Vercel returns `api-upload-free`, the current Hobby upload quota is
+     exhausted and immediate retries will continue to fail
+   - the clean exits are:
+     - wait for the quota reset window shown by Vercel
+     - upgrade the Vercel team/project to Pro
+     - move the source deploy to a public Git-linked repo or public deploy
+       mirror with proper Vercel GitHub App access
 
 ## Multi-Repo Brand Mirrors
 
