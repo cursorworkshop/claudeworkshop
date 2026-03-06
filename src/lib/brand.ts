@@ -90,7 +90,7 @@ const BRANDS: Record<BrandKey, BrandConfig> = {
     workshopsName: 'Codex Workshops',
     domain: 'codexworkshop.com',
     siteUrl: 'https://codexworkshop.com',
-    favicon: '/images/brands/codex-logo.png',
+    favicon: '/images/brands/codex-logo-black.png',
     infoEmail: 'info@codexworkshop.com',
     privacyEmail: 'privacy@codexworkshop.com',
     calUrl: 'https://cal.com/codexworkshop',
@@ -103,7 +103,7 @@ const BRANDS: Record<BrandKey, BrandConfig> = {
     logo: {
       variant: 'image',
       alt: 'Codex Workshop logo',
-      src: '/images/brands/codex-logo.png',
+      src: '/images/brands/codex-logo-black.png',
       width: 96,
       height: 96,
     },
