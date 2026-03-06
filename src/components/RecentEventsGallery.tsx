@@ -12,56 +12,56 @@ type EventMoment = {
 const eventMomentsByBrand: Record<BrandKey, EventMoment[]> = {
   cursor: [
     {
-      src: '/images/presenting/rogier-cursor-1.webp',
+      src: '/images/presenting/rogier-cursor-1.jpg',
       tag: 'Workshop',
       title: 'Live coding with engineering teams',
     },
     {
-      src: '/images/presenting/rogier-cursor-2.webp',
+      src: '/images/presenting/rogier-cursor-2.jpg',
       tag: 'Meetup',
       title: 'Founder talks and community Q&A',
     },
     {
-      src: '/images/presenting/rogier-cursor-3.webp',
+      src: '/images/presenting/rogier-cursor-3.jpg',
       tag: 'Session',
       title: 'Hands-on walkthroughs with real examples',
     },
     {
-      src: '/images/presenting/rogier-createnew.webp',
+      src: '/images/presenting/rogier-createnew.jpg',
       tag: 'Roadshow',
       title: 'Recent founder sessions with practical team demos',
     },
   ],
   claude: [
     {
-      src: '/images/presenting/rogier-claude-1.webp',
+      src: '/images/presenting/rogier-claude-1.jpg',
       tag: 'Meetup',
       title: 'Founder presentation during a recent Claude meetup',
     },
     {
-      src: '/images/presenting/rogier-createnew.webp',
+      src: '/images/presenting/rogier-createnew.jpg',
       tag: 'Session',
       title: 'Smaller room setups for live walkthroughs and Q&A',
     },
     {
-      src: '/images/presenting/rogier-cursor-2.webp',
+      src: '/images/presenting/rogier-cursor-2.jpg',
       tag: 'Workshop',
       title: 'Practical sessions built around real team questions',
     },
   ],
   codex: [
     {
-      src: '/images/presenting/rogier-codex-1.webp',
+      src: '/images/presenting/rogier-codex-1.jpg',
       tag: 'Meetup',
       title: 'Live room walkthroughs and short founder talks',
     },
     {
-      src: '/images/presenting/rogier-codex-2.webp',
+      src: '/images/presenting/rogier-codex-2.jpg',
       tag: 'Training',
       title: 'Focused demos for teams experimenting with Codex',
     },
     {
-      src: '/images/presenting/rogier-createnew.webp',
+      src: '/images/presenting/rogier-createnew.jpg',
       tag: 'Session',
       title: 'Smaller discussions on adoption, workflows, and reviews',
     },
