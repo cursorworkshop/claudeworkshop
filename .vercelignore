@@ -1,0 +1,15 @@
+.git
+.github
+.next
+.vercel
+node_modules
+docs
+tools
+images-presenting
+logo-linkedin.png
+AGENTS.md
+CLAUDE.md
+DEVELOPMENT.md
+README.md
+coverage
+*.log

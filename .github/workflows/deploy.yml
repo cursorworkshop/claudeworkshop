@@ -60,12 +60,7 @@ jobs:
           VERCEL_TOKEN_CLEAN="$(printf '%s' "$VERCEL_TOKEN" | tr -cd 'A-Za-z0-9_')"
           vercel pull --yes --environment=production --token="$VERCEL_TOKEN_CLEAN"
 
-      - name: Build Project Artifacts
+      - name: Deploy Source to Vercel
         run: |
           VERCEL_TOKEN_CLEAN="$(printf '%s' "$VERCEL_TOKEN" | tr -cd 'A-Za-z0-9_')"
-          vercel build --prod --token="$VERCEL_TOKEN_CLEAN"
-
-      - name: Deploy Project Artifacts to Vercel
-        run: |
-          VERCEL_TOKEN_CLEAN="$(printf '%s' "$VERCEL_TOKEN" | tr -cd 'A-Za-z0-9_')"
-          vercel deploy --prebuilt --prod --archive=tgz --token="$VERCEL_TOKEN_CLEAN"
+          vercel deploy --prod --archive=tgz --token="$VERCEL_TOKEN_CLEAN"
