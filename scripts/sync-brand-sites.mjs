@@ -20,6 +20,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 const DEFAULT_TARGET_ROOT = path.join(os.tmpdir(), 'cursorworkshop-brand-sync');
+const DEPLOY_AUTHOR_NAME = 'Claude Workshop';
+const DEPLOY_AUTHOR_EMAIL = 'info@claudeworkshop.com';
 
 const SOURCE = {
   productName: 'Claude',
@@ -587,10 +589,22 @@ function stageCommitAndMaybePush(targetDir, brand, push) {
   });
   const commitMessage = `sync: mirror cursorworkshop@${sourceSha}`;
 
-  run('git', ['commit', '-m', commitMessage], {
-    cwd: targetDir,
-    stdio: 'inherit',
-  });
+  run(
+    'git',
+    [
+      '-c',
+      `user.name=${DEPLOY_AUTHOR_NAME}`,
+      '-c',
+      `user.email=${DEPLOY_AUTHOR_EMAIL}`,
+      'commit',
+      '-m',
+      commitMessage,
+    ],
+    {
+      cwd: targetDir,
+      stdio: 'inherit',
+    }
+  );
 
   if (push) {
     run('git', ['pull', '--rebase', 'origin', 'main'], {

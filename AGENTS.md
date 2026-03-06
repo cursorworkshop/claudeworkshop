@@ -184,35 +184,40 @@ three workshop sites as one shared Vercel target.
 ### Required GitHub secrets by repo
 
 1. In `cursorworkshop/claudeworkshop`:
-   - `VERCEL_TOKEN`
-   - `VERCEL_ORG_ID`
-   - `VERCEL_PROJECT_ID`
    - `BRAND_SYNC_TOKEN`
-2. In `cursorworkshop/claudeworkshop`:
-   - `VERCEL_TOKEN`
-   - `VERCEL_ORG_ID`
-   - `VERCEL_PROJECT_ID`
-3. In `cursorworkshop/codexworkshop`:
+2. Optional manual CLI fallback secrets in any repo:
    - `VERCEL_TOKEN`
    - `VERCEL_ORG_ID`
    - `VERCEL_PROJECT_ID`
 
-### Vercel Git linkage and plan limits
+### Actual production path
 
-1. `cursorworkshop/claudeworkshop` is currently a private GitHub organization
-   repo, while Vercel project `cursorworkshop` is on the Hobby plan.
-2. On Hobby, Vercel cannot use Git-based deploys from a private organization
-   repo. Do not assume native Git linkage is available for the source repo.
-3. Therefore `claudeworkshop.com` currently deploys through the GitHub Actions
-   Vercel CLI workflow, not through native Vercel Git integration.
-4. `cursorworkshop/claudeworkshop` and `cursorworkshop/codexworkshop` are
-   public repos, so they can use native Vercel Git linkage if the Vercel
-   GitHub App has access to those repos.
-5. If Git linkage is desired for any repo, verify that the Vercel GitHub App
-   is installed for the `cursorworkshop` GitHub organization and that the
-   specific repo is included in the installation access list.
-6. If a Git link is wrong or missing, pushes may succeed while the live site
-   stays old. Fix the linkage or fall back to the CLI deploy workflow.
+1. The historically working production path is native Vercel Git deployment on
+   push to `main`.
+2. This applies to:
+   - `cursorworkshop/claudeworkshop` -> `claudeworkshop.com`
+   - `cursorworkshop/claudeworkshop` -> `claudeworkshop.com`
+   - `cursorworkshop/codexworkshop` -> `codexworkshop.com`
+3. The GitHub Actions workflow in `.github/workflows/deploy.yml` is not the
+   primary production deploy path anymore. It is only build verification.
+4. Manual/local Vercel CLI deploys are fallback only.
+
+### Commit author requirement for Vercel
+
+1. Vercel's Git deployment path checks the pushed commit author email.
+2. If the author email does not belong to a user that has access to the
+   `cursorworkshop` Vercel team, Vercel creates a deployment and then fails it
+   with an author-access error.
+3. The safe deploy author for this workspace is:
+   - `Claude Workshop <info@claudeworkshop.com>`
+4. When a local push is meant to trigger production, use a deploy-safe author
+   on the pushed commit.
+5. Mirror sync commits must also use a deploy-safe author. The sync script in
+   `scripts/sync-brand-sites.mjs` is expected to commit as
+   `Claude Workshop <info@claudeworkshop.com>`.
+6. If a push landed but Vercel shows `Git author ... must have access to the
+team cursorworkshop`, create a new follow-up commit with the deploy-safe
+   author and push again.
 
 ### Standard production flow
 
@@ -220,45 +225,42 @@ three workshop sites as one shared Vercel target.
 2. Run formatting/build checks before pushing:
    - `pnpm format`
    - `pnpm build`
-3. Push `cursorworkshop` to `main`.
-4. Let `cursorworkshop/.github/workflows/deploy.yml` deploy
-   `claudeworkshop.com`.
-5. Let `cursorworkshop/.github/workflows/sync-brand-sites.yml` fan the same
+3. Commit with a deploy-safe author when the push is meant to trigger
+   production:
+   - `Claude Workshop <info@claudeworkshop.com>`
+   - or another email that has access to the `cursorworkshop` Vercel team
+4. Push `cursorworkshop` to `main`.
+5. Let Vercel's native Git deployment ship `claudeworkshop.com`.
+6. Let `cursorworkshop/.github/workflows/sync-brand-sites.yml` fan the same
    commit out to:
    - `cursorworkshop/claudeworkshop`
    - `cursorworkshop/codexworkshop`
-6. Let each mirror repo's own `.github/workflows/deploy.yml` deploy its own
-   production site.
-7. Verify all three production domains after the pipelines finish.
+7. Let Vercel's native Git deployment on each mirror repo ship its own site.
+8. Verify all three production domains after the pipelines finish.
 
 ### Source repo workflows
 
 1. `.github/workflows/deploy.yml`
    - runs on push to `main`
-   - deploys only the `cursorworkshop` Vercel project
-   - uses:
-     - `vercel pull --environment=production`
-     - `vercel deploy --prod --archive=tgz`
+   - runs build verification only
+   - does not perform the primary production deploy
 2. `.github/workflows/sync-brand-sites.yml`
    - runs on push to `main`
    - pushes mirrored commits into the Claude and Codex repos
    - requires `BRAND_SYNC_TOKEN`
-   - does not itself deploy Claude or Codex to Vercel; it only updates their
-     GitHub repos
+   - does not itself deploy Claude or Codex to Vercel; it updates their
+     GitHub repos so native Vercel Git deploys can take over
 
 ### Mirror repo workflows
 
 1. `cursorworkshop/claudeworkshop/.github/workflows/deploy.yml`
-   - must deploy only `claudeworkshop.com`
-   - must use that repo's own `VERCEL_PROJECT_ID`
+   - runs build verification only
 2. `cursorworkshop/codexworkshop/.github/workflows/deploy.yml`
-   - must deploy only `codexworkshop.com`
-   - must use that repo's own `VERCEL_PROJECT_ID`
-3. Mirror deploy repos must not reuse the source repo's Vercel project ID.
+   - runs build verification only
 
 ### Manual fallback deploys
 
-1. Preferred path is always GitHub Actions on `main`.
+1. Preferred path is always Vercel native Git deployment on push to `main`.
 2. Use local/manual Vercel deploys only as a fallback.
 3. Before any local fallback deploy, confirm the repo is linked to the correct
    Vercel project:
@@ -272,19 +274,19 @@ three workshop sites as one shared Vercel target.
 ### Deployment troubleshooting
 
 1. Push succeeded but site did not change:
-   - check the repo's GitHub Action run
-   - check the repo's `VERCEL_PROJECT_ID`
-   - for `cursorworkshop`, remember the source repo does not rely on native
-     Git linkage while it stays private on Hobby
+   - check the Vercel deployment for the pushed commit
+   - check the commit author email on the pushed commit
+   - check whether the commit author has access to the `cursorworkshop`
+     Vercel team
 2. Source site updated but Claude/Codex did not:
    - check `sync-brand-sites.yml`
    - check whether mirrored commits landed in the sibling repos
-   - check each mirror repo's own deploy workflow
+   - check each mirror repo's Vercel deployment for the mirrored commit
 3. Mirror repo updated but live mirror site stayed old:
-   - check that the mirror Vercel project has a valid GitHub link
-   - check for missing Vercel secrets in that mirror repo
+   - check the mirrored commit author email
+   - check that the mirror Vercel project still auto-deploys from Git pushes
 4. Local Vercel deploy fails with upload/rate-limit errors:
-   - prefer GitHub Actions or a fresh non-rate-limited token
+   - prefer the native Git deployment path over repeated CLI uploads
    - do not keep retrying uploads blindly
    - if Vercel returns `api-upload-free`, the current Hobby upload quota is
      exhausted and immediate retries will continue to fail

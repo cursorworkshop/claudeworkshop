@@ -1,9 +1,4 @@
-name: GitHub Actions Vercel Production Deployment
-
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+name: GitHub Build Verification
 
 on:
   push:
@@ -12,14 +7,14 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: vercel-production-deploy
+  group: github-build-verification
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  Deploy-Production:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,27 +35,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Validate Vercel config
-        run: |
-          VERCEL_TOKEN_CLEAN="$(printf '%s' "$VERCEL_TOKEN" | tr -d '\r\n')"
-          VERCEL_ORG_ID_CLEAN="$(printf '%s' "$VERCEL_ORG_ID" | tr -d '\r\n')"
-          VERCEL_PROJECT_ID_CLEAN="$(printf '%s' "$VERCEL_PROJECT_ID" | tr -d '\r\n')"
-          test -n "$VERCEL_TOKEN_CLEAN"
-          test -n "$VERCEL_ORG_ID_CLEAN"
-          test -n "$VERCEL_PROJECT_ID_CLEAN"
-
-      - name: Remove stale local Vercel state
-        run: rm -rf .vercel
-
-      - name: Pull Vercel Environment Information
-        run: |
-          VERCEL_TOKEN_CLEAN="$(printf '%s' "$VERCEL_TOKEN" | tr -d '\r\n')"
-          vercel pull --yes --environment=production --token="$VERCEL_TOKEN_CLEAN"
-
-      - name: Deploy Source to Vercel
-        run: |
-          VERCEL_TOKEN_CLEAN="$(printf '%s' "$VERCEL_TOKEN" | tr -d '\r\n')"
-          vercel deploy --prod --archive=tgz --token="$VERCEL_TOKEN_CLEAN"
+      - name: Build application
+        run: pnpm build
