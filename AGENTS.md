@@ -176,29 +176,38 @@ When deploying:
 When working across the three workshop sites:
 
 1. Make product/site changes in `cursorworkshop` first.
-2. Use the mirror script from this repo to fan changes out:
+2. Unless the user explicitly scopes a change to one brand, treat every
+   requested product, content, design, and copy update as a shared change that
+   must ship to all three sites:
+   - `cursorworkshop`
+   - `claudeworkshop`
+   - `codexworkshop`
+3. Shared media pools stay shared by default:
+   - event photos, galleries, and other common image sets should appear across
+     all brand mirrors unless the user explicitly asks for brand-specific media
+4. Use the mirror script from this repo to fan changes out:
    - Local dry run / refresh mirrors: `pnpm sync:brands`
    - Push mirrors to GitHub: `pnpm deploy:brands`
-3. The canonical sync engine is `scripts/sync-brand-sites.mjs`.
-4. The automatic GitHub mirror path is `.github/workflows/sync-brand-sites.yml`
+5. The canonical sync engine is `scripts/sync-brand-sites.mjs`.
+6. The automatic GitHub mirror path is `.github/workflows/sync-brand-sites.yml`
    and requires the `BRAND_SYNC_TOKEN` secret.
-5. Each mirrored repo must keep its own deploy identity:
+7. Each mirrored repo must keep its own deploy identity:
    - do not mirror `.vercel/`
    - do not mirror `.env.local`
    - do not mirror `.env.vercel`
-6. Do not edit a dirty local sibling clone in place if it already contains
+8. Do not edit a dirty local sibling clone in place if it already contains
    unrelated work. Sync into a clean clone/root instead.
-7. The mirror is intentionally one-way:
+9. The mirror is intentionally one-way:
    - `cursorworkshop` -> `claudeworkshop`
    - `cursorworkshop` -> `codexworkshop`
    - never sync changes back from sibling repos into `cursorworkshop`
-8. Keep backend behavior aligned across all three sites:
-   - forms, lead capture, analytics, and outreach logic stay shared
-   - only brand-facing defaults (names, domains, logos, repo names, CTA URLs,
-     contact emails) should diverge per mirror
-9. Do not blindly mirror cursor-only automation that could publish from the
-   wrong brand context. Research/workflow fan-out is excluded on purpose unless
-   explicitly configured per repo.
+10. Keep backend behavior aligned across all three sites:
+    - forms, lead capture, analytics, and outreach logic stay shared
+    - only brand-facing defaults (names, domains, logos, repo names, CTA URLs,
+      contact emails) should diverge per mirror
+11. Do not blindly mirror cursor-only automation that could publish from the
+    wrong brand context. Research/workflow fan-out is excluded on purpose unless
+    explicitly configured per repo.
 
 ## Troubleshooting: Command Hanging Issues
 
