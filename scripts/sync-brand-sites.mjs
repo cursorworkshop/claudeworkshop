@@ -3,6 +3,7 @@
 import { execFileSync } from 'node:child_process';
 import {
   existsSync,
+  mkdtempSync,
   readdirSync,
   readFileSync,
   rmSync,
@@ -260,6 +261,27 @@ function ensureCleanCheckout(targetDir, brand, githubToken) {
   });
 }
 
+function createTrackedSourceSnapshot() {
+  const snapshotDir = mkdtempSync(
+    path.join(os.tmpdir(), 'cursorworkshop-brand-sync-source-')
+  );
+  execFileSync(
+    'sh',
+    [
+      '-c',
+      'git archive --format=tar HEAD | tar -xf - -C "$1"',
+      'sh',
+      snapshotDir,
+    ],
+    {
+      cwd: ROOT_DIR,
+      stdio: 'inherit',
+    }
+  );
+
+  return snapshotDir;
+}
+
 function mirrorSourceToTarget(targetDir) {
   const args = ['-a', '--delete'];
 
@@ -271,9 +293,15 @@ function mirrorSourceToTarget(targetDir) {
     args.push('--exclude', pattern);
   }
 
-  args.push(`${ROOT_DIR}/`, `${targetDir}/`);
+  const sourceSnapshotDir = createTrackedSourceSnapshot();
 
-  run('rsync', args, { stdio: 'inherit' });
+  try {
+    args.push(`${sourceSnapshotDir}/`, `${targetDir}/`);
+
+    run('rsync', args, { stdio: 'inherit' });
+  } finally {
+    rmSync(sourceSnapshotDir, { recursive: true, force: true });
+  }
 }
 
 function removeExcludedWorkflowFiles(targetDir) {
