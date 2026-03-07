@@ -1,32 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  Users,
-  Globe,
-  Award,
-  Github,
-  ExternalLink,
-  Star,
-  GitFork,
-  Zap,
-  MessageSquare,
-  CheckCircle2,
-  Rocket,
-  Linkedin,
-} from 'lucide-react';
+import { Users, Globe, Award, Github, Linkedin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card';
 import {
   Accordion,
   AccordionContent,
@@ -54,39 +34,6 @@ const founders = [
     bio: 'Dedicated to spreading the power of AI coding tools and building a global community of Claude enthusiasts.',
     github: 'https://github.com/okc0mputex',
     linkedin: 'https://www.linkedin.com/in/vasilistsolis',
-  },
-];
-
-const aboutStats = [
-  {
-    icon: Award,
-    title: 'Official Claude Ambassadors',
-    description:
-      'In daily contact with the Claude development team to ensure our training reflects the latest features and best practices. We help shape the product and provide feedback from real-world usage.',
-    highlights: [
-      { icon: Zap, text: 'Early access to new features' },
-      { icon: MessageSquare, text: 'Direct feedback channel' },
-      { icon: CheckCircle2, text: 'Certified expertise' },
-    ],
-  },
-  {
-    icon: Globe,
-    title: 'Global Events & Training',
-    description:
-      'We have hosted events around the world, bringing enthusiasm and expertise to developers and engineering teams across continents.',
-    highlights: [
-      { icon: Users, text: '100+ teams trained' },
-      { icon: Rocket, text: 'In-person & remote' },
-      { icon: Globe, text: 'Worldwide availability' },
-    ],
-  },
-  {
-    icon: Github,
-    title: 'We Build in the Open',
-    description:
-      'We contribute to the Claude ecosystem with open source tools. Our flagship project coordinates multiple AI agents for complex workflows.',
-    isOpenSource: true,
-    link: 'https://github.com/cursorworkshop/cursor-gastown',
   },
 ];
 
@@ -328,147 +275,66 @@ export default function AboutPage() {
             </div>
           </InView>
 
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-            {/* Card 1: Official Claude Ambassadors */}
-            <Card className='border-transparent bg-white h-full flex flex-col shadow-none ring-0'>
-              <CardHeader>
-                <div className='w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center mb-4'>
-                  <Award className='w-5 h-5 text-foreground' />
-                </div>
-                <CardTitle className='text-lg font-medium'>
-                  Official Claude Ambassadors
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='pt-0 flex-1 flex flex-col'>
-                <CardDescription className='text-base mb-4'>
-                  In daily contact with the Claude development team to ensure
-                  our training reflects the latest features and best practices.
-                  We help shape the product and provide feedback from real-world
-                  usage.
-                </CardDescription>
-                <div className='mt-auto space-y-2 pt-4 border-t border-border/30'>
-                  <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-                    <Zap className='w-3.5 h-3.5 text-zinc-400' />
-                    <span>Early access to new features</span>
-                  </div>
-                  <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-                    <MessageSquare className='w-3.5 h-3.5 text-zinc-400' />
-                    <span>Direct feedback channel</span>
-                  </div>
-                  <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-                    <CheckCircle2 className='w-3.5 h-3.5 text-zinc-400' />
-                    <span>Certified expertise</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <div className='border-t border-zinc-200/80 divide-y divide-zinc-200/80 md:grid md:grid-cols-3 md:items-stretch md:divide-y-0 md:divide-x'>
+            <div className='flex h-full flex-col py-8 md:min-h-[31rem] md:px-8 md:py-10'>
+              <h3 className='text-2xl font-medium tracking-tight text-foreground'>
+                Official Claude Ambassadors
+              </h3>
+              <p className='mt-5 text-lg leading-8 text-muted-foreground'>
+                In daily contact with the Claude development team to ensure our
+                training reflects the latest features and best practices. We
+                help shape the product and provide feedback from real-world
+                usage.
+              </p>
+              <div className='mt-auto space-y-2 border-t border-zinc-200/80 pt-5 text-sm text-zinc-500'>
+                <p>Early access to new features</p>
+                <p>Direct feedback channel</p>
+                <p>Certified expertise</p>
+              </div>
+            </div>
 
-            {/* Card 2: Global Events & Training */}
-            <Card className='border-transparent bg-white h-full flex flex-col shadow-none ring-0'>
-              <CardHeader>
-                <div className='w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center mb-4'>
-                  <Globe className='w-5 h-5 text-foreground' />
-                </div>
-                <CardTitle className='text-lg font-medium'>
-                  Global Events & Training
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='pt-0 flex-1 flex flex-col'>
-                <CardDescription className='text-base mb-4'>
-                  We have hosted events around the world, bringing enthusiasm
-                  and expertise to developers and engineering teams across
-                  continents.
-                </CardDescription>
-                <div className='mt-auto space-y-2 pt-4 border-t border-border/30'>
-                  <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-                    <Users className='w-3.5 h-3.5 text-zinc-400' />
-                    <span>100+ teams trained</span>
-                  </div>
-                  <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-                    <Rocket className='w-3.5 h-3.5 text-zinc-400' />
-                    <span>In-person & remote</span>
-                  </div>
-                  <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-                    <Globe className='w-3.5 h-3.5 text-zinc-400' />
-                    <span>Worldwide availability</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className='flex h-full flex-col py-8 md:min-h-[31rem] md:px-8 md:py-10'>
+              <h3 className='text-2xl font-medium tracking-tight text-foreground'>
+                Global Events & Training
+              </h3>
+              <p className='mt-5 text-lg leading-8 text-muted-foreground'>
+                We have hosted events around the world, bringing enthusiasm and
+                expertise to developers and engineering teams across continents.
+              </p>
+              <div className='mt-auto space-y-2 border-t border-zinc-200/80 pt-5 text-sm text-zinc-500'>
+                <p>100+ teams trained</p>
+                <p>In-person & remote</p>
+                <p>Worldwide availability</p>
+              </div>
+            </div>
 
-            {/* Card 3: We Build in the Open */}
-            <Card className='border-transparent bg-white h-full flex flex-col shadow-none ring-0'>
-              <CardHeader>
-                <div className='w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center mb-4'>
-                  <Github className='w-5 h-5 text-foreground' />
-                </div>
-                <CardTitle className='text-lg font-medium'>
-                  We Build in the Open
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='pt-0 flex-1 flex flex-col'>
-                <CardDescription className='text-base mb-4'>
-                  We contribute to the Claude ecosystem with open source tools.
-                  Our flagship project coordinates multiple AI agents for
-                  complex workflows.
-                </CardDescription>
-
-                {/* Mini GitHub Card - clickable */}
-                <div className='mt-auto pt-4 border-t border-border/30'>
-                  <p className='text-xs text-muted-foreground mb-2 uppercase tracking-wider'>
-                    Latest contribution
+            <div className='flex h-full flex-col py-8 md:min-h-[31rem] md:px-8 md:py-10'>
+              <h3 className='text-2xl font-medium tracking-tight text-foreground'>
+                We Build in the Open
+              </h3>
+              <p className='mt-5 text-lg leading-8 text-muted-foreground'>
+                We contribute to the ecosystem with open source tools. Our
+                flagship project coordinates multiple AI agents for complex
+                workflows.
+              </p>
+              <div className='mt-auto border-t border-zinc-200/80 pt-5'>
+                <p className='text-xs uppercase tracking-[0.18em] text-zinc-500'>
+                  Latest contribution
+                </p>
+                <a
+                  href='https://github.com/cursorworkshop/cursor-gastown'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='mt-3 block text-foreground transition-opacity hover:opacity-70'
+                >
+                  <p className='text-base font-medium'>cursor-gastown</p>
+                  <p className='mt-2 text-sm text-zinc-500'>
+                    {githubStats.stars} stars · {githubStats.forks} forks · Go ·
+                    Multi-Agent · MIT
                   </p>
-                  <a
-                    href='https://github.com/cursorworkshop/cursor-gastown'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='block group'
-                  >
-                    <div className='p-3 rounded-lg border border-border/50 bg-zinc-50 hover:bg-zinc-100 hover:border-zinc-300 transition-all duration-200'>
-                      <div className='flex items-center justify-between mb-2'>
-                        <div className='flex items-center gap-2'>
-                          <Github className='w-4 h-4 text-zinc-700' />
-                          <span className='font-medium text-sm text-foreground'>
-                            cursor-gastown
-                          </span>
-                        </div>
-                        <ExternalLink className='w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors' />
-                      </div>
-                      <div className='flex items-center gap-3 mb-2'>
-                        <span className='inline-flex items-center gap-1 text-xs text-muted-foreground'>
-                          <Star className='w-3 h-3 fill-amber-400 text-amber-400' />
-                          {githubStats.stars}
-                        </span>
-                        <span className='inline-flex items-center gap-1 text-xs text-muted-foreground'>
-                          <GitFork className='w-3 h-3' />
-                          {githubStats.forks}
-                        </span>
-                      </div>
-                      <div className='flex flex-wrap gap-1'>
-                        <Badge
-                          variant='outline'
-                          className='text-[10px] px-1.5 py-0 bg-[#00ADD8]/10 border-[#00ADD8]/30 text-[#00ADD8]'
-                        >
-                          Go
-                        </Badge>
-                        <Badge
-                          variant='outline'
-                          className='text-[10px] px-1.5 py-0'
-                        >
-                          Multi-Agent
-                        </Badge>
-                        <Badge
-                          variant='outline'
-                          className='text-[10px] px-1.5 py-0'
-                        >
-                          MIT
-                        </Badge>
-                      </div>
-                    </div>
-                  </a>
-                </div>
-              </CardContent>
-            </Card>
+                </a>
+              </div>
+            </div>
           </div>
 
           <RecentEventsGallery />

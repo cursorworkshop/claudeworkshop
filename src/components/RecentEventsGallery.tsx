@@ -1,103 +1,82 @@
-import Image from 'next/image';
+import { Gallery4, type Gallery4Item } from '@/components/blocks/gallery4';
 
-type EventMoment = {
-  className?: string;
-  height: number;
-  sizes: string;
-  src: string;
-  width: number;
-};
+const imageVersion = '20260307-gallery4';
 
-const eventMoments: EventMoment[] = [
+const presentingImages: Gallery4Item[] = [
   {
-    src: '/images/presenting/rogier-claude-1.jpg',
+    id: 'workshop-1',
+    title: 'Opening the session',
+    description: 'Kick-off moment from a live workshop evening.',
+    image: `/images/presenting/workshop-1.jpg?v=${imageVersion}`,
     width: 900,
     height: 506,
-    className: 'md:col-span-4 md:col-start-1 md:row-start-1',
-    sizes: '(max-width: 767px) 100vw, (max-width: 1279px) 34vw, 22vw',
   },
   {
-    src: '/images/presenting/rogier-codex-1.jpg',
-    width: 960,
-    height: 720,
-    className: 'md:col-span-5 md:col-start-5 md:row-start-1',
-    sizes: '(max-width: 767px) 100vw, (max-width: 1279px) 42vw, 30vw',
-  },
-  {
-    src: '/images/presenting/rogier-cursor-1.jpg',
+    id: 'workshop-5',
+    title: 'Live crowd walkthrough',
+    description: 'Real-time prompting and code discussion with the audience.',
+    image: `/images/presenting/workshop-5.jpg?v=${imageVersion}`,
     width: 720,
     height: 960,
-    className: 'md:col-span-3 md:col-start-10 md:row-start-1 md:row-span-2',
-    sizes: '(max-width: 767px) 100vw, (max-width: 1279px) 26vw, 20vw',
   },
   {
-    src: '/images/presenting/rogier-codex-2.jpg',
+    id: 'workshop-3',
+    title: 'Deep-dive talk',
+    description: 'A more focused segment inside the meetup flow.',
+    image: `/images/presenting/workshop-3.jpg?v=${imageVersion}`,
     width: 960,
     height: 720,
-    className: 'md:col-span-4 md:col-start-1 md:row-start-2',
-    sizes: '(max-width: 767px) 100vw, (max-width: 1279px) 34vw, 24vw',
   },
   {
-    src: '/images/presenting/rogier-createnew.jpg',
+    id: 'workshop-4',
+    title: 'CreateNew stage',
+    description: 'Panel-style setup with a looser conversation format.',
+    image: `/images/presenting/workshop-4.jpg?v=${imageVersion}`,
     width: 900,
     height: 556,
-    className: 'md:col-span-4 md:col-start-5 md:row-start-2',
-    sizes: '(max-width: 767px) 100vw, (max-width: 1279px) 34vw, 24vw',
   },
   {
-    src: '/images/presenting/rogier-cursor-2.jpg',
+    id: 'workshop-6',
+    title: 'Smaller room setup',
+    description: 'Compact session with close-up Q&A and demos.',
+    image: `/images/presenting/workshop-6.jpg?v=${imageVersion}`,
     width: 720,
     height: 960,
-    className: 'md:col-span-3 md:col-start-10 md:row-start-3',
-    sizes: '(max-width: 767px) 100vw, (max-width: 1279px) 26vw, 20vw',
   },
   {
-    src: '/images/presenting/rogier-cursor-3.jpg',
+    id: 'workshop-7',
+    title: 'Evening presentation',
+    description: 'A wider view of the room during the talk.',
+    image: `/images/presenting/workshop-7.jpg?v=${imageVersion}`,
     width: 900,
     height: 675,
-    className:
-      'md:col-span-4 md:col-start-1 md:row-start-3 xl:col-span-5 xl:col-start-1',
-    sizes: '(max-width: 767px) 100vw, (max-width: 1279px) 34vw, 28vw',
+  },
+  {
+    id: 'workshop-8',
+    title: 'Panel conversation',
+    description: 'Fireside-style exchange with founders and guests.',
+    image: `/images/presenting/workshop-8.jpg?v=${imageVersion}`,
+    width: 4032,
+    height: 3024,
+  },
+  {
+    id: 'workshop-9',
+    title: 'Guest presentation',
+    description: 'Community night with practical walkthroughs on stage.',
+    image: `/images/presenting/workshop-9.jpg?v=${imageVersion}`,
+    width: 4032,
+    height: 3024,
+  },
+  {
+    id: 'workshop-10',
+    title: 'After-hours session',
+    description: 'Late part of the meetup with the room still fully engaged.',
+    image: `/images/presenting/workshop-10.jpg?v=${imageVersion}`,
+    width: 4032,
+    height: 3024,
   },
 ];
 
 export function RecentEventsGallery() {
-  return (
-    <section aria-label='Workshop photo collage' className='mt-12 md:mt-14'>
-      <div className='grid grid-cols-1 gap-2 md:grid-cols-12 md:gap-[10px]'>
-        {eventMoments.map((moment, index) => (
-          <figure
-            key={moment.src}
-            className={[
-              'relative overflow-hidden bg-[#f4eadc] shadow-[0_18px_40px_rgba(91,56,75,0.14)]',
-              moment.className || '',
-            ].join(' ')}
-          >
-            <div
-              className='relative w-full'
-              style={{ aspectRatio: `${moment.width} / ${moment.height}` }}
-            >
-              <Image
-                src={moment.src}
-                alt=''
-                fill
-                sizes={moment.sizes}
-                className='object-cover'
-                priority={index < 4}
-                style={{
-                  filter:
-                    'sepia(0.24) saturate(0.88) contrast(0.84) brightness(1.1) hue-rotate(-16deg)',
-                  transform: 'scale(1.015)',
-                }}
-              />
-              <div className='pointer-events-none absolute inset-0 bg-[linear-gradient(140deg,rgba(255,212,224,0.32),rgba(255,245,210,0.16)_42%,rgba(160,214,255,0.2))] mix-blend-soft-light' />
-              <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_12%,rgba(255,252,236,0.44),transparent_34%),radial-gradient(circle_at_86%_18%,rgba(255,174,208,0.18),transparent_28%),radial-gradient(circle_at_82%_84%,rgba(124,182,245,0.16),transparent_30%),linear-gradient(180deg,rgba(97,72,42,0.08),rgba(43,29,24,0.2))] mix-blend-screen' />
-              <div className='pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,177,211,0.14),transparent_16%,transparent_84%,rgba(121,211,255,0.12))] mix-blend-overlay' />
-              <div className='pointer-events-none absolute inset-0 opacity-20 mix-blend-soft-light [background-image:radial-gradient(circle_at_1px_1px,rgba(255,248,232,0.72)_1px,transparent_0)] [background-size:7px_7px]' />
-            </div>
-          </figure>
-        ))}
-      </div>
-    </section>
-  );
+  return <Gallery4 items={presentingImages} />;
 }
