@@ -415,6 +415,44 @@ When working across the three workshop sites:
     wrong brand context. Research/workflow fan-out is excluded on purpose unless
     explicitly configured per repo.
 
+## CHANGELOG
+
+1. Keep a repo changelog in `docs/CHANGELOG.md`.
+2. For every repo change, prepend exactly one new line.
+3. Line format:
+   - `YYYY-MM-DD | what changed | key files changed | why this solves the issue`
+4. Newest entry stays on top.
+5. If a change spans `cursorworkshop`, `claudeworkshop`, `codexworkshop`, or
+   `nautilus`, add the matching entry in each repo that actually changed.
+
+## Non-Negotiables
+
+1. No emojis in code, docs, or chat.
+2. Never say something is validated unless you actually validated it.
+3. Never leak secrets. Do not print `.env`, keys, tokens, or secret values in
+   code, chat, logs, or pull requests.
+4. If asked to pick up a build or deploy, own it to green or report the exact
+   blocker plus the next step.
+5. After every atomic change on `main`, push it to `origin main`. Do not leave
+   committed local-only work behind.
+6. If runtime behavior is testable, do not claim success without validating the
+   real path you changed.
+7. If full validation is impossible, state what you validated, why full
+   validation was impossible, and what still remains pending.
+8. Prefer minimal changes. Delete or simplify before adding parallel
+   implementations.
+9. If a feature is dead, duplicate, unlinked, or half-shipped, remove it
+   instead of polishing around it.
+
+## Work Style
+
+1. Telegraph style is fine.
+2. Noun phrases are fine.
+3. Keep grammar simple.
+4. Minimize tokens.
+5. Default mantra: subtract first.
+6. Keep only what changes outcome, proof, or decision.
+
 ## Troubleshooting: Command Hanging Issues
 
 ### Git Commands Hanging

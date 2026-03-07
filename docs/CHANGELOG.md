@@ -1,0 +1,2 @@
+2026-03-07 | added a repo changelog and documented changelog, non-negotiables, and work-style rules in AGENTS | AGENTS.md, docs/CHANGELOG.md | makes future repo changes traceable and standardizes how they must be recorded
+2026-03-07 | lowered the nightly research floor to 25 and documented changelog rules | AGENTS.md, .github/workflows/research-cycle.yml, docs/nautilus/pipeline/run-cycle.mjs, docs/CHANGELOG.md | keeps nightly selection top-down above a practical floor and makes future repo changes auditable
