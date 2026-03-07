@@ -1,4 +1,8 @@
 content/editorials/**
+content/events/**
+content/workshops/**
 docs/nautilus/**
+mailerlite-emails/**
+public/**/*.html
 tools/bird-cli/**
 pnpm-lock.yaml

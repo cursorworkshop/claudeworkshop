@@ -24,10 +24,12 @@ jobs:
       VERCEL_CLAUDE_PROJECT_ID: prj_aGHPChctUlkHdDvTVNafXV9KAsj3
       VERCEL_CODEX_PROJECT_ID: prj_NSoYl4F3IhZI03Amn0kHBJ5oKr0i
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Decide whether this run should deploy
         id: gate
-        env:
-          HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
           set -euo pipefail
 
@@ -37,7 +39,7 @@ jobs:
             exit 0
           fi
 
-          commit_message="${HEAD_COMMIT_MESSAGE:-}"
+          commit_message="$(git log -1 --pretty=%s)"
 
           if printf '%s' "$commit_message" | grep -Eq '^sync: mirror cursorworkshop@'; then
             echo "Skipping mirror auto-deploy for sync commit; source repo workflow already deploys all three sites."
@@ -46,11 +48,6 @@ jobs:
           fi
 
           echo "should_deploy=true" >> "$GITHUB_OUTPUT"
-
-      - uses: actions/checkout@v4
-        if: steps.gate.outputs.should_deploy == 'true'
-        with:
-          fetch-depth: 0
 
       - name: Setup pnpm
         if: steps.gate.outputs.should_deploy == 'true'
@@ -98,6 +95,45 @@ jobs:
           require_secret VERCEL_TOKEN
           require_secret VERCEL_ORG_ID
           require_secret VERCEL_PROJECT_ID
+
+      - name: Sync mirror repo deploy secrets from the source repo
+        if: steps.gate.outputs.should_deploy == 'true' && github.repository == 'cursorworkshop/claudeworkshop'
+        env:
+          GH_TOKEN: ${{ secrets.BRAND_SYNC_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          require_secret() {
+            local name="$1"
+            local value="${!name:-}"
+            if [ -z "$(printf '%s' "$value" | tr -d '\r\n')" ]; then
+              echo "Missing required secret: $name"
+              exit 1
+            fi
+          }
+
+          require_secret GH_TOKEN
+          require_secret VERCEL_TOKEN
+          require_secret VERCEL_ORG_ID
+
+          VERCEL_TOKEN_CLEAN="$(printf '%s' "$VERCEL_TOKEN" | tr -d '\r\n')"
+          VERCEL_ORG_ID_CLEAN="$(printf '%s' "$VERCEL_ORG_ID" | tr -d '\r\n')"
+          VERCEL_CLAUDE_PROJECT_ID_CLEAN="$(printf '%s' "$VERCEL_CLAUDE_PROJECT_ID" | tr -d '\r\n')"
+          VERCEL_CODEX_PROJECT_ID_CLEAN="$(printf '%s' "$VERCEL_CODEX_PROJECT_ID" | tr -d '\r\n')"
+
+          sync_secret() {
+            local repo="$1"
+            local name="$2"
+            local value="$3"
+            gh secret set "$name" --repo "$repo" --body "$value"
+          }
+
+          sync_secret cursorworkshop/claudeworkshop VERCEL_TOKEN "$VERCEL_TOKEN_CLEAN"
+          sync_secret cursorworkshop/claudeworkshop VERCEL_ORG_ID "$VERCEL_ORG_ID_CLEAN"
+          sync_secret cursorworkshop/claudeworkshop VERCEL_PROJECT_ID "$VERCEL_CLAUDE_PROJECT_ID_CLEAN"
+          sync_secret cursorworkshop/codexworkshop VERCEL_TOKEN "$VERCEL_TOKEN_CLEAN"
+          sync_secret cursorworkshop/codexworkshop VERCEL_ORG_ID "$VERCEL_ORG_ID_CLEAN"
+          sync_secret cursorworkshop/codexworkshop VERCEL_PROJECT_ID "$VERCEL_CODEX_PROJECT_ID_CLEAN"
 
       - name: Deploy this repo to its matching production site
         if: steps.gate.outputs.should_deploy == 'true'

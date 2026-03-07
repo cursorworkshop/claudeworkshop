@@ -207,6 +207,7 @@ three workshop sites as one shared Vercel target.
 3. On `cursorworkshop/claudeworkshop`, `deploy.yml` must:
    - run formatting and build verification
    - deploy `claudeworkshop.com`
+   - sync the mirror repos' `VERCEL_*` secrets
    - sync `claudeworkshop` and `codexworkshop`
    - deploy both mirror sites from the freshly synced mirror clones
 4. On `cursorworkshop/claudeworkshop` and `cursorworkshop/codexworkshop`,
