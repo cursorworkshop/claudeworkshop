@@ -83,6 +83,12 @@ Switching models is one lever; changing how you use them is another.
 - **Add checkpoints**: require human approval for agent PRs, use PR templates that highlight common failure modes, and route security or infra changes through a separate path.
 - **Tighten prompts and context**: restate constraints, include a short “project contract” of patterns and anti-patterns, and trim noisy context. Some regressions are sensitivity to structure rather than pure capability loss.
 
+## One methodology lens
+
+This maps closely to our [methodology](/methodology), especially the Build and Review steps. In Build, agents can still handle boilerplate, repetitive implementation, and first-pass diffs, but engineers need to stay close to edge cases, local constraints, and anything novel. If a model starts slipping, the first fix is often to reduce delegated scope before changing the whole workflow.
+
+It also reinforces Review. Automated checks, style enforcement, and lightweight safety scans can stay in the loop, but merge decisions and business-logic validation still need a human owner. Making those boundaries explicit is what keeps a model regression from quietly turning into a production issue.
+
 ## Tradeoffs to manage
 
 - **Speed vs. reliability**: larger automated diffs move faster but raise the blast radius of a mistake.
