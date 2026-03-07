@@ -1,4 +1,4 @@
-name: GitHub Build Verification
+name: Production Deploy
 
 on:
   push:
@@ -7,33 +7,189 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: github-build-verification
+  group: production-deploy-${{ github.repository }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+    env:
+      BRAND_SYNC_TOKEN: ${{ secrets.BRAND_SYNC_TOKEN }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_CLAUDE_PROJECT_ID: prj_aGHPChctUlkHdDvTVNafXV9KAsj3
+      VERCEL_CODEX_PROJECT_ID: prj_NSoYl4F3IhZI03Amn0kHBJ5oKr0i
     steps:
+      - name: Decide whether this run should deploy
+        id: gate
+        env:
+          HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          set -euo pipefail
+
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ] || \
+             [ "${GITHUB_REPOSITORY}" = "cursorworkshop/claudeworkshop" ]; then
+            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          commit_message="${HEAD_COMMIT_MESSAGE:-}"
+
+          if printf '%s' "$commit_message" | grep -Eq '^sync: mirror cursorworkshop@'; then
+            echo "Skipping mirror auto-deploy for sync commit; source repo workflow already deploys all three sites."
+            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v4
+        if: steps.gate.outputs.should_deploy == 'true'
         with:
           fetch-depth: 0
 
       - name: Setup pnpm
+        if: steps.gate.outputs.should_deploy == 'true'
         uses: pnpm/action-setup@v4
         with:
           version: 10.2.1
 
       - name: Setup Node.js
+        if: steps.gate.outputs.should_deploy == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'pnpm'
 
       - name: Install dependencies
+        if: steps.gate.outputs.should_deploy == 'true'
         run: pnpm install --frozen-lockfile
 
+      - name: Check formatting
+        if: steps.gate.outputs.should_deploy == 'true'
+        run: pnpm run format:check
+
       - name: Build application
+        if: steps.gate.outputs.should_deploy == 'true'
         run: pnpm build
+
+      - name: Install Vercel CLI
+        if: steps.gate.outputs.should_deploy == 'true'
+        run: npm install --global vercel@latest
+
+      - name: Validate required Vercel secrets
+        if: steps.gate.outputs.should_deploy == 'true'
+        run: |
+          set -euo pipefail
+
+          require_secret() {
+            local name="$1"
+            local value="${!name:-}"
+            if [ -z "$(printf '%s' "$value" | tr -d '\r\n')" ]; then
+              echo "Missing required secret: $name"
+              exit 1
+            fi
+          }
+
+          require_secret VERCEL_TOKEN
+          require_secret VERCEL_ORG_ID
+          require_secret VERCEL_PROJECT_ID
+
+      - name: Deploy this repo to its matching production site
+        if: steps.gate.outputs.should_deploy == 'true'
+        run: |
+          set -euo pipefail
+
+          VERCEL_TOKEN_CLEAN="$(printf '%s' "$VERCEL_TOKEN" | tr -d '\r\n')"
+          VERCEL_ORG_ID_CLEAN="$(printf '%s' "$VERCEL_ORG_ID" | tr -d '\r\n')"
+          VERCEL_PROJECT_ID_CLEAN="$(printf '%s' "$VERCEL_PROJECT_ID" | tr -d '\r\n')"
+
+          rm -rf .vercel
+          export VERCEL_ORG_ID="$VERCEL_ORG_ID_CLEAN"
+          export VERCEL_PROJECT_ID="$VERCEL_PROJECT_ID_CLEAN"
+
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN_CLEAN"
+          vercel build --prod --token="$VERCEL_TOKEN_CLEAN"
+          vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN_CLEAN"
+
+      - name: Sync brand mirror repos after source deploy
+        if: steps.gate.outputs.should_deploy == 'true' && github.repository == 'cursorworkshop/claudeworkshop'
+        run: |
+          set -euo pipefail
+
+          if [ -z "$(printf '%s' "${BRAND_SYNC_TOKEN:-}" | tr -d '\r\n')" ]; then
+            echo "Missing required secret: BRAND_SYNC_TOKEN"
+            exit 1
+          fi
+
+          node scripts/sync-brand-sites.mjs \
+            --all \
+            --push \
+            --target-root "$RUNNER_TEMP/brand-sync"
+
+      - name: Deploy synced mirror repos from the source workflow
+        if: steps.gate.outputs.should_deploy == 'true' && github.repository == 'cursorworkshop/claudeworkshop'
+        run: |
+          set -euo pipefail
+
+          VERCEL_TOKEN_CLEAN="$(printf '%s' "$VERCEL_TOKEN" | tr -d '\r\n')"
+          VERCEL_ORG_ID_CLEAN="$(printf '%s' "$VERCEL_ORG_ID" | tr -d '\r\n')"
+          VERCEL_CLAUDE_PROJECT_ID_CLEAN="$(printf '%s' "$VERCEL_CLAUDE_PROJECT_ID" | tr -d '\r\n')"
+          VERCEL_CODEX_PROJECT_ID_CLEAN="$(printf '%s' "$VERCEL_CODEX_PROJECT_ID" | tr -d '\r\n')"
+
+          deploy_site() {
+            local site_dir="$1"
+            local project_id="$2"
+
+            (
+              cd "$site_dir"
+              rm -rf .vercel
+              export VERCEL_ORG_ID="$VERCEL_ORG_ID_CLEAN"
+              export VERCEL_PROJECT_ID="$project_id"
+              vercel pull --yes --environment=production --token="$VERCEL_TOKEN_CLEAN"
+              vercel build --prod --token="$VERCEL_TOKEN_CLEAN"
+              vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN_CLEAN"
+            )
+          }
+
+          deploy_site "$RUNNER_TEMP/brand-sync/claudeworkshop" "$VERCEL_CLAUDE_PROJECT_ID_CLEAN"
+          deploy_site "$RUNNER_TEMP/brand-sync/codexworkshop" "$VERCEL_CODEX_PROJECT_ID_CLEAN"
+
+      - name: Verify production URLs respond after deploy
+        if: steps.gate.outputs.should_deploy == 'true'
+        run: |
+          set -euo pipefail
+
+          verify_url() {
+            local url="$1"
+            local code
+            code="$(curl -s -o /dev/null -w '%{http_code}' "$url")"
+            if [ "$code" != "200" ]; then
+              echo "Expected 200 from $url but received $code"
+              exit 1
+            fi
+          }
+
+          if [ "${GITHUB_REPOSITORY}" = "cursorworkshop/claudeworkshop" ]; then
+            verify_url "https://www.claudeworkshop.com"
+            verify_url "https://www.claudeworkshop.com"
+            verify_url "https://www.codexworkshop.com"
+            exit 0
+          fi
+
+          case "${GITHUB_REPOSITORY}" in
+            cursorworkshop/claudeworkshop)
+              verify_url "https://www.claudeworkshop.com"
+              ;;
+            cursorworkshop/codexworkshop)
+              verify_url "https://www.codexworkshop.com"
+              ;;
+            *)
+              echo "No production URL mapping found for ${GITHUB_REPOSITORY}"
+              exit 1
+              ;;
+          esac

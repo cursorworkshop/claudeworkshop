@@ -1,0 +1,4 @@
+content/editorials/**
+docs/nautilus/**
+tools/bird-cli/**
+pnpm-lock.yaml

@@ -187,32 +187,44 @@ three workshop sites as one shared Vercel target.
 
 1. In `cursorworkshop/claudeworkshop`:
    - `BRAND_SYNC_TOKEN`
-2. Optional manual CLI fallback secrets in any repo:
+   - `VERCEL_TOKEN`
+   - `VERCEL_ORG_ID`
+   - `VERCEL_PROJECT_ID`
+2. In `cursorworkshop/claudeworkshop`:
+   - `VERCEL_TOKEN`
+   - `VERCEL_ORG_ID`
+   - `VERCEL_PROJECT_ID`
+3. In `cursorworkshop/codexworkshop`:
    - `VERCEL_TOKEN`
    - `VERCEL_ORG_ID`
    - `VERCEL_PROJECT_ID`
 
 ### Proven production path
 
-1. The currently proven production path is a local Vercel CLI production deploy
-   from the repo that owns the site.
-2. As of `2026-03-07`, the successful production deployments for:
-   - `claudeworkshop.com`
-   - `claudeworkshop.com`
-   - `codexworkshop.com`
-     were all created with `source: cli` in Vercel.
-3. Use the Vercel CLI from the correct linked repo:
-   - source repo -> `cursorworkshop` Vercel project
-   - Claude mirror repo -> `claudeworkshop` Vercel project
-   - Codex mirror repo -> `codexworkshop` Vercel project
-4. The GitHub Actions workflow in `.github/workflows/deploy.yml` is build
-   verification only.
-5. Nightly research is the exception: `.github/workflows/research-cycle.yml`
-   in `cursorworkshop/claudeworkshop` uses the Vercel CLI to deploy the source
-   site and both mirror sites after sync.
-6. GitHub pushes and mirror syncs are still required so repo history stays in
-   sync, but they are not the reliable final step for getting the live site
-   updated immediately.
+1. The authoritative production path is GitHub Actions plus Vercel CLI.
+2. `.github/workflows/deploy.yml` is the production deploy workflow in all
+   three repos.
+3. On `cursorworkshop/claudeworkshop`, `deploy.yml` must:
+   - run formatting and build verification
+   - deploy `claudeworkshop.com`
+   - sync `claudeworkshop` and `codexworkshop`
+   - deploy both mirror sites from the freshly synced mirror clones
+4. On `cursorworkshop/claudeworkshop` and `cursorworkshop/codexworkshop`,
+   `deploy.yml` must deploy only that repo's own site.
+5. Sync-generated mirror commits in the sibling repos should not trigger a
+   second automatic deploy, because the source repo workflow already deployed
+   those mirrors in the same rollout.
+6. Local Vercel CLI deploys remain the manual fallback:
+   - `vercel --prod --yes`
+7. Nightly research remains a source-repo-owned workflow, but it must keep the
+   same deploy principle:
+   - deploy source
+   - sync mirrors
+   - deploy mirrors
+8. Do not rely on Vercel's native Git auto-deploys for these repos.
+9. If Vercel starts sending failure emails for push-triggered deploys again,
+   check whether a Git repository is still connected to the project and
+   disconnect it so GitHub Actions remains the single deploy authority.
 
 ### Commit author requirement for Vercel
 
@@ -241,16 +253,14 @@ cursorworkshop`, create a new follow-up commit with the deploy-safe author
    - `Claude Workshop <info@claudeworkshop.com>`
    - or another email that has access to the `cursorworkshop` Vercel team
 4. Push `cursorworkshop` to `main`.
-5. Deploy the source repo locally with:
-   - `vercel --prod --yes`
-6. Let `cursorworkshop/.github/workflows/sync-brand-sites.yml` or
-   `pnpm deploy:brands` fan the same change out to:
-   - `cursorworkshop/claudeworkshop`
-   - `cursorworkshop/codexworkshop`
-7. From a clean local clone of each mirror repo, link the matching Vercel
-   project if needed and deploy with:
-   - `vercel --prod --yes`
-8. Verify all three production domains after the deploys finish.
+5. Let `.github/workflows/deploy.yml` perform the production rollout.
+6. The expected automatic rollout from the source repo is:
+   - deploy `claudeworkshop.com`
+   - sync mirrored commits into `claudeworkshop` and `codexworkshop`
+   - deploy `claudeworkshop.com`
+   - deploy `codexworkshop.com`
+7. Verify all three production domains after the workflow finishes.
+8. Use a manual local CLI deploy only if the GitHub Actions path is degraded.
 
 ### Nightly research automation path
 
@@ -287,20 +297,26 @@ cursorworkshop`, create a new follow-up commit with the deploy-safe author
 
 1. `.github/workflows/deploy.yml`
    - runs on push to `main`
-   - runs build verification only
-   - does not perform the production deploy
+   - is the authoritative production deploy workflow
+   - deploys `claudeworkshop.com`
+   - syncs the mirror repos
+   - deploys `claudeworkshop.com` and `codexworkshop.com`
 2. `.github/workflows/sync-brand-sites.yml`
-   - runs on push to `main`
+   - is manual fallback only
    - pushes mirrored commits into the Claude and Codex repos
    - requires `BRAND_SYNC_TOKEN`
-   - does not itself complete the production rollout
+   - does not replace the main production deploy workflow
 
 ### Mirror repo workflows
 
 1. `cursorworkshop/claudeworkshop/.github/workflows/deploy.yml`
-   - runs build verification only
+   - deploys `claudeworkshop.com` on direct/manual mirror pushes
+   - skips auto-deploy on sync-generated mirror commits because the source repo
+     workflow already deployed that rollout
 2. `cursorworkshop/codexworkshop/.github/workflows/deploy.yml`
-   - runs build verification only
+   - deploys `codexworkshop.com` on direct/manual mirror pushes
+   - skips auto-deploy on sync-generated mirror commits because the source repo
+     workflow already deployed that rollout
 
 ### Manual deploy checklist
 
@@ -318,17 +334,20 @@ cursorworkshop`, create a new follow-up commit with the deploy-safe author
    - `codexworkshop`
 5. Do not treat the rollout as complete until all three domains show the new
    content.
+6. If GitHub Actions is healthy, prefer the automated path over manual CLI.
 
 ### Deployment troubleshooting
 
 1. Push succeeded but site did not change:
+   - check whether `.github/workflows/deploy.yml` finished successfully
    - check whether a fresh `source: cli` production deployment exists in Vercel
    - if not, run `vercel --prod --yes` locally from the correct repo
    - check the commit author email on the shipped commit
 2. Source site updated but Claude/Codex did not:
-   - check `sync-brand-sites.yml`
+   - check the later source-workflow steps that sync and deploy mirrors
    - check whether mirrored commits landed in the sibling repos
-   - deploy each mirror repo locally with `vercel --prod --yes`
+   - if needed, run the manual fallback sync workflow and then deploy the
+     affected mirror locally
 3. Mirror repo updated but live mirror site stayed old:
    - check the mirrored commit author email
    - confirm the local mirror repo is linked to the matching Vercel project
@@ -339,7 +358,7 @@ cursorworkshop`, create a new follow-up commit with the deploy-safe author
      `Claude Workshop <info@claudeworkshop.com>`
    - redeploy from the local CLI
 5. If a deploy path worked once and the site is stale again, prefer repeating
-   the same local CLI pathway before inventing a new one.
+   the same GitHub Actions plus Vercel CLI pathway before inventing a new one.
 
 ## Multi-Repo Brand Mirrors
 
