@@ -94,6 +94,10 @@ const textOutputUsdPer1M = Number.parseFloat(
 const image1536x1024UsdEach = Number.parseFloat(
   process.env.OPENAI_IMAGE_1536X1024_USD_EACH || "0.063",
 );
+const dryRunPlaceholderImageBuffer = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wn8s8sAAAAASUVORK5CYII=",
+  "base64",
+);
 const pipelineStartedAt =
   process.env.NAUTILUS_PIPELINE_STARTED_AT || new Date().toISOString();
 const openAiRequestTimeoutMs = Math.max(
@@ -427,6 +431,35 @@ const refreshScoredSnapshotsAfterPublish = ({
         history?.article_url || row.published_article_url || "",
     };
   });
+
+  const rowIds = new Set(nextRows.map((row) => row.id));
+  for (const [id, history] of historyById.entries()) {
+    if (!publishedIds.has(id) || rowIds.has(id)) continue;
+
+    nextRows.push({
+      id,
+      status_url: history?.status_url || "",
+      author_handle: history?.author_handle || "",
+      author_name: history?.author_name || "",
+      created_at: history?.selected_at || history?.published_at || "",
+      text: "",
+      replies: "",
+      reposts: "",
+      likes: "",
+      conversation_id: "",
+      "relevance %": history?.relevance_percent ?? "",
+      relevance_reason: "Added from publish history to preserve done state.",
+      topic: "",
+      fit_for_agentic_coders: "",
+      selected: "yes",
+      selected_at: history?.selected_at || "",
+      done: "yes",
+      done_at: history?.published_at || "",
+      published_slug: history?.published_slug || "",
+      published_article_url: history?.article_url || "",
+      source: "published-history",
+    });
+  }
 
   writeText(liveScoredJsonPath, `${JSON.stringify(nextRows, null, 2)}\n`);
   writeText(
@@ -1884,7 +1917,12 @@ if (!dryRun && !imageGenerated) {
   );
 }
 
+if (dryRun && !imageGenerated) {
+  fs.writeFileSync(path.join(runDir, "image.png"), dryRunPlaceholderImageBuffer);
+}
+
 writeText(path.join(runDir, "article.mdx"), articleMdx);
+const imageFilePresent = fs.existsSync(path.join(runDir, "image.png"));
 
 const packageManifest = {
   usage: {
@@ -1908,7 +1946,7 @@ const packageManifest = {
   dry_run: dryRun,
   slug,
   article_url: articleUrl,
-  image_file: imageGenerated ? "image.png" : null,
+  image_file: imageFilePresent ? "image.png" : null,
   image_generation_error: imageError,
   candidate,
   package: {
