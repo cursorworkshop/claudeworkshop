@@ -229,6 +229,8 @@ three workshop sites as one shared Vercel target.
    - deploy source
    - sync mirrors
    - deploy mirrors
+   - the generated `chore: run research cycle [skip deploy]` commit must not
+     trigger a second source `deploy.yml` rollout
 10. Do not rely on Vercel's native Git auto-deploys for these repos.
 11. If Vercel starts sending failure emails for push-triggered deploys again,
     check whether a Git repository is still connected to the project and
@@ -267,6 +269,7 @@ cursorworkshop`, create a new follow-up commit with the deploy-safe author
    - sync mirrored commits into `claudeworkshop` and `codexworkshop`
    - deploy `claudeworkshop.com`
    - deploy `codexworkshop.com`
+   - retry temporary Vercel quota/rate-limit windows instead of failing fast
 7. Verify all three production domains after the workflow finishes.
 8. Use a manual local CLI deploy only if the GitHub Actions path is degraded.
 
@@ -279,6 +282,8 @@ cursorworkshop`, create a new follow-up commit with the deploy-safe author
 3. The source workflow must:
    - generate the research package once
    - commit with the deploy-safe author
+   - use the commit message `chore: run research cycle [skip deploy]`
+   - deploy from the workflow workspace first, then push that committed result to `main`
    - deploy `claudeworkshop.com`
    - sync the same publish to `claudeworkshop` and `codexworkshop`
    - deploy both mirror sites with their own Vercel project IDs

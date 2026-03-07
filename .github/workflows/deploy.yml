@@ -42,6 +42,19 @@ jobs:
 
           commit_message="$(git log -1 --pretty=%s)"
 
+          if printf '%s' "$commit_message" | grep -Eq '\[skip deploy\]'; then
+            echo "Skipping production deploy because this commit was already deployed by another workflow."
+            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "${GITHUB_ACTOR}" = "github-actions[bot]" ] && \
+             [ "$commit_message" = "chore: run research cycle" ]; then
+            echo "Skipping production deploy for the legacy research-cycle commit message; the nightly workflow already deploys all three sites."
+            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           if printf '%s' "$commit_message" | grep -Eq '^sync: mirror cursorworkshop@'; then
             echo "Skipping mirror auto-deploy for sync commit; source repo workflow already deploys all three sites."
             echo "should_deploy=false" >> "$GITHUB_OUTPUT"
@@ -161,19 +174,7 @@ jobs:
       - name: Deploy this repo to its matching production site
         if: steps.gate.outputs.should_deploy == 'true'
         run: |
-          set -euo pipefail
-
-          VERCEL_TOKEN_CLEAN="$(printf '%s' "$VERCEL_TOKEN" | tr -d '\r\n')"
-          VERCEL_ORG_ID_CLEAN="$(printf '%s' "$VERCEL_ORG_ID" | tr -d '\r\n')"
-          VERCEL_PROJECT_ID_CLEAN="$(printf '%s' "$VERCEL_PROJECT_ID" | tr -d '\r\n')"
-
-          rm -rf .vercel
-          export VERCEL_ORG_ID="$VERCEL_ORG_ID_CLEAN"
-          export VERCEL_PROJECT_ID="$VERCEL_PROJECT_ID_CLEAN"
-
-          vercel pull --yes --environment=production --token="$VERCEL_TOKEN_CLEAN"
-          vercel build --prod --token="$VERCEL_TOKEN_CLEAN"
-          vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN_CLEAN"
+          bash scripts/vercel-deploy-with-retry.sh
 
       - name: Sync brand mirror repos after source deploy
         if: steps.gate.outputs.should_deploy == 'true' && github.repository_owner == 'cursorworkshop' && github.event.repository.name == 'cursorworkshop'
@@ -206,12 +207,10 @@ jobs:
 
             (
               cd "$site_dir"
-              rm -rf .vercel
-              export VERCEL_ORG_ID="$VERCEL_ORG_ID_CLEAN"
               export VERCEL_PROJECT_ID="$project_id"
-              vercel pull --yes --environment=production --token="$VERCEL_TOKEN_CLEAN"
-              vercel build --prod --token="$VERCEL_TOKEN_CLEAN"
-              vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN_CLEAN"
+              export VERCEL_ORG_ID="$VERCEL_ORG_ID_CLEAN"
+              export VERCEL_TOKEN="$VERCEL_TOKEN_CLEAN"
+              bash "$GITHUB_WORKSPACE/scripts/vercel-deploy-with-retry.sh"
             )
           }
 
