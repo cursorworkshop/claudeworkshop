@@ -114,7 +114,7 @@ const Gallery4 = ({ items }: Gallery4Props) => {
   }, [items.length, sequenceWidth]);
 
   return (
-    <section className='relative left-1/2 right-1/2 w-screen -translate-x-1/2 overflow-hidden pt-14 [--gallery-card-height:18rem] md:pt-16 md:[--gallery-card-height:23rem] lg:[--gallery-card-height:27rem]'>
+    <section className='relative left-1/2 right-1/2 w-screen -translate-x-1/2 overflow-hidden pt-14 [--gallery-card-height:12.5rem] md:pt-16 md:[--gallery-card-height:23rem] lg:[--gallery-card-height:27rem]'>
       <div className='overflow-hidden'>
         <div
           ref={trackRef}
