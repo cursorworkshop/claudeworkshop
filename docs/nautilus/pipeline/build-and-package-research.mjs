@@ -745,7 +745,11 @@ const articleDraftSchema = {
 };
 
 const gradientPalettes = [
-  { name: 'monochrome white paper', start: '#ffffff', end: '#ffffff' },
+  { name: 'powder blue paper', start: '#dfe9f3', end: '#eef3f8' },
+  { name: 'sage paper', start: '#dbe7dc', end: '#edf3ed' },
+  { name: 'blush paper', start: '#ecd8dc', end: '#f5ebee' },
+  { name: 'buttercream paper', start: '#efe3c8', end: '#f7f1e3' },
+  { name: 'lilac paper', start: '#e4def0', end: '#f2eef8' },
 ];
 
 const hashString = input => {
@@ -794,9 +798,9 @@ Image style requirements:
 - Keep linework sketch-first, not polished. Avoid smooth vector-like edges.
 - Style DNA linework lock: ${styleDnaLinework.join('; ') || 'scratchy rough pen lines'}.
 - Style DNA hatching lock: ${styleDnaHatching.join('; ') || 'local low-density hatching only'}.
-- Style DNA tonal lock: ${styleDnaTone.join('; ') || 'pure white paper background, no gradient, monochrome only'}.
-- Background must be plain white paper (or near-white), with no color wash and no gradient.
-- Monochrome lock: black pencil/graphite marks only; no color accents, no colored fills.
+- Style DNA tonal lock: ${styleDnaTone.join('; ') || 'soft pastel paper background, explicitly not white, with a gentle tonal wash allowed'}.
+- Background must use a soft pastel paper tone and must not be plain white or near-white.
+- Keep the drawing language in black graphite/pencil, but allow the paper/background itself to carry muted pastel color.
 - Avoid computers/monitors/screens entirely unless explicitly required by future override.
 - No logos, no watermarks, no branded UI marks.
 - No readable text, words, letters, numbers, or labels anywhere.
@@ -827,9 +831,9 @@ const buildFinalImagePrompt = ({
     'Line color lock: single black graphite/pencil line family only (no multicolor inking).',
     `Style DNA linework lock: ${styleDnaLinework.join('; ') || 'scratchy rough pen lines'}.`,
     `Style DNA hatching lock: ${styleDnaHatching.join('; ') || 'local low-density hatching only'}.`,
-    `Style DNA tonal lock: ${styleDnaTone.join('; ') || 'pure white paper background, no gradient, monochrome only'}.`,
-    'Background lock: plain white paper (or near-white). No gradients and no color washes.',
-    `Monochrome lock: only black pencil/graphite marks. Palette reference is fixed to ${palette.name}.`,
+    `Style DNA tonal lock: ${styleDnaTone.join('; ') || 'soft pastel paper background, explicitly not white, with a gentle tonal wash allowed'}.`,
+    `Background color lock: use ${palette.name} with soft muted tones around ${palette.start} to ${palette.end}; the background must not be white or near-white.`,
+    'Color policy: keep linework and drawing marks predominantly black graphite/pencil, while the paper/background carries the pastel tone.',
     `Topic focus (semantic only, never render as text): ${topic || 'agentic coding workflows'}.`,
     `Article title context (semantic only, never render as words): ${title}.`,
     coreAngle
@@ -863,11 +867,11 @@ const buildFinalImagePrompt = ({
     'Render with physical/symbolic shape language only; no digital interface motifs.',
     'Do not draw polished box-arrow flowcharts or literal UI modules.',
     'Stroke-density lock: keep hatching sparse and selective only. Do NOT fill hoodie/chair/body with dense crosshatching.',
-    'Preserve large white-paper areas and lightness; keep overall line density low-to-medium.',
+    'Preserve large pastel-paper areas and lightness; keep overall line density low-to-medium.',
     'Line-weight lock: thin scratchy strokes, avoid thick dark contour blocks.',
     'If a reference image is provided as edit input, preserve style DNA closely but do not force identical framing every time.',
     'The style must look hand-sketched first, not polished illustration.',
-    'Negative style constraints: not photorealistic, not 3D render, not glossy ad, not comic/cartoon style, not fantasy art, and absolutely no color accents.',
+    'Negative style constraints: not photorealistic, not 3D render, not glossy ad, not comic/cartoon style, not fantasy art, and no neon or saturated color accents.',
     styleTemplateHardNegatives.length
       ? `Template hard negatives to enforce: ${styleTemplateHardNegatives.join(', ')}.`
       : '',
@@ -907,7 +911,7 @@ Evaluate the FIRST image (candidate output) against the target style and hard co
 If a SECOND image is provided, it is the style reference to match.
 
 Context:
-- monochrome policy: black pencil/graphite marks only on white paper (no color accents)
+- pastel paper policy: black pencil/graphite drawing marks on a muted pastel paper background that must not be white
 - concept: ${concept}
 - attempt: ${attempt}
 - scene context type: ${sceneBrief?.context_type || 'unknown'}
@@ -920,7 +924,7 @@ Hard constraints (must pass):
 1) one clear focal subject or object (human optional)
 2) avoid repetitive person-behind-computer composition
 3) rough hand-drawn pen/pencil linework with visible jitter and imperfections (not polished vector look)
-4) plain white (or near-white) paper background, with no gradient and no color wash
+4) soft pastel paper background that is clearly not white or near-white
 5) no logos, watermarks, branding marks, or decorative overlays anywhere
 6) composition follows scene brief while keeping editorial sketch readability
 7) no floating arrows/icons/symbols/callouts
@@ -934,7 +938,8 @@ Hard constraints (must pass):
 15) if scene context type is workflow_moment, dominant person portrait framing is a hard fail
 16) composition should feel abstract/conceptual rather than a literal screenshot recreation
 17) any visible computer/monitor/screen/laptop/browser/terminal/dashboard is a hard fail
-18) any visible non-black color fill/accent/ink is a hard fail
+18) white or near-white background is a hard fail
+19) neon, saturated, or glossy ad-like color accents are a hard fail
 
 Return JSON:
 {

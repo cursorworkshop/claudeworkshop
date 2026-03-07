@@ -1,10 +1,10 @@
 {
-  "template_id": "nautilus-editorial-black-pencil-v3",
-  "version": "1.1.0",
+  "template_id": "nautilus-editorial-black-pencil-pastel-v4",
+  "version": "1.2.0",
   "canonical_reference": {
     "name": "multi-agent-orchestration-approved-02",
     "path": "docs/nautilus/examples/image-style/target-style-reference.png",
-    "notes": "Canonical reference for rough black-pencil line quality and high-white-space editorial composition."
+    "notes": "Canonical reference for rough black-pencil line quality, soft pastel paper tone, and high-negative-space editorial composition."
   },
   "style_dna": {
     "medium": "hand-drawn black-pencil sketch",
@@ -20,9 +20,10 @@
       "preserve large white-paper whitespace"
     ],
     "tone": [
-      "plain white paper background",
-      "no gradient",
-      "strict monochrome (black marks only)"
+      "soft pastel paper background only",
+      "background must not be pure white or near-white",
+      "subtle pastel wash or gentle tonal gradient is allowed",
+      "keep graphite/black marks as the dominant drawing language"
     ]
   },
   "composition_lock": {
@@ -55,8 +56,9 @@
     "polished vector illustration",
     "comic-book finish",
     "dense global crosshatching",
-    "any non-black color accents or fills",
-    "colored or pastel background washes"
+    "pure white or near-white background",
+    "neon, saturated, or high-contrast color accents",
+    "rainbow or multi-accent color schemes"
   ],
   "allowed_variation": {
     "scene_rule": "scene must be grounded in the article",
