@@ -46,6 +46,12 @@ const LAST_KNOWN_GOOD_SCORED_JSON_PATH = path.join(
   'state',
   'X-bookmarks.last-known-good.scored.json'
 );
+const SELECTION_STATE_PATH = path.join(
+  RESEARCH_DIR,
+  'data',
+  'state',
+  'X-bookmarks.selection-state.json'
+);
 
 const csvEscape = input => {
   const value = input == null ? '' : String(input);
@@ -58,6 +64,11 @@ const csvEscape = input => {
 const safeDate = input => {
   const ms = Date.parse(input || '');
   return Number.isFinite(ms) ? ms : 0;
+};
+
+const readJson = filePath => {
+  if (!fs.existsSync(filePath)) return null;
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 };
 
 const scoreRelevance = text => {
@@ -190,6 +201,30 @@ const fetchAllBookmarks = () => {
 const main = () => {
   fs.mkdirSync(outputDir, { recursive: true });
 
+  const selectionState = readJson(SELECTION_STATE_PATH) || {
+    selected_ids: [],
+    published_ids: [],
+    history: [],
+  };
+  const selectedIds = new Set(
+    Array.isArray(selectionState.selected_ids) ? selectionState.selected_ids : []
+  );
+  const publishedIds = new Set(
+    Array.isArray(selectionState.published_ids)
+      ? selectionState.published_ids
+      : []
+  );
+  const historyById = new Map();
+  for (const entry of Array.isArray(selectionState.history)
+    ? selectionState.history
+    : []) {
+    if (!entry?.id) continue;
+    historyById.set(entry.id, entry);
+    if (entry.published_at) {
+      publishedIds.add(entry.id);
+    }
+  }
+
   const fetched = fetchAllBookmarks();
 
   const dedupMap = new Map();
@@ -206,6 +241,9 @@ const main = () => {
     const scoringText = `${text} ${row.author?.username || ''}`;
     const { score, reason } = scoreRelevance(scoringText);
     const topic = classifyTopic(scoringText);
+    const history = historyById.get(row.id) || null;
+    const isSelected = selectedIds.has(row.id);
+    const isDone = publishedIds.has(row.id);
     return {
       id: row.id || '',
       status_url: toStatusUrl(row),
@@ -221,6 +259,12 @@ const main = () => {
       relevance_reason: reason,
       topic,
       fit_for_agentic_coders: score >= 65 ? 'yes' : 'no',
+      selected: isSelected ? 'yes' : 'no',
+      selected_at: history?.selected_at || '',
+      done: isDone ? 'yes' : 'no',
+      done_at: history?.published_at || '',
+      published_slug: history?.published_slug || '',
+      published_article_url: history?.article_url || '',
       source: 'bird_cli_bookmarks',
     };
   });
@@ -272,6 +316,12 @@ const main = () => {
     'relevance_reason',
     'topic',
     'fit_for_agentic_coders',
+    'selected',
+    'selected_at',
+    'done',
+    'done_at',
+    'published_slug',
+    'published_article_url',
     'source',
   ]);
 
@@ -295,6 +345,8 @@ const main = () => {
     total_fetched: fetched.length,
     total_unique: deduped.length,
     total_scored: scoredRows.length,
+    total_selected: scoredRows.filter(row => row.selected === 'yes').length,
+    total_done: scoredRows.filter(row => row.done === 'yes').length,
     top_count: topRows.length,
     files: {
       raw_json: path.relative(RESEARCH_DIR, RAW_JSON_PATH),

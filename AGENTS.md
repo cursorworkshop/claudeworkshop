@@ -22,6 +22,7 @@ When working on the automated research/image pipeline:
 7. `claudeworkshop` and `codexworkshop` do not run their own separate nightly research generation.
 8. The automated research pipeline does not create or send LinkedIn posts. Do not add LinkedIn secrets or LinkedIn posting steps back into this job.
 9. The nightly GitHub Actions cron for the production research cycle is `0 1 * * *` (01:00 UTC daily).
+10. Once a bookmark candidate has been published, it must be marked as `done` in the scored CSV/JSON state and must not be selected again unless reuse is explicitly forced for debugging.
 
 ## Supabase Project
 

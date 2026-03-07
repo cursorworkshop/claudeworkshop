@@ -63,6 +63,10 @@ Machine-readable workflow spec:
 - all live `/research/<slug>` URLs
 - estimated API generation cost
 
+The scored bookmark outputs also annotate whether each candidate is already
+selected or fully done/published, and normal nightly selection skips published
+candidates instead of reusing them.
+
 ## Local Run
 
 ```bash

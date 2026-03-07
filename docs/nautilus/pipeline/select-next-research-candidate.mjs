@@ -45,7 +45,8 @@ const minRelevance = Math.max(
 );
 const allowReuseSelected =
   !hasFlag('--no-reuse-selected') &&
-  (process.env.NAUTILUS_ALLOW_REUSE_SELECTED || '1') !== '0';
+  (hasFlag('--allow-reuse-selected') ||
+    (process.env.NAUTILUS_ALLOW_REUSE_SELECTED || '0') === '1');
 const markSelected = hasFlag('--mark-selected');
 
 const safeDate = input => {
@@ -93,10 +94,22 @@ if (!Array.isArray(rows)) {
   throw new Error(`Expected array in ${inputJson}`);
 }
 
-const state = readJson(stateJson) || { selected_ids: [], history: [] };
+const state = readJson(stateJson) || {
+  selected_ids: [],
+  published_ids: [],
+  history: [],
+};
 const selectedIds = new Set(
   Array.isArray(state.selected_ids) ? state.selected_ids : []
 );
+const publishedIds = new Set(
+  Array.isArray(state.published_ids) ? state.published_ids : []
+);
+for (const entry of Array.isArray(state.history) ? state.history : []) {
+  if (entry?.id && entry?.published_at) {
+    publishedIds.add(entry.id);
+  }
+}
 
 const ranked = [...rows]
   .filter(row => Number(row['relevance %']) >= minRelevance)
@@ -106,11 +119,13 @@ const ranked = [...rows]
       safeDate(b.created_at) - safeDate(a.created_at)
   );
 
-let pick = ranked.find(row => !selectedIds.has(row.id));
+const unpublishedRanked = ranked.filter(row => !publishedIds.has(row.id));
+
+let pick = unpublishedRanked.find(row => !selectedIds.has(row.id));
 let reusedSelectedCandidate = false;
 
-if (!pick && allowReuseSelected && ranked.length > 0) {
-  pick = ranked[0];
+if (!pick && allowReuseSelected && unpublishedRanked.length > 0) {
+  pick = unpublishedRanked[0];
   reusedSelectedCandidate = true;
 }
 
@@ -120,7 +135,7 @@ if (!pick) {
     min_relevance: minRelevance,
     status: 'no_candidate',
     message:
-      'No unselected candidate found above threshold. Lower threshold or reset selection state.',
+      'No unpublished candidate found above threshold. Add fresh bookmarks or explicitly allow selected-candidate reuse.',
   };
   writeJson(outputJson, noPick);
   console.log('No candidate found.');
@@ -158,7 +173,8 @@ writeJson(outputJson, candidate);
 if (markSelected) {
   const nextState = {
     ...state,
-    selected_ids: [...selectedIds, candidate.id],
+    selected_ids: [...new Set([...selectedIds, candidate.id])],
+    published_ids: [...publishedIds],
     history: [
       ...(Array.isArray(state.history) ? state.history : []),
       {

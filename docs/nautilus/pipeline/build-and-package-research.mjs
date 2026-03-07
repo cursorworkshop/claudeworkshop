@@ -243,6 +243,68 @@ const writeText = (filePath, content) => {
   fs.writeFileSync(filePath, content, 'utf8');
 };
 
+const updateSelectionStateAfterPublish = ({
+  stateDirPath,
+  candidate,
+  slug,
+  articleUrl,
+  publishedAt,
+  dryRunMode,
+}) => {
+  if (dryRunMode) return;
+
+  const statePath = path.join(stateDirPath, 'X-bookmarks.selection-state.json');
+  const state = fs.existsSync(statePath) ? readJson(statePath) : {};
+  const selectedIds = new Set(
+    Array.isArray(state.selected_ids) ? state.selected_ids : []
+  );
+  const publishedIds = new Set(
+    Array.isArray(state.published_ids) ? state.published_ids : []
+  );
+  const history = Array.isArray(state.history) ? [...state.history] : [];
+
+  selectedIds.add(candidate.id);
+  publishedIds.add(candidate.id);
+
+  const nextEntry = {
+    id: candidate.id,
+    selected_at: candidate.generated_at || publishedAt,
+    published_at: publishedAt,
+    relevance_percent: candidate.relevance_percent ?? null,
+    candidate_slug: candidate.candidate_slug ?? null,
+    published_slug: slug,
+    article_url: articleUrl,
+    status_url: candidate.status_url ?? null,
+    author_handle: candidate.author_handle ?? null,
+    author_name: candidate.author_name ?? null,
+  };
+
+  const existingIndex = history.findIndex(entry => entry?.id === candidate.id);
+  if (existingIndex >= 0) {
+    history[existingIndex] = {
+      ...history[existingIndex],
+      ...nextEntry,
+      selected_at: history[existingIndex]?.selected_at || nextEntry.selected_at,
+    };
+  } else {
+    history.push(nextEntry);
+  }
+
+  writeText(
+    statePath,
+    `${JSON.stringify(
+      {
+        ...state,
+        selected_ids: [...selectedIds],
+        published_ids: [...publishedIds],
+        history,
+      },
+      null,
+      2
+    )}\n`
+  );
+};
+
 const slugify = input =>
   String(input || '')
     .toLowerCase()
@@ -1599,6 +1661,14 @@ writeText(
   path.join(stateDir, 'latest-publish.json'),
   `${JSON.stringify(latestState, null, 2)}\n`
 );
+updateSelectionStateAfterPublish({
+  stateDirPath: stateDir,
+  candidate,
+  slug,
+  articleUrl,
+  publishedAt: latestState.updated_at,
+  dryRunMode: dryRun,
+});
 
 console.log(`Packaged slug: ${slug}`);
 console.log(`Article URL: ${articleUrl}`);
