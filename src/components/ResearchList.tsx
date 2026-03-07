@@ -8,67 +8,7 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import type { ResearchArticle } from '@/lib/research';
 
-// Hero images for each article
-const articleImages: Record<string, string> = {
-  'claude-2-4-subagents-skills':
-    '/images/editorials/research-renaissance-1.jpg',
-  'designing-codebases-for-ai-agents':
-    '/images/editorials/research-renaissance-2.jpg',
-  'gas-town-multi-agent-orchestration':
-    '/images/editorials/research-renaissance-3.jpg',
-  'job-vs-gym-ai-skills-framework':
-    '/images/editorials/research-renaissance-4.jpg',
-  'senior-vs-junior-ai-acceptance-rates':
-    '/images/editorials/research-renaissance-5.jpg',
-  'yc-founders-ai-coding-patterns':
-    '/images/editorials/research-renaissance-6.jpg',
-  'claude-gastown-multi-agent-orchestration':
-    '/images/editorials/research-renaissance-7.jpg',
-  'multi-agent-orchestration-2019564738649505882':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304124620.png',
-  'ai-coding-tooling-1977706278110765481':
-    '/images/editorials/ai-coding-tooling-1977706278110765481.png',
-  'mcp-and-integrations-1961848171925278932':
-    '/images/editorials/mcp-and-integrations-1961848171925278932.png',
-  'ai-coding-tooling-2020290971951391031':
-    '/images/editorials/ai-coding-tooling-2020290971951391031.png',
-  'multi-agent-orchestration-2019564738649505882-20260304124620':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304124620.png',
-  'multi-agent-orchestration-2019564738649505882-20260304125803':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304125803.png',
-  'multi-agent-orchestration-2019564738649505882-20260304134944':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304134944.png',
-  'multi-agent-orchestration-2019564738649505882-20260304143439':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304143439.png',
-  'multi-agent-orchestration-2019564738649505882-20260304145109':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304145109.png',
-  'multi-agent-orchestration-2019564738649505882-20260304150431':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304150431.png',
-  'multi-agent-orchestration-2019564738649505882-20260304160211':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304160211.png',
-  'multi-agent-orchestration-2019564738649505882-20260304165409':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304165409.png',
-  'multi-agent-orchestration-2019564738649505882-20260304170252':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304170252.png',
-  'multi-agent-orchestration-2019564738649505882-20260304170948':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304170948.png',
-  'multi-agent-orchestration-2019564738649505882-20260304172558':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304172558.png',
-  'multi-agent-orchestration-2019564738649505882-20260304173811':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304173811.png',
-  'multi-agent-orchestration-2019564738649505882-20260304175352':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304175352.png',
-  'multi-agent-orchestration-2019564738649505882-20260304184030':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304184030.png',
-  'multi-agent-orchestration-2019564738649505882-20260304185005':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260304185005.png',
-  'multi-agent-orchestration-2019564738649505882-20260305095655':
-    '/images/editorials/multi-agent-orchestration-2019564738649505882-20260305095655.png',
-  'multi-agent-orchestration-20260305-1046':
-    '/images/editorials/multi-agent-orchestration-20260305-1046.png',
-  'multi-agent-orchestration-20260306-0828':
-    '/images/editorials/multi-agent-orchestration-20260306-0828.png',
-};
+const DEFAULT_RESEARCH_IMAGE = '/images/editorials/research-renaissance-1.jpg';
 
 const getArticleImage = (article: ResearchArticle): string => {
   const explicitImage = article.image?.trim();
@@ -76,9 +16,7 @@ const getArticleImage = (article: ResearchArticle): string => {
     return explicitImage;
   }
 
-  return (
-    articleImages[article.slug] || `/images/editorials/${article.slug}.png`
-  );
+  return DEFAULT_RESEARCH_IMAGE;
 };
 
 const formatDate = (dateString: string) => {
