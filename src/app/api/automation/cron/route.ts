@@ -6,7 +6,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const DEFAULT_OWNER = 'cursorworkshop';
-const DEFAULT_REPO = siteConfig.github.repoName;
+const DEFAULT_REPO = 'cursorworkshop';
 const DEFAULT_WORKFLOW_ID = 'research-cycle.yml';
 const DEFAULT_REF = 'main';
 

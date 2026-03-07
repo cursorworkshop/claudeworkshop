@@ -30,7 +30,8 @@ const maxPages = Math.max(
 );
 const topN = Math.max(
   1,
-  Number.parseInt(getArgValue('--top', String(DEFAULT_TOP_N)), 10) || DEFAULT_TOP_N
+  Number.parseInt(getArgValue('--top', String(DEFAULT_TOP_N)), 10) ||
+    DEFAULT_TOP_N
 );
 
 const RAW_JSON_PATH = path.join(outputDir, 'X-bookmarks.live.raw.json');
@@ -106,9 +107,12 @@ const scoreRelevance = text => {
   score = Math.max(0, Math.min(100, score));
 
   let reason = 'Low alignment with agentic-coding audience.';
-  if (score >= 80) reason = 'Strong match for agentic coding and team workflows.';
-  else if (score >= 65) reason = 'Good match with practical AI coding relevance.';
-  else if (score >= 50) reason = 'Partial match; likely needs a tighter engineering angle.';
+  if (score >= 80)
+    reason = 'Strong match for agentic coding and team workflows.';
+  else if (score >= 65)
+    reason = 'Good match with practical AI coding relevance.';
+  else if (score >= 50)
+    reason = 'Partial match; likely needs a tighter engineering angle.';
 
   return { score, reason };
 };
@@ -153,11 +157,8 @@ const buildTopPrepRow = item => {
     fit_for_agentic_coders: item['relevance %'] >= 65 ? 'yes' : 'no',
     candidate_slug: slug,
     article_working_title: `What ${topic} changes for teams shipping with coding agents`,
-    core_angle: seed || 'Use this post as a proof point for a real workflow shift.',
-    linkedin_hook_draft: `This signal is getting hard to ignore: ${seed.slice(
-      0,
-      120
-    )}... Full breakdown on claudeworkshop.com/research.`,
+    core_angle:
+      seed || 'Use this post as a proof point for a real workflow shift.',
     image_prompt_draft:
       'Single developer seated at one desk in three-quarter back profile, focused on one monitor with subtle abstract cues of agent orchestration. No extra people.',
     humanizer_notes:
@@ -232,15 +233,29 @@ const main = () => {
 
   const topRows = ranked.slice(0, topN).map(buildTopPrepRow);
 
-  fs.writeFileSync(RAW_JSON_PATH, `${JSON.stringify(deduped, null, 2)}\n`, 'utf8');
-  fs.writeFileSync(SCORED_JSON_PATH, `${JSON.stringify(scoredRows, null, 2)}\n`, 'utf8');
-  fs.mkdirSync(path.dirname(LAST_KNOWN_GOOD_SCORED_JSON_PATH), { recursive: true });
+  fs.writeFileSync(
+    RAW_JSON_PATH,
+    `${JSON.stringify(deduped, null, 2)}\n`,
+    'utf8'
+  );
+  fs.writeFileSync(
+    SCORED_JSON_PATH,
+    `${JSON.stringify(scoredRows, null, 2)}\n`,
+    'utf8'
+  );
+  fs.mkdirSync(path.dirname(LAST_KNOWN_GOOD_SCORED_JSON_PATH), {
+    recursive: true,
+  });
   fs.writeFileSync(
     LAST_KNOWN_GOOD_SCORED_JSON_PATH,
     `${JSON.stringify(scoredRows, null, 2)}\n`,
     'utf8'
   );
-  fs.writeFileSync(TOP_JSON_PATH, `${JSON.stringify(topRows, null, 2)}\n`, 'utf8');
+  fs.writeFileSync(
+    TOP_JSON_PATH,
+    `${JSON.stringify(topRows, null, 2)}\n`,
+    'utf8'
+  );
 
   writeCsv(SCORED_CSV_PATH, scoredRows, [
     'id',
@@ -270,7 +285,6 @@ const main = () => {
     'candidate_slug',
     'article_working_title',
     'core_angle',
-    'linkedin_hook_draft',
     'image_prompt_draft',
     'humanizer_notes',
   ]);
@@ -295,7 +309,11 @@ const main = () => {
     },
   };
 
-  fs.writeFileSync(SUMMARY_JSON_PATH, `${JSON.stringify(summary, null, 2)}\n`, 'utf8');
+  fs.writeFileSync(
+    SUMMARY_JSON_PATH,
+    `${JSON.stringify(summary, null, 2)}\n`,
+    'utf8'
+  );
 
   console.log(`Fetched bookmarks: ${summary.total_fetched}`);
   console.log(`Unique bookmarks: ${summary.total_unique}`);

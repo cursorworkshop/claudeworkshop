@@ -14,13 +14,13 @@ When working on the automated research/image pipeline:
    - X bookmarks -> scored CSV/JSON
    - select best unselected candidate
    - build article + humanizer + hero image
-   - publish to `/research` and wait until URL is live
-   - post to LinkedIn
+   - publish to `claudeworkshop.com/research`
+   - sync the exact same publish to `claudeworkshop.com/research` and `codexworkshop.com/research`
+   - wait until the `/research/<slug>` URL is live on all three sites
    - send Resend completion email to founders with source links + generation cost
-6. LINKEDIN SAFETY RULE (NON-NEGOTIABLE): NEVER POST FROM A PERSONAL PROFILE. ALWAYS POST ONLY TO THE CURSORWORKSHOP ORGANIZATION PAGE.
-7. LINKEDIN AUTHOR HARD LOCK (NON-NEGOTIABLE): LINKEDIN_ORGANIZATION_URN MUST BE EXACTLY `urn:li:organization:108842408`. REFUSE TO POST IF IT DOES NOT MATCH.
-8. LINKEDIN APP HARD LOCK (NON-NEGOTIABLE): LINKEDIN_CLIENT_ID MUST BE EXACTLY `775wbb9ubr5s2x`. REFUSE TO POST IF IT DOES NOT MATCH.
-9. LINKEDIN TOKEN POLICY (NON-NEGOTIABLE): DO NOT USE `LINKEDIN_REFRESH_TOKEN` IN THIS PIPELINE. ONLY `LINKEDIN_ACCESS_TOKEN` IS ALLOWED.
+6. Research generation runs exactly once per cycle, in `cursorworkshop/claudeworkshop`.
+7. `claudeworkshop` and `codexworkshop` do not run their own separate nightly research generation.
+8. The automated research pipeline does not create or send LinkedIn posts. Do not add LinkedIn secrets or LinkedIn posting steps back into this job.
 
 ## Supabase Project
 
@@ -205,7 +205,10 @@ three workshop sites as one shared Vercel target.
    - Codex mirror repo -> `codexworkshop` Vercel project
 4. The GitHub Actions workflow in `.github/workflows/deploy.yml` is build
    verification only.
-5. GitHub pushes and mirror syncs are still required so repo history stays in
+5. Nightly research is the exception: `.github/workflows/research-cycle.yml`
+   in `cursorworkshop/claudeworkshop` uses the Vercel CLI to deploy the source
+   site and both mirror sites after sync.
+6. GitHub pushes and mirror syncs are still required so repo history stays in
    sync, but they are not the reliable final step for getting the live site
    updated immediately.
 
@@ -246,6 +249,23 @@ cursorworkshop`, create a new follow-up commit with the deploy-safe author
    project if needed and deploy with:
    - `vercel --prod --yes`
 8. Verify all three production domains after the deploys finish.
+
+### Nightly research automation path
+
+1. Only `cursorworkshop/claudeworkshop` owns the nightly research workflow.
+2. `/api/automation/cron` should dispatch `cursorworkshop/claudeworkshop`
+   `research-cycle.yml` by default, even when the request originates from a
+   brand mirror domain.
+3. The source workflow must:
+   - generate the research package once
+   - commit with the deploy-safe author
+   - deploy `claudeworkshop.com`
+   - sync the same publish to `claudeworkshop` and `codexworkshop`
+   - deploy both mirror sites with their own Vercel project IDs
+   - wait for the new `/research/<slug>` URL to be live on all three sites
+   - send the founders email
+4. Do not add a separate research cron, selection state, or content generator
+   to the mirror repos.
 
 ## Brand-Specific Funnel Rules
 

@@ -106,7 +106,13 @@ const openAiImageRequestTimeoutMs = Math.max(
 const styleTemplatePath = path.resolve(
   getArgValue(
     '--style-template',
-    path.join(PROJECT_ROOT, 'examples', 'image-style', 'style-template.json')
+    path.join(
+      PROJECT_ROOT,
+      'docs',
+      'examples',
+      'image-style',
+      'style-template.json'
+    )
   )
 );
 const styleTemplate = fs.existsSync(styleTemplatePath)
@@ -161,12 +167,14 @@ const imageCompositionMinScore = Math.max(
 );
 const imageReferencePath = path.join(
   PROJECT_ROOT,
+  'docs',
   'examples',
   'image-style',
   'target-style-reference.png'
 );
 const imageStyleSpecPath = path.join(
   PROJECT_ROOT,
+  'docs',
   'examples',
   'image-style',
   'reference-style-spec.md'
@@ -186,7 +194,7 @@ const negativeSpaceTarget = toNumber(
     '--negative-space',
     styleTemplateComposition.negative_space_target ?? '0.70'
   ),
-  0.70
+  0.7
 );
 const subjectScaleRange =
   Array.isArray(styleTemplateComposition.subject_scale_range) &&
@@ -211,7 +219,7 @@ const articleBaseUrl = (
 ).replace(/\/+$/, '');
 const authorName = process.env.RESEARCH_AUTHOR_NAME || 'Rogier Muller';
 const authorUrl =
-  process.env.RESEARCH_AUTHOR_URL || 'https://www.linkedin.com/in/rogyr/';
+  process.env.RESEARCH_AUTHOR_URL || 'https://www.claudeworkshop.com/about';
 
 const usageMetrics = {
   chat_calls: 0,
@@ -1518,36 +1526,6 @@ if (!dryRun && !imageGenerated) {
 
 writeText(path.join(runDir, 'article.mdx'), articleMdx);
 
-const snippetSchema = {
-  linkedinSnippet: 'string',
-};
-
-const linkedinSnippet = dryRun
-  ? `Signal worth watching for agentic coding teams. Full write-up: ${articleUrl}`
-  : String(
-      (
-        await chatJson([
-          {
-            role: 'system',
-            content:
-              'You write concise LinkedIn snippets that tease a technical article without sounding salesy.',
-          },
-          {
-            role: 'user',
-            content: `Write one LinkedIn snippet based on this finalized published article. Include this URL exactly once: ${articleUrl}\n\nArticle:\n${finalBody}\n\nReturn JSON with schema: ${JSON.stringify(
-              snippetSchema
-            )}`,
-          },
-        ])
-      ).linkedinSnippet || ''
-    ).trim();
-
-const snippetWithUrl = linkedinSnippet.includes(articleUrl)
-  ? linkedinSnippet
-  : `${linkedinSnippet}\n\n${articleUrl}`.trim();
-
-writeText(path.join(runDir, 'linkedin.txt'), `${snippetWithUrl}\n`);
-
 const packageManifest = {
   usage: {
     ...usageMetrics,
@@ -1579,7 +1557,6 @@ const packageManifest = {
     tags,
     metaTitle,
     metaDescription,
-    linkedinSnippet: snippetWithUrl,
     imagePalette: gradientPalette,
     imageStyleReferenceUsed: Boolean(styleReferenceImageDataUri),
     imageStyleReferencePath: styleReferenceImageDataUri

@@ -4,7 +4,10 @@ This folder contains the production pipeline that turns fresh X bookmarks into:
 
 1. A long-form `/research` article.
 2. A style-locked hero image attached to that article.
-3. A live LinkedIn post linked to that article.
+3. A synchronized nightly rollout to:
+   - `https://www.claudeworkshop.com/research`
+   - `https://www.claudeworkshop.com/research`
+   - `https://www.codexworkshop.com/research`
 4. A Resend completion email to founders with source links + generation cost.
 
 ## Pipeline Diagram
@@ -49,28 +52,26 @@ Machine-readable workflow spec:
 5. Generate a custom hero image from finalized article scene brief(s) with style/composition QA + retry.
 6. Hard gate: if custom hero image is missing, the package is rejected (no publish).
 7. Apply package to `content/editorials` + `public/images/editorials`.
-8. `/research/<slug>` renders that same custom image as hero + `og:image` + `twitter:image`.
-9. Commit + push changes (triggers production deploy workflow).
-10. Wait until `/research/<slug>` is live.
-11. Publish LinkedIn post with article link (preview image is sourced from `og:image`).
-12. Send Resend summary email with:
+8. Commit + push changes to `cursorworkshop`.
+9. Deploy `claudeworkshop.com`.
+10. Sync the same publish package into `claudeworkshop` and `codexworkshop`.
+11. Deploy both mirror sites.
+12. Wait until `/research/<slug>` is live on all three sites.
+13. Send Resend summary email with:
 
 - X bookmark link used
-- `/research/<slug>` URL
-- LinkedIn post URL
+- all live `/research/<slug>` URLs
 - estimated API generation cost
-
-LINKEDIN SAFETY RULE (NON-NEGOTIABLE): NEVER POST FROM A PERSONAL PROFILE. ALWAYS POST ONLY TO THE CURSORWORKSHOP ORGANIZATION PAGE.
 
 ## Local Run
 
 ```bash
 # dry run
-node docs/nautilus/pipeline/run-cycle.mjs --dry-run
+node pipeline/run-cycle.mjs --dry-run
 
 # live run
 OPENAI_API_KEY=... \
-node docs/nautilus/pipeline/run-cycle.mjs \
+node pipeline/run-cycle.mjs \
   --apply-to-cursor \
   --cursor-repo /Users/rogiermuller/Developer/cursorworkshop
 ```
@@ -90,9 +91,10 @@ It polishes newly generated `content/editorials/*.mdx` articles to improve tone 
 - `X_AUTH_TOKEN` (required for headless X bookmarks fetch via Bird)
 - `X_CT0` (required for headless X bookmarks fetch via Bird)
 - `RESEND_API_KEY` (required for completion email)
-- `LINKEDIN_CLIENT_ID` (required; MUST be exactly `775wbb9ubr5s2x` for locked org posting app)
-- `LINKEDIN_ACCESS_TOKEN` (required; refresh-token fallback is intentionally disabled)
-- `LINKEDIN_ORGANIZATION_URN` (required; MUST be exactly `urn:li:organization:108842408` for Claude Workshop org-only posting)
+- `BRAND_SYNC_TOKEN` (required to push nightly mirror updates)
+- `VERCEL_TOKEN` (required for nightly source + mirror deploys)
+- `VERCEL_ORG_ID` (required for nightly source + mirror deploys)
+- `VERCEL_PROJECT_ID` (required for `cursorworkshop` source deploy)
 
 Optional:
 
@@ -105,6 +107,7 @@ Optional:
 - `RESEARCH_NOTIFY_FROM` (default: `Claude Workshop <info@claudeworkshop.com>`)
 - `RESEARCH_NOTIFY_REPLY_TO` (default: `info@claudeworkshop.com`)
 - `RESEARCH_BASE_URL` (default in workflow: `https://www.claudeworkshop.com/research`)
+- `RESEARCH_SITE_BASE_URLS` (default: all three production `/research` bases)
 
 Content-shape tuning (dynamic):
 
@@ -114,14 +117,14 @@ Content-shape tuning (dynamic):
 
 Where article style is enforced:
 
-- Generator prompt + quality gate: [pipeline/build-and-package-research.mjs](/Users/rogiermuller/Developer/cursorworkshop/docs/nautilus/pipeline/build-and-package-research.mjs)
-- CI polish prompt: [prompts/codex-polish.md](/Users/rogiermuller/Developer/cursorworkshop/docs/nautilus/prompts/codex-polish.md)
-- Machine-readable pipeline flow: [pipeline/research-full-run.workflow.yaml](/Users/rogiermuller/Developer/cursorworkshop/docs/nautilus/pipeline/research-full-run.workflow.yaml)
+- Generator prompt + quality gate: [pipeline/build-and-package-research.mjs](/Users/rogiermuller/Developer/nautilus/pipeline/build-and-package-research.mjs)
+- CI polish prompt: [prompts/codex-polish.md](/Users/rogiermuller/Developer/nautilus/prompts/codex-polish.md)
+- Machine-readable pipeline flow: [pipeline/research-full-run.workflow.yaml](/Users/rogiermuller/Developer/nautilus/pipeline/research-full-run.workflow.yaml)
 
 Quick setup helper:
 
 ```bash
-docs/nautilus/scripts/setup-github-secrets.sh cursorworkshop/claudeworkshop
+scripts/setup-github-secrets.sh cursorworkshop/claudeworkshop
 ```
 
 ## Required Vercel Environment Variables

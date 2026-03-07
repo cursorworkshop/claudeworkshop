@@ -41,10 +41,7 @@ const stateJson = path.resolve(
 );
 const minRelevance = Math.max(
   0,
-  Math.min(
-    100,
-    Number.parseInt(getArgValue('--min-relevance', '65'), 10) || 65
-  )
+  Math.min(100, Number.parseInt(getArgValue('--min-relevance', '65'), 10) || 65)
 );
 const allowReuseSelected =
   !hasFlag('--no-reuse-selected') &&
@@ -147,11 +144,8 @@ const candidate = {
   topic,
   candidate_slug: slugify(`${topic}-${pick.id}`).slice(0, 72),
   article_working_title: `What ${topic} changes for teams shipping with coding agents`,
-  core_angle: core || 'Translate this signal into practical team workflow changes.',
-  linkedin_hook_draft: `This is a signal more teams are running into: ${core.slice(
-    0,
-    130
-  )}... Full write-up on claudeworkshop.com/research.`,
+  core_angle:
+    core || 'Translate this signal into practical team workflow changes.',
   image_prompt_draft:
     'Single developer seated at one desk in three-quarter back profile, focused on one monitor with subtle abstract cues of agent orchestration. No extra people.',
   humanizer_notes:
@@ -182,7 +176,9 @@ if (reusedSelectedCandidate) {
     `Selected previously-used candidate due exhausted pool: ${candidate.id} (${candidate.relevance_percent}%)`
   );
 } else {
-  console.log(`Selected candidate: ${candidate.id} (${candidate.relevance_percent}%)`);
+  console.log(
+    `Selected candidate: ${candidate.id} (${candidate.relevance_percent}%)`
+  );
 }
 console.log(`Output: ${outputJson}`);
 if (markSelected) {

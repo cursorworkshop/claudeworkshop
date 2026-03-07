@@ -8,6 +8,12 @@ const argv = process.argv.slice(2);
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(SCRIPT_DIR, '..');
 
+const DEFAULT_RESEARCH_SITE_BASE_URLS = [
+  'https://www.claudeworkshop.com/research',
+  'https://www.claudeworkshop.com/research',
+  'https://www.codexworkshop.com/research',
+];
+
 const getArgValue = (name, fallback) => {
   const idx = argv.findIndex(arg => arg === name);
   if (idx === -1) return fallback;
@@ -39,17 +45,6 @@ const waitIntervalMs = Math.max(
 const skipLiveCheck = hasFlag('--skip-live-check');
 const dryRun = hasFlag('--dry-run');
 
-const linkedinClientId = process.env.LINKEDIN_CLIENT_ID || '';
-const linkedinAccessTokenFromEnv = process.env.LINKEDIN_ACCESS_TOKEN || '';
-const linkedinRefreshToken = process.env.LINKEDIN_REFRESH_TOKEN || '';
-const linkedinOrganizationUrn = process.env.LINKEDIN_ORGANIZATION_URN || '';
-const linkedinApiBaseUrl = (
-  process.env.LINKEDIN_API_BASE_URL || 'https://api.linkedin.com'
-).replace(/\/+$/, '');
-const linkedinApiVersion = process.env.LINKEDIN_API_VERSION || '202602';
-const requiredLinkedinOrganizationUrn = 'urn:li:organization:108842408';
-const requiredLinkedinClientId = '775wbb9ubr5s2x';
-
 const resendApiKey = process.env.RESEND_API_KEY || '';
 const notifyFrom =
   process.env.RESEARCH_NOTIFY_FROM ||
@@ -63,6 +58,13 @@ const notifyEmails = (
   .filter(Boolean);
 const notifyReplyTo =
   process.env.RESEARCH_NOTIFY_REPLY_TO || 'info@claudeworkshop.com';
+const researchSiteBaseUrls = (
+  process.env.RESEARCH_SITE_BASE_URLS ||
+  DEFAULT_RESEARCH_SITE_BASE_URLS.join(',')
+)
+  .split(',')
+  .map(value => value.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
 
 const readJson = filePath => JSON.parse(fs.readFileSync(filePath, 'utf8'));
 const writeJson = (filePath, value) => {
@@ -112,6 +114,7 @@ const waitUntilLive = async url => {
         return {
           ok: true,
           status: response.status,
+          url,
         };
       }
     } catch (error) {
@@ -121,140 +124,8 @@ const waitUntilLive = async url => {
   }
 
   throw new Error(
-    `Research URL did not become live in time (${waitTimeoutMs}ms). Last status: ${lastStatus}`
+    `Research URL did not become live in time (${waitTimeoutMs}ms): ${url}. Last status: ${lastStatus}`
   );
-};
-
-const assertLinkedInOrgOnlyPolicy = () => {
-  const actualClientId = String(linkedinClientId || '').trim();
-  if (!actualClientId) {
-    throw new Error('LINKEDIN_CLIENT_ID is required for org-only posting.');
-  }
-  if (actualClientId !== requiredLinkedinClientId) {
-    throw new Error(
-      `LINKEDIN_CLIENT_ID MUST BE EXACTLY ${requiredLinkedinClientId}. Refusing to run with any other LinkedIn app.`
-    );
-  }
-  if (String(linkedinRefreshToken || '').trim()) {
-    throw new Error(
-      'LINKEDIN_REFRESH_TOKEN IS DISABLED FOR SAFETY IN THIS PIPELINE. Use only LINKEDIN_ACCESS_TOKEN from the locked org app.'
-    );
-  }
-};
-
-const ensureLinkedInAccessToken = async () => {
-  const accessToken = String(linkedinAccessTokenFromEnv || '').trim();
-  if (accessToken) {
-    return accessToken;
-  }
-  throw new Error(
-    'Missing LINKEDIN_ACCESS_TOKEN. This pipeline does not allow refresh-token fallback for safety.'
-  );
-};
-
-const normalizeOrganizationUrn = value => {
-  const raw = String(value || '').trim();
-  if (!raw) return '';
-  if (raw.startsWith('urn:li:organization:')) return raw;
-  if (raw.startsWith('urn:li:person:')) {
-    throw new Error(
-      'PERSONAL LINKEDIN POSTING IS FORBIDDEN. Configure LINKEDIN_ORGANIZATION_URN.'
-    );
-  }
-  if (raw.startsWith('urn:')) {
-    throw new Error(
-      `Unsupported LinkedIn author URN (${raw}). Expected urn:li:organization:<id>.`
-    );
-  }
-  if (/^\d+$/.test(raw)) return `urn:li:organization:${raw}`;
-
-  throw new Error(
-    `Invalid LINKEDIN_ORGANIZATION_URN value (${raw}). Use a numeric id or full urn:li:organization:<id>.`
-  );
-};
-
-const resolveLinkedInAuthorUrn = () => {
-  assertLinkedInOrgOnlyPolicy();
-  const urn = normalizeOrganizationUrn(linkedinOrganizationUrn);
-  if (!urn) {
-    throw new Error(
-      'LINKEDIN_ORGANIZATION_URN IS REQUIRED. PERSONAL LINKEDIN POSTING IS FORBIDDEN.'
-    );
-  }
-  if (urn !== requiredLinkedinOrganizationUrn) {
-    throw new Error(
-      `LINKEDIN_ORGANIZATION_URN MUST BE EXACTLY ${requiredLinkedinOrganizationUrn}. Refusing to post to any other author. PERSONAL LINKEDIN POSTING IS FORBIDDEN.`
-    );
-  }
-  return urn;
-};
-
-const postToLinkedIn = async ({
-  accessToken,
-  authorUrn,
-  text,
-  articleUrl,
-  articleTitle,
-  articleDescription,
-}) => {
-  const response = await fetch(`${linkedinApiBaseUrl}/rest/posts`, {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${accessToken}`,
-      'content-type': 'application/json',
-      'X-Restli-Protocol-Version': '2.0.0',
-      'LinkedIn-Version': linkedinApiVersion,
-    },
-    body: JSON.stringify({
-      author: authorUrn,
-      commentary: text,
-      visibility: 'PUBLIC',
-      distribution: {
-        feedDistribution: 'MAIN_FEED',
-        targetEntities: [],
-        thirdPartyDistributionChannels: [],
-      },
-      content: {
-        article: {
-          source: articleUrl,
-          title: articleTitle || 'Claude Workshop Research',
-          description: articleDescription || '',
-        },
-      },
-      lifecycleState: 'PUBLISHED',
-      isReshareDisabledByAuthor: false,
-    }),
-  });
-
-  if (!response.ok) {
-    const body = await response.text();
-    if (
-      response.status === 400 &&
-      body.includes(
-        'Organization permissions must be used when using organization as author'
-      )
-    ) {
-      throw new Error(
-        `LinkedIn organization permissions missing for ${authorUrn}. Re-authorize the app with organization scopes (at minimum w_organization_social) using a member who is an admin of this organization. PERSONAL LINKEDIN POSTING IS FORBIDDEN.`
-      );
-    }
-    throw new Error(
-      `LinkedIn publish failed (${response.status}): ${body.slice(0, 500)}`
-    );
-  }
-
-  const payload = await response.json().catch(() => ({}));
-  const headerUrn = response.headers.get('x-restli-id');
-  const rawUrn = String(payload.id || headerUrn || '').trim();
-  const postUrn = rawUrn ? decodeURIComponent(rawUrn) : '';
-  const postUrl = postUrn
-    ? `https://www.linkedin.com/feed/update/${postUrn}/`
-    : '';
-
-  return {
-    postUrn,
-    postUrl,
-  };
 };
 
 const escapeHtml = input =>
@@ -265,11 +136,35 @@ const escapeHtml = input =>
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
 
+const normalizeResearchUrl = value =>
+  String(value || '')
+    .trim()
+    .replace(/\/+$/, '');
+
+const buildResearchUrls = ({ articleUrl, slug }) => {
+  const urls = new Set();
+  const normalizedArticleUrl = normalizeResearchUrl(articleUrl);
+
+  if (normalizedArticleUrl) {
+    urls.add(normalizedArticleUrl);
+  }
+
+  for (const baseUrl of researchSiteBaseUrls) {
+    if (!baseUrl) continue;
+    const normalizedBaseUrl = normalizeResearchUrl(baseUrl);
+    if (!normalizedBaseUrl) continue;
+
+    const directMatch = normalizedBaseUrl.endsWith(`/${slug}`);
+    urls.add(directMatch ? normalizedBaseUrl : `${normalizedBaseUrl}/${slug}`);
+  }
+
+  return Array.from(urls);
+};
+
 const sendSummaryEmail = async ({
   datetimeIso,
   xBookmarkUrl,
-  articleUrl,
-  linkedinUrl,
+  researchUrls,
   costUsd,
   slug,
 }) => {
@@ -282,21 +177,22 @@ const sendSummaryEmail = async ({
 
   const costLine = `$${Number(costUsd || 0).toFixed(4)} (estimated from configured API pricing)`;
   const html = [
-    `<p>Article and LI posted on ${escapeHtml(datetimeIso)}</p>`,
+    `<p>Research automation completed on ${escapeHtml(datetimeIso)}</p>`,
     '<ul>',
     `  <li>X bookmark used: <a href="${escapeHtml(xBookmarkUrl)}">${escapeHtml(xBookmarkUrl)}</a></li>`,
-    `  <li>Research page: <a href="${escapeHtml(articleUrl)}">${escapeHtml(articleUrl)}</a></li>`,
-    `  <li>Linkedin: <a href="${escapeHtml(linkedinUrl)}">${escapeHtml(linkedinUrl)}</a></li>`,
+    ...researchUrls.map(
+      url =>
+        `  <li>Research page: <a href="${escapeHtml(url)}">${escapeHtml(url)}</a></li>`
+    ),
     `  <li>cost it took to generate all of this ${escapeHtml(costLine)}</li>`,
     '</ul>',
   ].join('\n');
 
   const text = [
-    `Article and LI posted on ${datetimeIso}`,
+    `Research automation completed on ${datetimeIso}`,
     '',
     `- X bookmark used: ${xBookmarkUrl}`,
-    `- Research page: ${articleUrl}`,
-    `- Linkedin: ${linkedinUrl}`,
+    ...researchUrls.map(url => `- Research page: ${url}`),
     `- cost it took to generate all of this ${costLine}`,
   ].join('\n');
 
@@ -310,7 +206,7 @@ const sendSummaryEmail = async ({
       from: notifyFrom,
       to: notifyEmails,
       reply_to: notifyReplyTo,
-      subject: `Research automation posted: ${slug}`,
+      subject: `Research automation published: ${slug}`,
       html,
       text,
     }),
@@ -336,68 +232,44 @@ const main = async () => {
   }
 
   const manifestPath = path.join(packageDir, 'package.json');
-  const linkedinPath = path.join(packageDir, 'linkedin.txt');
   if (!fs.existsSync(manifestPath)) {
     throw new Error(`Missing package manifest: ${manifestPath}`);
-  }
-  if (!fs.existsSync(linkedinPath)) {
-    throw new Error(`Missing linkedin snippet: ${linkedinPath}`);
   }
 
   const manifest = readJson(manifestPath);
   const slug = String(manifest.slug || '').trim();
   const articleUrl = String(manifest.article_url || '').trim();
-  const articleTitle = String(manifest.title || '').trim();
-  const articleDescription = String(
-    manifest.summary || manifest.description || ''
-  ).trim();
   const xBookmarkUrl = String(manifest?.candidate?.status_url || '').trim();
   const estimatedCostUsd = Number(
     manifest?.usage?.estimated_total_cost_usd || 0
   );
-  const linkedinText = fs.readFileSync(linkedinPath, 'utf8').trim();
 
   if (!slug) throw new Error('Manifest missing slug.');
   if (!articleUrl) throw new Error('Manifest missing article_url.');
   if (!xBookmarkUrl) throw new Error('Manifest missing candidate.status_url.');
-  if (!linkedinText) throw new Error('linkedin.txt is empty.');
+
+  const researchUrls = buildResearchUrls({ articleUrl, slug });
+  if (researchUrls.length === 0) {
+    throw new Error('No research URLs were derived for live verification.');
+  }
 
   if (!dryRun && !skipLiveCheck) {
-    console.log(`Waiting for live research URL: ${articleUrl}`);
-    await waitUntilLive(articleUrl);
+    for (const url of researchUrls) {
+      console.log(`Waiting for live research URL: ${url}`);
+      await waitUntilLive(url);
+    }
   }
 
   const datetimeIso = new Date().toISOString();
-  let linkedin = {
-    postUrn: '',
-    postUrl: '',
-  };
   let email = {
     id: null,
   };
 
   if (!dryRun) {
-    const accessToken = await ensureLinkedInAccessToken();
-    const authorUrn = resolveLinkedInAuthorUrn();
-    linkedin = await postToLinkedIn({
-      accessToken,
-      authorUrn,
-      text: linkedinText,
-      articleUrl,
-      articleTitle,
-      articleDescription,
-    });
-    if (!linkedin.postUrl) {
-      throw new Error(
-        'LinkedIn returned no post URL/URN. Aborting before email notification.'
-      );
-    }
-
     email = await sendSummaryEmail({
       datetimeIso,
       xBookmarkUrl,
-      articleUrl,
-      linkedinUrl: linkedin.postUrl,
+      researchUrls,
       costUsd: estimatedCostUsd,
       slug,
     });
@@ -407,11 +279,10 @@ const main = async () => {
     distributed_at: datetimeIso,
     dry_run: dryRun,
     slug,
-    article_url: articleUrl,
+    primary_article_url: articleUrl,
+    research_urls: researchUrls,
     x_bookmark_url: xBookmarkUrl,
     estimated_total_cost_usd: Number(estimatedCostUsd.toFixed(6)),
-    linkedin_post_urn: linkedin.postUrn || null,
-    linkedin_post_url: linkedin.postUrl || null,
     resend_email_id: email.id || null,
     notified_recipients: notifyEmails,
   };
@@ -419,10 +290,10 @@ const main = async () => {
   writeJson(path.join(packageDir, 'distribution.json'), distributionReport);
 
   console.log(`Distributed slug: ${slug}`);
-  console.log(`Research URL: ${articleUrl}`);
-  console.log(
-    `LinkedIn URL: ${distributionReport.linkedin_post_url || '(dry run)'}`
-  );
+  console.log(`Primary research URL: ${articleUrl}`);
+  for (const url of researchUrls) {
+    console.log(`Research URL: ${url}`);
+  }
   console.log(
     `Notification email id: ${distributionReport.resend_email_id || '(dry run)'}`
   );

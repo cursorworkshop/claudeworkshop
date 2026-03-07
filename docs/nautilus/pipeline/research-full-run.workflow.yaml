@@ -4,33 +4,27 @@ owner: cursorworkshop
 purpose: >
   Nightly fully-automated research pipeline:
   X bookmark -> scored candidate -> humanized article -> custom hero image ->
-  live /research page -> LinkedIn organization post -> founders email.
+  live /research page on all three sites -> founders email.
 
 schedule:
   github_actions_workflow: .github/workflows/research-cycle.yml
-  cron_utc: "0 8 * * *"
+  cron_utc: '0 8 * * *'
   frequency: nightly
 
 non_negotiable_rules:
-  - NEVER POST FROM A PERSONAL PROFILE. ALWAYS POST ONLY TO THE CURSORWORKSHOP ORGANIZATION PAGE.
   - A CUSTOM HERO IMAGE IS REQUIRED BEFORE ARTICLE PUBLISH.
   - THE SAME CUSTOM HERO IMAGE MUST BE USED FOR PAGE HERO + OG:IMAGE + TWITTER:IMAGE.
+  - THE SAME PUBLISHED ARTICLE MUST ROLL OUT TO CURSOR, CLAUDE, AND CODEX.
 
 required_secrets:
   - OPENAI_API_KEY
   - X_AUTH_TOKEN
   - X_CT0
   - RESEND_API_KEY
-  - LINKEDIN_CLIENT_ID
-  - LINKEDIN_ACCESS_TOKEN
-  - LINKEDIN_ORGANIZATION_URN
+  - BRAND_SYNC_TOKEN
   - VERCEL_TOKEN
   - VERCEL_ORG_ID
   - VERCEL_PROJECT_ID
-
-locked_values:
-  LINKEDIN_CLIENT_ID: 775wbb9ubr5s2x
-  LINKEDIN_ORGANIZATION_URN: urn:li:organization:108842408
 
 content_constraints:
   target_read_time_minutes: 5-6
@@ -72,7 +66,6 @@ pipeline:
     outputs:
       - docs/nautilus/data/outbox/<timestamp>-<slug>/article.mdx
       - docs/nautilus/data/outbox/<timestamp>-<slug>/image.png
-      - docs/nautilus/data/outbox/<timestamp>-<slug>/linkedin.txt
       - docs/nautilus/data/outbox/<timestamp>-<slug>/package.json
 
   - id: apply_package_to_site_repo
@@ -84,54 +77,35 @@ pipeline:
       - public/images/editorials/<slug>.png
       - src/components/ResearchList.tsx
 
-  - id: commit_push_and_deploy
+  - id: deploy_source_and_mirrors
     workflow_steps:
       - git_commit_and_push_main
-      - vercel_pull_build_deploy_prod
+      - deploy_cursorworkshop_prod
+      - sync_claude_and_codex_repos
+      - deploy_claudeworkshop_prod
+      - deploy_codexworkshop_prod
     output:
-      - production_url_live
+      - production_urls_live
 
-  - id: verify_live_and_metadata
+  - id: verify_live_and_notify_founders
     script: docs/nautilus/pipeline/distribute-after-live.mjs
     checks:
-      - GET /research/<slug> returns 200
+      - GET /research/<slug> returns 200 on claudeworkshop.com
+      - GET /research/<slug> returns 200 on claudeworkshop.com
+      - GET /research/<slug> returns 200 on codexworkshop.com
       - page_hero_image == /images/editorials/<slug>.png
-      - og:image == https://claudeworkshop.com/images/editorials/<slug>.png
-      - twitter:image == https://claudeworkshop.com/images/editorials/<slug>.png
-
-  - id: post_to_linkedin_org_page
-    script: docs/nautilus/pipeline/distribute-after-live.mjs
-    hard_fail_if:
-      - LINKEDIN_ORGANIZATION_URN_missing
-      - linkedin_author_is_person_urn
-      - linkedin_publish_error
-    output:
-      - linkedin_post_url
-
-  - id: send_founder_email
-    script: docs/nautilus/pipeline/distribute-after-live.mjs
     provider: resend
     recipients:
       - contact@rogyr.com
       - vasilis@vasilistsolis.com
-    body_template_html: |
-      <p>Article and LI posted on {datetime}</p>
-      <ul>
-        <li>X bookmark used: {x_bookmark_url}</li>
-        <li>Research page: {research_url}</li>
-        <li>Linkedin: {linkedin_url}</li>
-        <li>cost it took to generate all of this {estimated_generation_cost_usd}</li>
-      </ul>
 
 success_definition:
   - github_action_conclusion == success
   - article_committed == true
   - image_committed == true
-  - research_url_live == true
-  - linkedin_post_url_present == true
+  - research_urls_live == true
   - resend_email_sent == true
 
 failure_policy:
   - stop_on_first_hard_fail
-  - no_linkedin_post_without_live_research_url
-  - no_founder_email_if_linkedin_failed
+  - no_founder_email_without_live_research_urls

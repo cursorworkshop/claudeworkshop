@@ -37,7 +37,9 @@ const decodeHtmlEntities = input => {
     .replace(/&#x([0-9a-f]+);/gi, (_, hex) =>
       String.fromCodePoint(parseInt(hex, 16))
     )
-    .replace(/&#([0-9]+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/&#([0-9]+);/g, (_, dec) =>
+      String.fromCodePoint(parseInt(dec, 10))
+    )
     .replace(/\u00A0/g, ' ');
 };
 
@@ -149,7 +151,8 @@ const scoreRelevance = text => {
   score = Math.max(0, Math.min(100, score));
 
   let reason = 'Low alignment with agentic-coding audience.';
-  if (score >= 80) reason = 'Strong match for agentic coding and team workflows.';
+  if (score >= 80)
+    reason = 'Strong match for agentic coding and team workflows.';
   else if (score >= 65)
     reason = 'Good match with practical AI coding relevance.';
   else if (score >= 50)
@@ -171,10 +174,8 @@ const classifyTopic = text => {
 
 const buildPrepRow = item => {
   const topic = classifyTopic(item.text);
-  const baseSlug = `${topic.replace(/[^a-z0-9]+/g, '-')}-${item.statusId}`.slice(
-    0,
-    64
-  );
+  const baseSlug =
+    `${topic.replace(/[^a-z0-9]+/g, '-')}-${item.statusId}`.slice(0, 64);
   const trimmedText = item.text.replace(/\s+/g, ' ').trim();
   const firstSentence = (trimmedText.split(/[.!?]\s+/)[0] || trimmedText).slice(
     0,
@@ -187,11 +188,9 @@ const buildPrepRow = item => {
     fit_for_agentic_coders: item.relevancePercent >= 65 ? 'yes' : 'no',
     candidate_slug: baseSlug.replace(/^-+|-+$/g, ''),
     article_working_title: `What ${topic} changes for agentic coding teams`,
-    core_angle: firstSentence || 'Use this post as a proof point for a practical workflow shift.',
-    linkedin_hook_draft: `Most teams are seeing this signal now: ${firstSentence.slice(
-      0,
-      120
-    )}... Full breakdown on our research page.`,
+    core_angle:
+      firstSentence ||
+      'Use this post as a proof point for a practical workflow shift.',
     evidence_checklist:
       'Verify original thread, linked source docs, concrete implementation details, and limits.',
   };
@@ -199,7 +198,8 @@ const buildPrepRow = item => {
 
 const extractTweets = html => {
   const articles = [];
-  const articleRegex = /<article[^>]*data-testid="tweet"[^>]*>([\s\S]*?)<\/article>/gi;
+  const articleRegex =
+    /<article[^>]*data-testid="tweet"[^>]*>([\s\S]*?)<\/article>/gi;
   let m;
   while ((m = articleRegex.exec(html)) !== null) {
     articles.push(m[0]);
@@ -233,17 +233,21 @@ const extractTweets = html => {
       .filter(link => link !== statusUrl);
 
     const dedupLinks = [...new Set(hrefs)];
-    const externalLinks = dedupLinks.filter(link => !link.startsWith('https://x.com/'));
+    const externalLinks = dedupLinks.filter(
+      link => !link.startsWith('https://x.com/')
+    );
 
     const mediaUrls = [
       ...new Set(
-        [...article.matchAll(/https:\/\/pbs\.twimg\.com\/media\/[^"')\s]+/g)].map(
-          match => cleanUrl(match[0])
-        )
+        [
+          ...article.matchAll(/https:\/\/pbs\.twimg\.com\/media\/[^"')\s]+/g),
+        ].map(match => cleanUrl(match[0]))
       ),
     ];
 
-    const metricsLabelMatch = article.match(/aria-label="([^"]*replies[^"]*)"/i);
+    const metricsLabelMatch = article.match(
+      /aria-label="([^"]*replies[^"]*)"/i
+    );
     const metricsLabel = metricsLabelMatch
       ? decodeHtmlEntities(metricsLabelMatch[1])
       : '';
@@ -337,7 +341,6 @@ const run = () => {
     'candidate_slug',
     'article_working_title',
     'core_angle',
-    'linkedin_hook_draft',
     'evidence_checklist',
   ];
 

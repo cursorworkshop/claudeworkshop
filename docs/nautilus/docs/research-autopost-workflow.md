@@ -2,34 +2,31 @@
 
 ## Objective
 
-Create high-signal research posts from fresh X bookmarks, then publish to `/research` with a matching LinkedIn snippet.
+Create high-signal research posts from fresh X bookmarks, publish them to `/research`, and roll the same publish to all three workshop sites every night.
 
 ## SSOT
 
 - Live bookmarks dataset:
-  - `docs/nautilus/data/live/X-bookmarks.live.scored.json`
+  - `data/live/X-bookmarks.live.scored.json`
 - Selection state:
-  - `docs/nautilus/data/state/X-bookmarks.selection-state.json`
+  - `data/state/X-bookmarks.selection-state.json`
 - Current candidate:
-  - `docs/nautilus/data/state/X-bookmarks.next-research-candidate.json`
+  - `data/state/X-bookmarks.next-research-candidate.json`
 - Latest publish run:
-  - `docs/nautilus/data/state/latest-publish.json`
+  - `data/state/latest-publish.json`
 
-## Step 1: Fetch + Score (daily)
+## Step 1: Fetch + Score
 
 ```bash
-node docs/nautilus/pipeline/fetch-bookmarks-to-csv.mjs \
-  --out-dir docs/nautilus/data/live \
+node pipeline/fetch-bookmarks-to-csv.mjs \
   --max-pages 100 \
-  --top 20 \
-  --bird-cmd "node tools/bird-fork/dist/index.js"
+  --top 20
 ```
 
-## Step 2: Select Candidate (nightly, one candidate per run)
+## Step 2: Select Candidate
 
 ```bash
-node docs/nautilus/pipeline/select-next-research-candidate.mjs \
-  --out-dir docs/nautilus/data \
+node pipeline/select-next-research-candidate.mjs \
   --min-relevance 65 \
   --mark-selected
 ```
@@ -38,10 +35,10 @@ node docs/nautilus/pipeline/select-next-research-candidate.mjs \
 
 ```bash
 OPENAI_API_KEY=... \
-node docs/nautilus/pipeline/build-and-publish-research.mjs \
-  --candidate-json docs/nautilus/data/state/X-bookmarks.next-research-candidate.json \
-  --state-dir docs/nautilus/data/state \
-  --outbox-dir docs/nautilus/data/outbox \
+node pipeline/build-and-package-research.mjs \
+  --candidate-json data/state/X-bookmarks.next-research-candidate.json \
+  --state-dir data/state \
+  --outbox-dir data/outbox \
   --min-relevance 65
 ```
 
@@ -50,21 +47,19 @@ This step:
 - drafts the article
 - runs a second humanizer pass
 - generates a research image via OpenAI image API
-- writes the article to `content/editorials/<slug>.mdx`
-- updates image mapping in `src/components/ResearchList.tsx`
-- writes LinkedIn draft + package snapshot in `docs/nautilus/data/outbox/...`
+- writes the package snapshot in `data/outbox/...`
 
-## Step 4: Deploy + Live Check + LinkedIn + Resend
+## Step 4: Apply + Deploy + Fan-Out
 
 After commit/push:
 
-- deploy workflow publishes to production
-- distribution step waits for `/research/<slug>` to be live
-- posts to LinkedIn API with final article URL
-- sends founders a Resend email with:
+- deploy `claudeworkshop.com`
+- sync the same content into `claudeworkshop` and `codexworkshop`
+- deploy both mirror sites
+- wait for `/research/<slug>` to return `200` on all three
+- send founders a Resend email with:
   - X bookmark used
-  - research URL
-  - LinkedIn URL
+  - all live research URLs
   - estimated generation cost
 
 ## Quality gates
