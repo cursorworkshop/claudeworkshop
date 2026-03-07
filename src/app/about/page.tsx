@@ -307,11 +307,9 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <RecentEventsGallery />
-
       {/* What We Do Section */}
       <section className='py-24 bg-zinc-50'>
-        <div className='max-w-5xl mx-auto container-padding'>
+        <div className='max-w-7xl mx-auto container-padding'>
           <InView
             variants={{
               hidden: { opacity: 0, y: 20 },
@@ -472,6 +470,8 @@ export default function AboutPage() {
               </CardContent>
             </Card>
           </div>
+
+          <RecentEventsGallery />
         </div>
       </section>
 
