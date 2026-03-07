@@ -8,7 +8,8 @@ This folder contains the production pipeline that turns fresh X bookmarks into:
    - `https://www.claudeworkshop.com/research`
    - `https://www.claudeworkshop.com/research`
    - `https://www.codexworkshop.com/research`
-4. A Resend completion email to founders with source links + generation cost.
+4. A Resend completion email to founders with source links, generation cost,
+   and total time to live on `/research`.
 
 ## Pipeline Diagram
 
@@ -61,11 +62,13 @@ Machine-readable workflow spec:
 
 - X bookmark link used
 - all live `/research/<slug>` URLs
+- total time from pipeline start to live `/research` availability
 - estimated API generation cost
 
 The scored bookmark outputs also annotate whether each candidate is already
-selected or fully done/published, and normal nightly selection skips published
-candidates instead of reusing them.
+selected or fully done/published. A successful manual publish run now refreshes
+the scored JSON/CSV snapshots immediately as well, and normal nightly selection
+still skips published candidates instead of reusing them.
 
 ## Local Run
 

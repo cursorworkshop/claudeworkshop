@@ -91,6 +91,8 @@ const textOutputUsdPer1M = Number.parseFloat(
 const image1536x1024UsdEach = Number.parseFloat(
   process.env.OPENAI_IMAGE_1536X1024_USD_EACH || '0.063'
 );
+const pipelineStartedAt =
+  process.env.NAUTILUS_PIPELINE_STARTED_AT || new Date().toISOString();
 const openAiRequestTimeoutMs = Math.max(
   10_000,
   Number.parseInt(process.env.OPENAI_REQUEST_TIMEOUT_MS || '120000', 10) ||
@@ -242,6 +244,43 @@ const writeText = (filePath, content) => {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, content, 'utf8');
 };
+const csvEscape = input => {
+  const value = input == null ? '' : String(input);
+  if (/[",\n]/.test(value)) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+};
+const writeCsv = (targetPath, rows, headers) => {
+  const lines = [headers.map(csvEscape).join(',')];
+  for (const row of rows) {
+    lines.push(headers.map(header => csvEscape(row[header])).join(','));
+  }
+  writeText(targetPath, `${lines.join('\n')}\n`);
+};
+const SCORED_SNAPSHOT_HEADERS = [
+  'id',
+  'status_url',
+  'author_handle',
+  'author_name',
+  'created_at',
+  'text',
+  'replies',
+  'reposts',
+  'likes',
+  'conversation_id',
+  'relevance %',
+  'relevance_reason',
+  'topic',
+  'fit_for_agentic_coders',
+  'selected',
+  'selected_at',
+  'done',
+  'done_at',
+  'published_slug',
+  'published_article_url',
+  'source',
+];
 
 const updateSelectionStateAfterPublish = ({
   stateDirPath,
@@ -303,6 +342,102 @@ const updateSelectionStateAfterPublish = ({
       2
     )}\n`
   );
+};
+
+const refreshScoredSnapshotsAfterPublish = ({
+  projectRoot,
+  stateDirPath,
+  dryRunMode,
+}) => {
+  if (dryRunMode) return;
+
+  const statePath = path.join(stateDirPath, 'X-bookmarks.selection-state.json');
+  if (!fs.existsSync(statePath)) return;
+
+  const liveDirPath = path.join(projectRoot, 'data', 'live');
+  const liveScoredJsonPath = path.join(
+    liveDirPath,
+    'X-bookmarks.live.scored.json'
+  );
+  const liveScoredCsvPath = path.join(liveDirPath, 'X-bookmarks.live.scored.csv');
+  const liveSummaryPath = path.join(liveDirPath, 'X-bookmarks.live.summary.json');
+  const lastKnownGoodScoredJsonPath = path.join(
+    stateDirPath,
+    'X-bookmarks.last-known-good.scored.json'
+  );
+
+  const sourceRowsPath = fs.existsSync(liveScoredJsonPath)
+    ? liveScoredJsonPath
+    : fs.existsSync(lastKnownGoodScoredJsonPath)
+      ? lastKnownGoodScoredJsonPath
+      : '';
+
+  if (!sourceRowsPath) return;
+
+  const scoredRows = readJson(sourceRowsPath);
+  if (!Array.isArray(scoredRows) || scoredRows.length === 0) return;
+
+  const selectionState = readJson(statePath) || {};
+  const selectedIds = new Set(
+    Array.isArray(selectionState.selected_ids) ? selectionState.selected_ids : []
+  );
+  const publishedIds = new Set(
+    Array.isArray(selectionState.published_ids)
+      ? selectionState.published_ids
+      : []
+  );
+  const historyById = new Map();
+
+  for (const entry of Array.isArray(selectionState.history)
+    ? selectionState.history
+    : []) {
+    if (!entry?.id) continue;
+    historyById.set(entry.id, entry);
+    if (entry.published_at) {
+      publishedIds.add(entry.id);
+    }
+  }
+
+  const nextRows = scoredRows.map(row => {
+    const history = historyById.get(row.id) || null;
+    const isSelected = selectedIds.has(row.id);
+    const isDone = publishedIds.has(row.id);
+
+    return {
+      ...row,
+      selected: isSelected ? 'yes' : 'no',
+      selected_at: history?.selected_at || row.selected_at || '',
+      done: isDone ? 'yes' : 'no',
+      done_at: history?.published_at || row.done_at || '',
+      published_slug: history?.published_slug || row.published_slug || '',
+      published_article_url:
+        history?.article_url || row.published_article_url || '',
+    };
+  });
+
+  writeText(liveScoredJsonPath, `${JSON.stringify(nextRows, null, 2)}\n`);
+  writeText(
+    lastKnownGoodScoredJsonPath,
+    `${JSON.stringify(nextRows, null, 2)}\n`
+  );
+  writeCsv(liveScoredCsvPath, nextRows, SCORED_SNAPSHOT_HEADERS);
+
+  if (fs.existsSync(liveSummaryPath)) {
+    const summary = readJson(liveSummaryPath) || {};
+    writeText(
+      liveSummaryPath,
+      `${JSON.stringify(
+        {
+          ...summary,
+          updated_at: new Date().toISOString(),
+          total_selected: nextRows.filter(row => row.selected === 'yes').length,
+          total_done: nextRows.filter(row => row.done === 'yes').length,
+        },
+        null,
+        2
+      )}\n`
+    );
+  }
 };
 
 const slugify = input =>
@@ -1617,6 +1752,7 @@ const packageManifest = {
     },
   },
   generated_at: new Date().toISOString(),
+  pipeline_started_at: pipelineStartedAt,
   dry_run: dryRun,
   slug,
   article_url: articleUrl,
@@ -1660,6 +1796,7 @@ writeText(
 
 const latestState = {
   updated_at: new Date().toISOString(),
+  pipeline_started_at: pipelineStartedAt,
   slug,
   article_url: articleUrl,
   outbox_dir: path.relative(PROJECT_ROOT, runDir),
@@ -1677,6 +1814,11 @@ updateSelectionStateAfterPublish({
   slug,
   articleUrl,
   publishedAt: latestState.updated_at,
+  dryRunMode: dryRun,
+});
+refreshScoredSnapshotsAfterPublish({
+  projectRoot: PROJECT_ROOT,
+  stateDirPath: stateDir,
   dryRunMode: dryRun,
 });
 

@@ -41,6 +41,8 @@ const applyToCursor = hasFlag('--apply-to-cursor');
 const allowStaleBookmarksFallback =
   !hasFlag('--no-stale-bookmarks-fallback') &&
   (process.env.NAUTILUS_ALLOW_STALE_BOOKMARKS_FALLBACK || '1') !== '0';
+const pipelineStartedAt =
+  process.env.NAUTILUS_PIPELINE_STARTED_AT || new Date().toISOString();
 
 const scoredBookmarksPath = path.join(
   PROJECT_ROOT,
@@ -61,7 +63,10 @@ const run = (scriptName, extraArgs = []) => {
   execFileSync(nodeBin, [scriptPath, ...extraArgs], {
     stdio: 'inherit',
     cwd: PROJECT_ROOT,
-    env: process.env,
+    env: {
+      ...process.env,
+      NAUTILUS_PIPELINE_STARTED_AT: pipelineStartedAt,
+    },
   });
 };
 
@@ -87,6 +92,8 @@ const resolveScoredBookmarksInputPath = () => {
 };
 
 let scoredBookmarksInputPath = scoredBookmarksPath;
+
+console.log(`Pipeline started at: ${pipelineStartedAt}`);
 
 try {
   run('fetch-bookmarks-to-csv.mjs', ['--max-pages', maxPages, '--top', topN]);

@@ -72,6 +72,23 @@ const writeJson = (filePath, value) => {
   fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
 };
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const safeDate = input => {
+  const ms = Date.parse(input || '');
+  return Number.isFinite(ms) ? ms : 0;
+};
+const formatDuration = inputMs => {
+  const totalSeconds = Math.max(0, Math.round((inputMs || 0) / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const parts = [];
+
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0 || hours > 0) parts.push(`${minutes}m`);
+  parts.push(`${seconds}s`);
+
+  return parts.join(' ');
+};
 
 const latestOutboxDir = () => {
   if (!fs.existsSync(outboxRoot)) return '';
@@ -163,6 +180,9 @@ const buildResearchUrls = ({ articleUrl, slug }) => {
 
 const sendSummaryEmail = async ({
   datetimeIso,
+  pipelineStartedAt,
+  liveVerifiedAt,
+  totalTimeToLiveHuman,
   xBookmarkUrl,
   researchUrls,
   costUsd,
@@ -176,6 +196,10 @@ const sendSummaryEmail = async ({
   }
 
   const costLine = `$${Number(costUsd || 0).toFixed(4)} (estimated from configured API pricing)`;
+  const timingLine =
+    pipelineStartedAt && liveVerifiedAt && totalTimeToLiveHuman
+      ? `${totalTimeToLiveHuman} from pipeline start to live /research availability`
+      : '';
   const html = [
     `<p>Research automation completed on ${escapeHtml(datetimeIso)}</p>`,
     '<ul>',
@@ -184,6 +208,13 @@ const sendSummaryEmail = async ({
       url =>
         `  <li>Research page: <a href="${escapeHtml(url)}">${escapeHtml(url)}</a></li>`
     ),
+    ...(timingLine
+      ? [
+          `  <li>Total time to live: ${escapeHtml(timingLine)}</li>`,
+          `  <li>Pipeline started: ${escapeHtml(pipelineStartedAt)}</li>`,
+          `  <li>Live verification passed: ${escapeHtml(liveVerifiedAt)}</li>`,
+        ]
+      : []),
     `  <li>cost it took to generate all of this ${escapeHtml(costLine)}</li>`,
     '</ul>',
   ].join('\n');
@@ -193,6 +224,13 @@ const sendSummaryEmail = async ({
     '',
     `- X bookmark used: ${xBookmarkUrl}`,
     ...researchUrls.map(url => `- Research page: ${url}`),
+    ...(timingLine
+      ? [
+          `- Total time to live: ${timingLine}`,
+          `- Pipeline started: ${pipelineStartedAt}`,
+          `- Live verification passed: ${liveVerifiedAt}`,
+        ]
+      : []),
     `- cost it took to generate all of this ${costLine}`,
   ].join('\n');
 
@@ -232,17 +270,28 @@ const main = async () => {
   }
 
   const manifestPath = path.join(packageDir, 'package.json');
+  const distributionPath = path.join(packageDir, 'distribution.json');
   if (!fs.existsSync(manifestPath)) {
     throw new Error(`Missing package manifest: ${manifestPath}`);
   }
 
   const manifest = readJson(manifestPath);
+  const priorDistribution = fs.existsSync(distributionPath)
+    ? readJson(distributionPath)
+    : null;
+  const latestState = fs.existsSync(stateJsonPath) ? readJson(stateJsonPath) : {};
   const slug = String(manifest.slug || '').trim();
   const articleUrl = String(manifest.article_url || '').trim();
   const xBookmarkUrl = String(manifest?.candidate?.status_url || '').trim();
   const estimatedCostUsd = Number(
     manifest?.usage?.estimated_total_cost_usd || 0
   );
+  const pipelineStartedAt = String(
+    manifest.pipeline_started_at ||
+      latestState?.pipeline_started_at ||
+      manifest?.candidate?.generated_at ||
+      ''
+  ).trim();
 
   if (!slug) throw new Error('Manifest missing slug.');
   if (!articleUrl) throw new Error('Manifest missing article_url.');
@@ -260,6 +309,27 @@ const main = async () => {
     }
   }
 
+  const priorLiveVerifiedAt = String(
+    priorDistribution?.live_verified_at || ''
+  ).trim();
+  const liveVerifiedAt = priorLiveVerifiedAt || new Date().toISOString();
+  const pipelineStartedAtMs = safeDate(pipelineStartedAt);
+  const liveVerifiedAtMs = safeDate(liveVerifiedAt);
+  const priorTotalTimeToLiveMs = Number.isFinite(
+    Number(priorDistribution?.total_time_to_live_ms)
+  )
+    ? Number(priorDistribution.total_time_to_live_ms)
+    : null;
+  const computedTotalTimeToLiveMs =
+    pipelineStartedAtMs > 0 && liveVerifiedAtMs >= pipelineStartedAtMs
+      ? liveVerifiedAtMs - pipelineStartedAtMs
+      : null;
+  const totalTimeToLiveMs =
+    priorTotalTimeToLiveMs != null && priorTotalTimeToLiveMs >= 0
+      ? priorTotalTimeToLiveMs
+      : computedTotalTimeToLiveMs;
+  const totalTimeToLiveHuman =
+    totalTimeToLiveMs == null ? '' : formatDuration(totalTimeToLiveMs);
   const datetimeIso = new Date().toISOString();
   let email = {
     id: null,
@@ -268,6 +338,9 @@ const main = async () => {
   if (!dryRun) {
     email = await sendSummaryEmail({
       datetimeIso,
+      pipelineStartedAt,
+      liveVerifiedAt,
+      totalTimeToLiveHuman,
       xBookmarkUrl,
       researchUrls,
       costUsd: estimatedCostUsd,
@@ -282,6 +355,10 @@ const main = async () => {
     primary_article_url: articleUrl,
     research_urls: researchUrls,
     x_bookmark_url: xBookmarkUrl,
+    pipeline_started_at: pipelineStartedAt || null,
+    live_verified_at: liveVerifiedAt,
+    total_time_to_live_ms: totalTimeToLiveMs,
+    total_time_to_live_human: totalTimeToLiveHuman || null,
     estimated_total_cost_usd: Number(estimatedCostUsd.toFixed(6)),
     resend_email_id: email.id || null,
     notified_recipients: notifyEmails,
