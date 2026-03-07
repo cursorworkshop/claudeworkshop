@@ -798,8 +798,9 @@ Image style requirements:
 - Keep linework sketch-first, not polished. Avoid smooth vector-like edges.
 - Style DNA linework lock: ${styleDnaLinework.join('; ') || 'scratchy rough pen lines'}.
 - Style DNA hatching lock: ${styleDnaHatching.join('; ') || 'local low-density hatching only'}.
-- Style DNA tonal lock: ${styleDnaTone.join('; ') || 'soft pastel paper background, explicitly not white, with a gentle tonal wash allowed'}.
+- Style DNA tonal lock: ${styleDnaTone.join('; ') || 'soft pastel paper background, explicitly not white, clean and near-flat, with only a very smooth tonal wash allowed'}.
 - Background must use a soft pastel paper tone and must not be plain white or near-white.
+- Background cleanliness lock: keep the pastel field smooth, calm, and near-flat; avoid visible paper grain, fibers, speckle, mottling, or texture noise.
 - Keep the drawing language in black graphite/pencil, but allow the paper/background itself to carry muted pastel color.
 - Avoid computers/monitors/screens entirely unless explicitly required by future override.
 - No logos, no watermarks, no branded UI marks.
@@ -831,9 +832,10 @@ const buildFinalImagePrompt = ({
     'Line color lock: single black graphite/pencil line family only (no multicolor inking).',
     `Style DNA linework lock: ${styleDnaLinework.join('; ') || 'scratchy rough pen lines'}.`,
     `Style DNA hatching lock: ${styleDnaHatching.join('; ') || 'local low-density hatching only'}.`,
-    `Style DNA tonal lock: ${styleDnaTone.join('; ') || 'soft pastel paper background, explicitly not white, with a gentle tonal wash allowed'}.`,
+    `Style DNA tonal lock: ${styleDnaTone.join('; ') || 'soft pastel paper background, explicitly not white, clean and near-flat, with only a very smooth tonal wash allowed'}.`,
     `Background color lock: use ${palette.name} with soft muted tones around ${palette.start} to ${palette.end}; the background must not be white or near-white.`,
     'Color policy: keep linework and drawing marks predominantly black graphite/pencil, while the paper/background carries the pastel tone.',
+    'Background cleanliness lock: keep the pastel field smooth and calm, with no visible paper grain, fibers, speckle, mottling, distressed stock texture, or noisy wash.',
     `Topic focus (semantic only, never render as text): ${topic || 'agentic coding workflows'}.`,
     `Article title context (semantic only, never render as words): ${title}.`,
     coreAngle
@@ -868,6 +870,7 @@ const buildFinalImagePrompt = ({
     'Do not draw polished box-arrow flowcharts or literal UI modules.',
     'Stroke-density lock: keep hatching sparse and selective only. Do NOT fill hoodie/chair/body with dense crosshatching.',
     'Preserve large pastel-paper areas and lightness; keep overall line density low-to-medium.',
+    'Tonal-surface lock: background should read clean and almost flat, not textured or noisy.',
     'Line-weight lock: thin scratchy strokes, avoid thick dark contour blocks.',
     'If a reference image is provided as edit input, preserve style DNA closely but do not force identical framing every time.',
     'The style must look hand-sketched first, not polished illustration.',
@@ -912,6 +915,7 @@ If a SECOND image is provided, it is the style reference to match.
 
 Context:
 - pastel paper policy: black pencil/graphite drawing marks on a muted pastel paper background that must not be white
+- clean background policy: pastel field should read smooth and calm, without visible paper grain, fibers, speckle, mottling, or texture noise
 - concept: ${concept}
 - attempt: ${attempt}
 - scene context type: ${sceneBrief?.context_type || 'unknown'}
@@ -940,6 +944,7 @@ Hard constraints (must pass):
 17) any visible computer/monitor/screen/laptop/browser/terminal/dashboard is a hard fail
 18) white or near-white background is a hard fail
 19) neon, saturated, or glossy ad-like color accents are a hard fail
+20) visible paper grain, fibrous paper texture, speckle, mottling, watercolor bloom, or noisy background texture is a hard fail
 
 Return JSON:
 {

@@ -7,7 +7,7 @@ Reference asset: `target-style-reference.png`.
 
 ## 1) Visual Identity (Locked)
 
-- Medium: hand-drawn black-pencil sketch on soft pastel paper.
+- Medium: hand-drawn black-pencil sketch on a clean soft pastel field.
 - Ink family: single black graphite/pencil line family.
 - Rendering intent: fast editorial notebook drawing, intentionally unfinished.
 - Overall feel: human-made, rough, observational sketch.
@@ -47,7 +47,9 @@ Reference asset: `target-style-reference.png`.
 
 - Background: soft pastel paper only.
 - Background must not be pure white or near-white.
-- A subtle pastel wash or gentle tonal gradient is allowed.
+- Background should feel smooth, clean, and near-flat.
+- A subtle pastel wash or gentle tonal gradient is allowed only if it stays very smooth.
+- Avoid visible paper grain, fibers, speckle, mottling, watercolor bloom, or texture noise.
 - Keep drawing marks predominantly black graphite/pencil against the pastel field.
 
 ## 6) Detail and Content Rules
@@ -69,6 +71,7 @@ Reference asset: `target-style-reference.png`.
 - Floating arrows/icons/callouts.
 - Futuristic HUD overlays.
 - Pure white or near-white background.
+- Visible paper grain, fibrous paper texture, speckle, mottling, or noisy background texture.
 - Neon, saturated, or high-contrast color accents.
 
 ## 8) Pass/Fail Checklist
@@ -81,15 +84,16 @@ Fail if:
 - Linework is too clean, uniform, or perfect.
 - Whitespace is too low (crowded frame).
 - The background falls back to white instead of a soft pastel paper tone.
+- The background is noisy, grainy, fibrous, mottled, or overly textured instead of clean and calm.
 - Colors are bright, neon, saturated, or ad-like instead of muted pastel.
 
 Pass only if first impression is:
 
-> "A rough black-pencil technical editorial sketch on muted pastel paper with strong breathing room and scene-specific content."
+> "A rough black-pencil technical editorial sketch on a clean muted pastel background with strong breathing room and scene-specific content."
 
 ## 9) Prompting Notes
 
-- Use direct style-lock language ("rough", "unfinished", "jittery strokes", "black graphite on muted pastel paper").
+- Use direct style-lock language ("rough", "unfinished", "jittery strokes", "black graphite on a clean muted pastel background").
 - Lock style DNA and whitespace target.
 - Keep composition and subject flexible per scene brief.
 - Repeat anti-trope instruction: do not default to person at computer, and avoid computer devices altogether.

@@ -6,7 +6,9 @@ Style lock:
 - Local scribble hatching only (hair/hoodie/chair); avoid heavy global shading.
 - Keep hatching density low-to-medium; preserve visible paper whitespace.
 - Must look like a quick observational drawing, not polished concept art.
-- Warm peach/salmon paper background; near-flat tone, gradient only if very subtle.
+- Warm peach/salmon paper background; near-flat tone, gradient only if very subtle and smooth.
+- Background must feel clean and calm, not grainy, fibrous, mottled, or distressed.
+- Avoid visible paper texture, speckle, watercolor bloom, or print-like noise in the background.
 
 Composition lock:
 - Exactly one focal subject or focal object.
@@ -33,4 +35,4 @@ Hard negatives:
 
 Quality bar:
 - At thumbnail size, first impression should be:
-  "rough hand-sketched technical editorial scene on warm paper."
+  "rough hand-sketched technical editorial scene on a clean pastel field."

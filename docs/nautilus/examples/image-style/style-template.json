@@ -1,10 +1,10 @@
 {
-  "template_id": "nautilus-editorial-black-pencil-pastel-v4",
-  "version": "1.2.0",
+  "template_id": "nautilus-editorial-black-pencil-pastel-clean-v5",
+  "version": "1.3.0",
   "canonical_reference": {
     "name": "multi-agent-orchestration-approved-02",
     "path": "docs/nautilus/examples/image-style/target-style-reference.png",
-    "notes": "Canonical reference for rough black-pencil line quality, soft pastel paper tone, and high-negative-space editorial composition."
+    "notes": "Canonical reference for rough black-pencil line quality, clean soft pastel tone, and high-negative-space editorial composition."
   },
   "style_dna": {
     "medium": "hand-drawn black-pencil sketch",
@@ -17,12 +17,14 @@
     "hatching": [
       "local only and sparse",
       "low density",
-      "preserve large white-paper whitespace"
+      "preserve large clean background whitespace"
     ],
     "tone": [
       "soft pastel paper background only",
       "background must not be pure white or near-white",
-      "subtle pastel wash or gentle tonal gradient is allowed",
+      "background should read as smooth and clean, not fibrous or distressed",
+      "subtle pastel wash or gentle tonal gradient is allowed only if very smooth",
+      "avoid visible paper grain, speckle, fibers, mottling, or texture noise",
       "keep graphite/black marks as the dominant drawing language"
     ]
   },
@@ -57,6 +59,7 @@
     "comic-book finish",
     "dense global crosshatching",
     "pure white or near-white background",
+    "visible paper grain, fibers, speckle, mottling, or noisy texture",
     "neon, saturated, or high-contrast color accents",
     "rainbow or multi-accent color schemes"
   ],
