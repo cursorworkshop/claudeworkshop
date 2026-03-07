@@ -68,7 +68,7 @@ jobs:
             [ -z "$file_path" ] && continue
 
             case "$file_path" in
-              .github/*|AGENTS.md|CLAUDE.md|README.md|docs/*|.prettierignore|scripts/sync-brand-sites.mjs|scripts/sync-nautilus-research-map.sh)
+              .github/*|AGENTS.md|CLAUDE.md|README.md|docs/*|.prettierignore|scripts/sync-brand-sites.mjs|scripts/sync-nautilus-research-map.sh|scripts/vercel-deploy-with-retry.sh)
                 ;;
               *)
                 deploy_required=true
