@@ -78,7 +78,7 @@ node pipeline/run-cycle.mjs \
 
 ## Schedule
 
-`research-cycle.yml` runs every night via GitHub Actions cron (`0 8 * * *`, UTC).
+`research-cycle.yml` runs every night via GitHub Actions cron (`0 1 * * *`, UTC).
 
 ## Codex In CI
 
