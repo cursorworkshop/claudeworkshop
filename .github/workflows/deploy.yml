@@ -33,8 +33,10 @@ jobs:
         run: |
           set -euo pipefail
 
+          repo_name="${GITHUB_REPOSITORY##*/}"
+
           if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ] || \
-             [ "${GITHUB_REPOSITORY}" = "cursorworkshop/claudeworkshop" ]; then
+             [ "$repo_name" = "cursorworkshop" ]; then
             echo "should_deploy=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -97,7 +99,7 @@ jobs:
           require_secret VERCEL_PROJECT_ID
 
       - name: Sync mirror repo deploy secrets from the source repo
-        if: steps.gate.outputs.should_deploy == 'true' && github.repository == 'cursorworkshop/claudeworkshop'
+        if: steps.gate.outputs.should_deploy == 'true' && github.repository_owner == 'cursorworkshop' && github.event.repository.name == 'cursorworkshop'
         env:
           GH_TOKEN: ${{ secrets.BRAND_SYNC_TOKEN }}
         run: |
@@ -153,7 +155,7 @@ jobs:
           vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN_CLEAN"
 
       - name: Sync brand mirror repos after source deploy
-        if: steps.gate.outputs.should_deploy == 'true' && github.repository == 'cursorworkshop/claudeworkshop'
+        if: steps.gate.outputs.should_deploy == 'true' && github.repository_owner == 'cursorworkshop' && github.event.repository.name == 'cursorworkshop'
         run: |
           set -euo pipefail
 
@@ -168,7 +170,7 @@ jobs:
             --target-root "$RUNNER_TEMP/brand-sync"
 
       - name: Deploy synced mirror repos from the source workflow
-        if: steps.gate.outputs.should_deploy == 'true' && github.repository == 'cursorworkshop/claudeworkshop'
+        if: steps.gate.outputs.should_deploy == 'true' && github.repository_owner == 'cursorworkshop' && github.event.repository.name == 'cursorworkshop'
         run: |
           set -euo pipefail
 
@@ -210,7 +212,9 @@ jobs:
             fi
           }
 
-          if [ "${GITHUB_REPOSITORY}" = "cursorworkshop/claudeworkshop" ]; then
+          repo_name="${GITHUB_REPOSITORY##*/}"
+
+          if [ "$repo_name" = "cursorworkshop" ]; then
             verify_url "https://www.claudeworkshop.com"
             verify_url "https://www.claudeworkshop.com"
             verify_url "https://www.codexworkshop.com"
