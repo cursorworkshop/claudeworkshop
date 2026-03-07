@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { siteConfig } from '@/lib/config';
 
 const STORAGE_KEY = 'exit_intent_shown';
 const DELAY_MS = 10000; // Wait 10 seconds before enabling
@@ -23,6 +24,7 @@ export function ExitIntentModal({
   forceOpen = false,
   onClose,
 }: ExitIntentModalProps) {
+  const leadMagnetEnabled = siteConfig.branding.leadMagnetEnabled;
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(forceOpen);
   const [firstName, setFirstName] = useState('');
@@ -37,6 +39,10 @@ export function ExitIntentModal({
   const isBlockedPath = BLOCKED_PATHS.some(path => pathname?.startsWith(path));
 
   useEffect(() => {
+    if (!leadMagnetEnabled) {
+      return;
+    }
+
     if (forceOpen) {
       setIsOpen(true);
       return;
@@ -56,10 +62,10 @@ export function ExitIntentModal({
     const timer = setTimeout(() => setCanShow(true), DELAY_MS);
 
     return () => clearTimeout(timer);
-  }, [forceOpen, isBlockedPath]);
+  }, [forceOpen, isBlockedPath, leadMagnetEnabled]);
 
   useEffect(() => {
-    if (!canShow || forceOpen || isBlockedPath) return;
+    if (!leadMagnetEnabled || !canShow || forceOpen || isBlockedPath) return;
 
     const handleMouseLeave = (e: MouseEvent) => {
       // Only trigger when mouse leaves toward top of page
@@ -72,7 +78,7 @@ export function ExitIntentModal({
 
     document.addEventListener('mouseleave', handleMouseLeave);
     return () => document.removeEventListener('mouseleave', handleMouseLeave);
-  }, [canShow, forceOpen, isBlockedPath]);
+  }, [canShow, forceOpen, isBlockedPath, leadMagnetEnabled]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,6 +110,10 @@ export function ExitIntentModal({
     setIsOpen(false);
     onClose?.();
   };
+
+  if (!leadMagnetEnabled) {
+    return null;
+  }
 
   return (
     <AnimatePresence>

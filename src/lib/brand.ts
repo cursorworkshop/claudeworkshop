@@ -30,6 +30,7 @@ export type BrandConfig = {
   githubOrgUrl: string;
   githubRepoName: string;
   githubRepoUrl: string;
+  leadMagnetEnabled: boolean;
   logo: BrandLogoConfig;
 };
 
@@ -54,6 +55,7 @@ const BRANDS: Record<BrandKey, BrandConfig> = {
     githubOrgUrl: 'https://github.com/cursorworkshop',
     githubRepoName: 'cursorworkshop',
     githubRepoUrl: 'https://github.com/cursorworkshop/claudeworkshop',
+    leadMagnetEnabled: true,
     logo: {
       variant: 'cursor-cube',
       alt: 'Claude Workshop logo',
@@ -76,6 +78,7 @@ const BRANDS: Record<BrandKey, BrandConfig> = {
     githubOrgUrl: 'https://github.com/cursorworkshop',
     githubRepoName: 'claudeworkshop',
     githubRepoUrl: 'https://github.com/cursorworkshop/claudeworkshop',
+    leadMagnetEnabled: false,
     logo: {
       variant: 'image',
       alt: 'Claude Workshop logo',
@@ -101,6 +104,7 @@ const BRANDS: Record<BrandKey, BrandConfig> = {
     githubOrgUrl: 'https://github.com/cursorworkshop',
     githubRepoName: 'codexworkshop',
     githubRepoUrl: 'https://github.com/cursorworkshop/codexworkshop',
+    leadMagnetEnabled: false,
     logo: {
       variant: 'image',
       alt: 'Codex Workshop logo',

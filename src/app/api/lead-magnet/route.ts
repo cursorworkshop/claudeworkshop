@@ -1,6 +1,8 @@
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+import { siteConfig } from '@/lib/config';
+
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const MAILERLITE_LEADS_GROUP_ID = '179658323762612095';
@@ -16,10 +18,24 @@ function composeFullName(firstName: string, lastName: string): string | null {
 }
 
 export async function GET() {
+  if (!siteConfig.branding.leadMagnetEnabled) {
+    return Response.json(
+      { error: 'Lead magnet is not available on this site' },
+      { status: 404 }
+    );
+  }
+
   return Response.json({ status: 'Lead magnet API ready' });
 }
 
 export async function POST(request: Request) {
+  if (!siteConfig.branding.leadMagnetEnabled) {
+    return Response.json(
+      { error: 'Lead magnet is not available on this site' },
+      { status: 404 }
+    );
+  }
+
   try {
     const payload = (await request.json()) as {
       email?: unknown;

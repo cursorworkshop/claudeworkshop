@@ -78,7 +78,7 @@ export default function RootLayout({
             <Header />
             <main>{children}</main>
             <VeilFooter />
-            <ExitIntentModal />
+            {siteConfig.branding.leadMagnetEnabled ? <ExitIntentModal /> : null}
             <Toaster />
           </TrackingProvider>
         </ThemeProvider>

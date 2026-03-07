@@ -11,6 +11,7 @@ export interface SiteConfig {
     workshopsName: string;
     domain: string;
     favicon: string;
+    leadMagnetEnabled: boolean;
   };
   contact: {
     infoEmail: string;

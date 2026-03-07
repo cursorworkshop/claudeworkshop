@@ -14,6 +14,7 @@ export const siteConfig: SiteConfig = {
     workshopsName: brandConfig.workshopsName,
     domain: brandConfig.domain,
     favicon: brandConfig.favicon,
+    leadMagnetEnabled: brandConfig.leadMagnetEnabled,
   },
   contact: {
     infoEmail: brandConfig.infoEmail,

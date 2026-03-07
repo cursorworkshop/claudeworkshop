@@ -247,6 +247,20 @@ cursorworkshop`, create a new follow-up commit with the deploy-safe author
    - `vercel --prod --yes`
 8. Verify all three production domains after the deploys finish.
 
+## Brand-Specific Funnel Rules
+
+1. `claudeworkshop.com` is the only brand that currently has the white paper
+   lead magnet enabled.
+2. `claudeworkshop.com` and `codexworkshop.com` must not expose:
+   - `/white-paper`
+   - the exit-intent white paper modal
+   - the public lead-magnet submission flow
+3. When working on white paper, exit-intent, or lead-magnet code, keep that
+   split intact unless the founders explicitly say the Claude and Codex white
+   papers are ready.
+4. If a shared UI change touches those flows, verify that Claude still works
+   and Claude/Codex still stay disabled after the rollout.
+
 ### Source repo workflows
 
 1. `.github/workflows/deploy.yml`
