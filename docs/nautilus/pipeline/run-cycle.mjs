@@ -22,7 +22,7 @@ const nodeBin = process.execPath;
 const dryRun = hasFlag('--dry-run');
 const maxPages = getArgValue('--max-pages', process.env.NAUTILUS_MAX_PAGES || '100');
 const topN = getArgValue('--top', process.env.NAUTILUS_TOP_N || '20');
-const minRelevance = getArgValue('--min-relevance', process.env.NAUTILUS_MIN_RELEVANCE || '65');
+const minRelevance = getArgValue('--min-relevance', process.env.NAUTILUS_MIN_RELEVANCE || '25');
 const maxDraftAttempts = getArgValue('--max-draft-attempts', process.env.NAUTILUS_MAX_DRAFT_ATTEMPTS || '3');
 const minWordCount = getArgValue(
   '--min-word-count',
