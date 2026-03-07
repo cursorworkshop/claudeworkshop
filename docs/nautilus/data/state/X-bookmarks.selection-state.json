@@ -3,13 +3,15 @@
     "2019564738649505882",
     "1977706278110765481",
     "1961848171925278932",
-    "2020290971951391031"
+    "2020290971951391031",
+    "2003118032919613595"
   ],
   "published_ids": [
     "2019564738649505882",
     "1977706278110765481",
     "1961848171925278932",
-    "2020290971951391031"
+    "2020290971951391031",
+    "2003118032919613595"
   ],
   "history": [
     {
@@ -48,6 +50,18 @@
       "published_at": "2026-03-02T12:44:49.353Z",
       "published_slug": "ai-coding-tooling-2020290971951391031",
       "article_url": "https://www.claudeworkshop.com/research/ai-coding-tooling-2020290971951391031"
+    },
+    {
+      "id": "2003118032919613595",
+      "selected_at": "2026-03-07T12:55:59.308Z",
+      "published_at": "2026-03-07T12:57:51.017Z",
+      "relevance_percent": 57,
+      "candidate_slug": "ai-coding-tooling-2003118032919613595",
+      "published_slug": "ai-coding-tooling-20260307-1255",
+      "article_url": "https://www.claudeworkshop.com/research/ai-coding-tooling-20260307-1255",
+      "status_url": "https://x.com/Yampeleg/status/2003118032919613595",
+      "author_handle": "Yampeleg",
+      "author_name": "Yam Peleg"
     }
   ]
 }
