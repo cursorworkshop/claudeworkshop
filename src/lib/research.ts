@@ -34,9 +34,7 @@ export type ResearchArticleWithContent = ResearchArticle & {
 const RESEARCH_DIR = path.join(process.cwd(), 'content', 'editorials');
 const CANONICAL_MULTI_AGENT_SLUG =
   'multi-agent-orchestration-2019564738649505882';
-const NON_PUBLIC_RESEARCH_SLUGS = new Set([
-  'multi-agent-orchestration-20260307-0820',
-]);
+const NON_PUBLIC_RESEARCH_SLUGS = new Set<string>();
 
 const calculateReadingTime = (content: string): number => {
   const wordsPerMinute = 200;
