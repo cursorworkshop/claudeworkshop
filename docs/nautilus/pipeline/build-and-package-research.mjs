@@ -1,22 +1,22 @@
 #!/usr/bin/env node
 
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const argv = process.argv.slice(2);
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
-const PROJECT_ROOT = path.resolve(SCRIPT_DIR, '..');
+const PROJECT_ROOT = path.resolve(SCRIPT_DIR, "..");
 
 const getArgValue = (name, fallback) => {
-  const idx = argv.findIndex(arg => arg === name);
+  const idx = argv.findIndex((arg) => arg === name);
   if (idx === -1) return fallback;
   const next = argv[idx + 1];
-  if (!next || next.startsWith('--')) return fallback;
+  if (!next || next.startsWith("--")) return fallback;
   return next;
 };
 
-const hasFlag = name => argv.includes(name);
+const hasFlag = (name) => argv.includes(name);
 const toNumber = (value, fallback) => {
   const parsed = Number.parseFloat(String(value));
   return Number.isFinite(parsed) ? parsed : fallback;
@@ -24,42 +24,45 @@ const toNumber = (value, fallback) => {
 
 const candidateJsonPath = path.resolve(
   getArgValue(
-    '--candidate-json',
+    "--candidate-json",
     path.join(
       PROJECT_ROOT,
-      'data',
-      'state',
-      'X-bookmarks.next-research-candidate.json'
-    )
-  )
+      "data",
+      "state",
+      "X-bookmarks.next-research-candidate.json",
+    ),
+  ),
 );
 const stateDir = path.resolve(
-  getArgValue('--state-dir', path.join(PROJECT_ROOT, 'data', 'state'))
+  getArgValue("--state-dir", path.join(PROJECT_ROOT, "data", "state")),
 );
 const outboxDir = path.resolve(
-  getArgValue('--outbox-dir', path.join(PROJECT_ROOT, 'data', 'outbox'))
+  getArgValue("--outbox-dir", path.join(PROJECT_ROOT, "data", "outbox")),
 );
 const minRelevance = Math.max(
   0,
-  Math.min(100, Number.parseInt(getArgValue('--min-relevance', '65'), 10) || 65)
+  Math.min(
+    100,
+    Number.parseInt(getArgValue("--min-relevance", "65"), 10) || 65,
+  ),
 );
 const maxDraftAttempts = Math.max(
   1,
-  Number.parseInt(getArgValue('--max-draft-attempts', '3'), 10) || 3
+  Number.parseInt(getArgValue("--max-draft-attempts", "3"), 10) || 3,
 );
 const minWordCount = Math.max(
   100,
-  Number.parseInt(getArgValue('--min-word-count', '450'), 10) || 450
+  Number.parseInt(getArgValue("--min-word-count", "450"), 10) || 450,
 );
 const maxWordCount = Math.max(
   minWordCount + 50,
   Number.parseInt(
     getArgValue(
-      '--max-word-count',
-      process.env.NAUTILUS_MAX_WORD_COUNT || '1100'
+      "--max-word-count",
+      process.env.NAUTILUS_MAX_WORD_COUNT || "1100",
     ),
-    10
-  ) || 1100
+    10,
+  ) || 1100,
 );
 const targetWordCount = Math.max(
   minWordCount,
@@ -67,58 +70,58 @@ const targetWordCount = Math.max(
     maxWordCount,
     Number.parseInt(
       getArgValue(
-        '--target-word-count',
-        process.env.NAUTILUS_TARGET_WORD_COUNT || '900'
+        "--target-word-count",
+        process.env.NAUTILUS_TARGET_WORD_COUNT || "900",
       ),
-      10
-    ) || 900
-  )
+      10,
+    ) || 900,
+  ),
 );
-const dryRun = hasFlag('--dry-run');
+const dryRun = hasFlag("--dry-run");
 
-const openAiKey = process.env.OPENAI_API_KEY || '';
+const openAiKey = process.env.OPENAI_API_KEY || "";
 const openAiBaseUrl = (
-  process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1'
-).replace(/\/+$/, '');
-const textModel = process.env.OPENAI_TEXT_MODEL || 'gpt-4.1';
-const imageModel = process.env.OPENAI_IMAGE_MODEL || 'gpt-image-1';
+  process.env.OPENAI_BASE_URL || "https://api.openai.com/v1"
+).replace(/\/+$/, "");
+const textModel = process.env.OPENAI_TEXT_MODEL || "gpt-4.1";
+const imageModel = process.env.OPENAI_IMAGE_MODEL || "gpt-image-1";
 const textInputUsdPer1M = Number.parseFloat(
-  process.env.OPENAI_TEXT_INPUT_USD_PER_1M || '2'
+  process.env.OPENAI_TEXT_INPUT_USD_PER_1M || "2",
 );
 const textOutputUsdPer1M = Number.parseFloat(
-  process.env.OPENAI_TEXT_OUTPUT_USD_PER_1M || '8'
+  process.env.OPENAI_TEXT_OUTPUT_USD_PER_1M || "8",
 );
 const image1536x1024UsdEach = Number.parseFloat(
-  process.env.OPENAI_IMAGE_1536X1024_USD_EACH || '0.063'
+  process.env.OPENAI_IMAGE_1536X1024_USD_EACH || "0.063",
 );
 const pipelineStartedAt =
   process.env.NAUTILUS_PIPELINE_STARTED_AT || new Date().toISOString();
 const openAiRequestTimeoutMs = Math.max(
   10_000,
-  Number.parseInt(process.env.OPENAI_REQUEST_TIMEOUT_MS || '120000', 10) ||
-    120_000
+  Number.parseInt(process.env.OPENAI_REQUEST_TIMEOUT_MS || "120000", 10) ||
+    120_000,
 );
 const openAiImageRequestTimeoutMs = Math.max(
   openAiRequestTimeoutMs,
   Number.parseInt(
-    process.env.OPENAI_IMAGE_REQUEST_TIMEOUT_MS || '180000',
-    10
-  ) || 180_000
+    process.env.OPENAI_IMAGE_REQUEST_TIMEOUT_MS || "180000",
+    10,
+  ) || 180_000,
 );
 const styleTemplatePath = path.resolve(
   getArgValue(
-    '--style-template',
+    "--style-template",
     path.join(
       PROJECT_ROOT,
-      'docs',
-      'examples',
-      'image-style',
-      'style-template.json'
-    )
-  )
+      "docs",
+      "examples",
+      "image-style",
+      "style-template.json",
+    ),
+  ),
 );
 const styleTemplate = fs.existsSync(styleTemplatePath)
-  ? JSON.parse(fs.readFileSync(styleTemplatePath, 'utf8'))
+  ? JSON.parse(fs.readFileSync(styleTemplatePath, "utf8"))
   : {};
 const styleTemplateQuality = styleTemplate?.quality_thresholds || {};
 const styleTemplateComposition = styleTemplate?.composition_lock || {};
@@ -127,17 +130,17 @@ const styleTemplateHardNegatives = Array.isArray(styleTemplate?.hard_negatives)
   ? styleTemplate.hard_negatives
   : [];
 const imageReviewModel =
-  process.env.OPENAI_IMAGE_REVIEW_MODEL || 'gpt-4.1-mini';
+  process.env.OPENAI_IMAGE_REVIEW_MODEL || "gpt-4.1-mini";
 const imageMaxAttempts = Math.max(
   1,
   Number.parseInt(
     getArgValue(
-      '--image-max-attempts',
+      "--image-max-attempts",
       process.env.NAUTILUS_IMAGE_MAX_ATTEMPTS ||
-        String(styleTemplateQuality.max_style_attempts || '8')
+        String(styleTemplateQuality.max_style_attempts || "8"),
     ),
-    10
-  ) || 8
+    10,
+  ) || 8,
 );
 const imageMinScore = Math.max(
   1,
@@ -145,13 +148,13 @@ const imageMinScore = Math.max(
     100,
     Number.parseInt(
       getArgValue(
-        '--image-min-score',
+        "--image-min-score",
         process.env.NAUTILUS_IMAGE_MIN_SCORE ||
-          String(styleTemplateQuality.style_score_min || '96')
+          String(styleTemplateQuality.style_score_min || "96"),
       ),
-      10
-    ) || 96
-  )
+      10,
+    ) || 96,
+  ),
 );
 const imageCompositionMinScore = Math.max(
   1,
@@ -159,44 +162,44 @@ const imageCompositionMinScore = Math.max(
     100,
     Number.parseInt(
       getArgValue(
-        '--image-composition-min-score',
+        "--image-composition-min-score",
         process.env.NAUTILUS_IMAGE_COMPOSITION_MIN_SCORE ||
-          String(styleTemplateQuality.composition_score_min || '94')
+          String(styleTemplateQuality.composition_score_min || "94"),
       ),
-      10
-    ) || 94
-  )
+      10,
+    ) || 94,
+  ),
 );
 const imageReferencePath = path.join(
   PROJECT_ROOT,
-  'docs',
-  'examples',
-  'image-style',
-  'target-style-reference.png'
+  "docs",
+  "examples",
+  "image-style",
+  "target-style-reference.png",
 );
 const imageStyleSpecPath = path.join(
   PROJECT_ROOT,
-  'docs',
-  'examples',
-  'image-style',
-  'reference-style-spec.md'
+  "docs",
+  "examples",
+  "image-style",
+  "reference-style-spec.md",
 );
 const imageStyleSpecText = fs.existsSync(imageStyleSpecPath)
-  ? fs.readFileSync(imageStyleSpecPath, 'utf8').trim()
-  : '';
+  ? fs.readFileSync(imageStyleSpecPath, "utf8").trim()
+  : "";
 const subjectScaleTarget = toNumber(
   getArgValue(
-    '--subject-scale',
-    styleTemplateComposition.subject_scale_target ?? '0.22'
+    "--subject-scale",
+    styleTemplateComposition.subject_scale_target ?? "0.22",
   ),
-  0.22
+  0.22,
 );
 const negativeSpaceTarget = toNumber(
   getArgValue(
-    '--negative-space',
-    styleTemplateComposition.negative_space_target ?? '0.70'
+    "--negative-space",
+    styleTemplateComposition.negative_space_target ?? "0.70",
   ),
-  0.7
+  0.7,
 );
 const subjectScaleRange =
   Array.isArray(styleTemplateComposition.subject_scale_range) &&
@@ -212,16 +215,16 @@ const styleReferenceImageBuffer = fs.existsSync(imageReferencePath)
   ? fs.readFileSync(imageReferencePath)
   : null;
 const preferReferenceEdit =
-  (process.env.NAUTILUS_IMAGE_USE_REFERENCE_EDIT || 'true')
+  (process.env.NAUTILUS_IMAGE_USE_REFERENCE_EDIT || "true")
     .trim()
-    .toLowerCase() !== 'false';
+    .toLowerCase() !== "false";
 
 const articleBaseUrl = (
-  process.env.RESEARCH_BASE_URL || 'https://www.claudeworkshop.com/research'
-).replace(/\/+$/, '');
-const authorName = process.env.RESEARCH_AUTHOR_NAME || 'Rogier Muller';
+  process.env.RESEARCH_BASE_URL || "https://www.claudeworkshop.com/research"
+).replace(/\/+$/, "");
+const authorName = process.env.RESEARCH_AUTHOR_NAME || "Rogier Muller";
 const authorUrl =
-  process.env.RESEARCH_AUTHOR_URL || 'https://www.claudeworkshop.com/about';
+  process.env.RESEARCH_AUTHOR_URL || "https://www.claudeworkshop.com/about";
 
 const usageMetrics = {
   chat_calls: 0,
@@ -236,50 +239,50 @@ const usageMetrics = {
 };
 
 if (!openAiKey && !dryRun) {
-  throw new Error('OPENAI_API_KEY is required unless --dry-run is used.');
+  throw new Error("OPENAI_API_KEY is required unless --dry-run is used.");
 }
 
-const readJson = filePath => JSON.parse(fs.readFileSync(filePath, 'utf8'));
+const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, "utf8"));
 const writeText = (filePath, content) => {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, content, 'utf8');
+  fs.writeFileSync(filePath, content, "utf8");
 };
-const csvEscape = input => {
-  const value = input == null ? '' : String(input);
+const csvEscape = (input) => {
+  const value = input == null ? "" : String(input);
   if (/[",\n]/.test(value)) {
     return `"${value.replace(/"/g, '""')}"`;
   }
   return value;
 };
 const writeCsv = (targetPath, rows, headers) => {
-  const lines = [headers.map(csvEscape).join(',')];
+  const lines = [headers.map(csvEscape).join(",")];
   for (const row of rows) {
-    lines.push(headers.map(header => csvEscape(row[header])).join(','));
+    lines.push(headers.map((header) => csvEscape(row[header])).join(","));
   }
-  writeText(targetPath, `${lines.join('\n')}\n`);
+  writeText(targetPath, `${lines.join("\n")}\n`);
 };
 const SCORED_SNAPSHOT_HEADERS = [
-  'id',
-  'status_url',
-  'author_handle',
-  'author_name',
-  'created_at',
-  'text',
-  'replies',
-  'reposts',
-  'likes',
-  'conversation_id',
-  'relevance %',
-  'relevance_reason',
-  'topic',
-  'fit_for_agentic_coders',
-  'selected',
-  'selected_at',
-  'done',
-  'done_at',
-  'published_slug',
-  'published_article_url',
-  'source',
+  "id",
+  "status_url",
+  "author_handle",
+  "author_name",
+  "created_at",
+  "text",
+  "replies",
+  "reposts",
+  "likes",
+  "conversation_id",
+  "relevance %",
+  "relevance_reason",
+  "topic",
+  "fit_for_agentic_coders",
+  "selected",
+  "selected_at",
+  "done",
+  "done_at",
+  "published_slug",
+  "published_article_url",
+  "source",
 ];
 
 const updateSelectionStateAfterPublish = ({
@@ -292,13 +295,13 @@ const updateSelectionStateAfterPublish = ({
 }) => {
   if (dryRunMode) return;
 
-  const statePath = path.join(stateDirPath, 'X-bookmarks.selection-state.json');
+  const statePath = path.join(stateDirPath, "X-bookmarks.selection-state.json");
   const state = fs.existsSync(statePath) ? readJson(statePath) : {};
   const selectedIds = new Set(
-    Array.isArray(state.selected_ids) ? state.selected_ids : []
+    Array.isArray(state.selected_ids) ? state.selected_ids : [],
   );
   const publishedIds = new Set(
-    Array.isArray(state.published_ids) ? state.published_ids : []
+    Array.isArray(state.published_ids) ? state.published_ids : [],
   );
   const history = Array.isArray(state.history) ? [...state.history] : [];
 
@@ -318,7 +321,9 @@ const updateSelectionStateAfterPublish = ({
     author_name: candidate.author_name ?? null,
   };
 
-  const existingIndex = history.findIndex(entry => entry?.id === candidate.id);
+  const existingIndex = history.findIndex(
+    (entry) => entry?.id === candidate.id,
+  );
   if (existingIndex >= 0) {
     history[existingIndex] = {
       ...history[existingIndex],
@@ -339,8 +344,8 @@ const updateSelectionStateAfterPublish = ({
         history,
       },
       null,
-      2
-    )}\n`
+      2,
+    )}\n`,
   );
 };
 
@@ -351,26 +356,32 @@ const refreshScoredSnapshotsAfterPublish = ({
 }) => {
   if (dryRunMode) return;
 
-  const statePath = path.join(stateDirPath, 'X-bookmarks.selection-state.json');
+  const statePath = path.join(stateDirPath, "X-bookmarks.selection-state.json");
   if (!fs.existsSync(statePath)) return;
 
-  const liveDirPath = path.join(projectRoot, 'data', 'live');
+  const liveDirPath = path.join(projectRoot, "data", "live");
   const liveScoredJsonPath = path.join(
     liveDirPath,
-    'X-bookmarks.live.scored.json'
+    "X-bookmarks.live.scored.json",
   );
-  const liveScoredCsvPath = path.join(liveDirPath, 'X-bookmarks.live.scored.csv');
-  const liveSummaryPath = path.join(liveDirPath, 'X-bookmarks.live.summary.json');
+  const liveScoredCsvPath = path.join(
+    liveDirPath,
+    "X-bookmarks.live.scored.csv",
+  );
+  const liveSummaryPath = path.join(
+    liveDirPath,
+    "X-bookmarks.live.summary.json",
+  );
   const lastKnownGoodScoredJsonPath = path.join(
     stateDirPath,
-    'X-bookmarks.last-known-good.scored.json'
+    "X-bookmarks.last-known-good.scored.json",
   );
 
   const sourceRowsPath = fs.existsSync(liveScoredJsonPath)
     ? liveScoredJsonPath
     : fs.existsSync(lastKnownGoodScoredJsonPath)
       ? lastKnownGoodScoredJsonPath
-      : '';
+      : "";
 
   if (!sourceRowsPath) return;
 
@@ -379,12 +390,14 @@ const refreshScoredSnapshotsAfterPublish = ({
 
   const selectionState = readJson(statePath) || {};
   const selectedIds = new Set(
-    Array.isArray(selectionState.selected_ids) ? selectionState.selected_ids : []
+    Array.isArray(selectionState.selected_ids)
+      ? selectionState.selected_ids
+      : [],
   );
   const publishedIds = new Set(
     Array.isArray(selectionState.published_ids)
       ? selectionState.published_ids
-      : []
+      : [],
   );
   const historyById = new Map();
 
@@ -398,27 +411,27 @@ const refreshScoredSnapshotsAfterPublish = ({
     }
   }
 
-  const nextRows = scoredRows.map(row => {
+  const nextRows = scoredRows.map((row) => {
     const history = historyById.get(row.id) || null;
     const isSelected = selectedIds.has(row.id);
     const isDone = publishedIds.has(row.id);
 
     return {
       ...row,
-      selected: isSelected ? 'yes' : 'no',
-      selected_at: history?.selected_at || row.selected_at || '',
-      done: isDone ? 'yes' : 'no',
-      done_at: history?.published_at || row.done_at || '',
-      published_slug: history?.published_slug || row.published_slug || '',
+      selected: isSelected ? "yes" : "no",
+      selected_at: history?.selected_at || row.selected_at || "",
+      done: isDone ? "yes" : "no",
+      done_at: history?.published_at || row.done_at || "",
+      published_slug: history?.published_slug || row.published_slug || "",
       published_article_url:
-        history?.article_url || row.published_article_url || '',
+        history?.article_url || row.published_article_url || "",
     };
   });
 
   writeText(liveScoredJsonPath, `${JSON.stringify(nextRows, null, 2)}\n`);
   writeText(
     lastKnownGoodScoredJsonPath,
-    `${JSON.stringify(nextRows, null, 2)}\n`
+    `${JSON.stringify(nextRows, null, 2)}\n`,
   );
   writeCsv(liveScoredCsvPath, nextRows, SCORED_SNAPSHOT_HEADERS);
 
@@ -430,47 +443,48 @@ const refreshScoredSnapshotsAfterPublish = ({
         {
           ...summary,
           updated_at: new Date().toISOString(),
-          total_selected: nextRows.filter(row => row.selected === 'yes').length,
-          total_done: nextRows.filter(row => row.done === 'yes').length,
+          total_selected: nextRows.filter((row) => row.selected === "yes")
+            .length,
+          total_done: nextRows.filter((row) => row.done === "yes").length,
         },
         null,
-        2
-      )}\n`
+        2,
+      )}\n`,
     );
   }
 };
 
-const slugify = input =>
-  String(input || '')
+const slugify = (input) =>
+  String(input || "")
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
     .slice(0, 80);
 
-const escapeSingleQuotedYaml = input =>
-  String(input || '')
+const escapeSingleQuotedYaml = (input) =>
+  String(input || "")
     .replace(/'/g, "''")
     .trim();
 
-const stripCodeFences = input => {
-  const value = String(input || '').trim();
-  if (value.startsWith('```')) {
+const stripCodeFences = (input) => {
+  const value = String(input || "").trim();
+  if (value.startsWith("```")) {
     return value
-      .replace(/^```[a-zA-Z0-9]*\n?/, '')
-      .replace(/\n?```$/, '')
+      .replace(/^```[a-zA-Z0-9]*\n?/, "")
+      .replace(/\n?```$/, "")
       .trim();
   }
   return value;
 };
 
-const parseJsonLoose = input => {
+const parseJsonLoose = (input) => {
   const cleaned = stripCodeFences(input);
   try {
     return JSON.parse(cleaned);
   } catch {
     const match = cleaned.match(/\{[\s\S]*\}/);
     if (!match) {
-      throw new Error('Model did not return JSON.');
+      throw new Error("Model did not return JSON.");
     }
     return JSON.parse(match[0]);
   }
@@ -482,7 +496,7 @@ const fetchWithTimeout = async (url, options, timeoutMs) => {
   try {
     return await fetch(url, { ...options, signal: controller.signal });
   } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
+    if (error instanceof Error && error.name === "AbortError") {
       throw new Error(`Request timed out after ${timeoutMs}ms: ${url}`);
     }
     throw error;
@@ -491,18 +505,18 @@ const fetchWithTimeout = async (url, options, timeoutMs) => {
   }
 };
 
-const accumulateChatUsage = payload => {
+const accumulateChatUsage = (payload) => {
   const usage = payload?.usage || {};
   const promptTokens =
     Number(
-      usage.prompt_tokens || usage.input_tokens || usage.input_text_tokens || 0
+      usage.prompt_tokens || usage.input_tokens || usage.input_text_tokens || 0,
     ) || 0;
   const completionTokens =
     Number(
       usage.completion_tokens ||
         usage.output_tokens ||
         usage.output_text_tokens ||
-        0
+        0,
     ) || 0;
   const totalTokens =
     Number(usage.total_tokens || promptTokens + completionTokens) || 0;
@@ -517,25 +531,25 @@ const chatJson = async (messages, model = textModel, temperature = 0.35) => {
   const response = await fetchWithTimeout(
     `${openAiBaseUrl}/chat/completions`,
     {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'content-type': 'application/json',
+        "content-type": "application/json",
         authorization: `Bearer ${openAiKey}`,
       },
       body: JSON.stringify({
         model,
         temperature,
-        response_format: { type: 'json_object' },
+        response_format: { type: "json_object" },
         messages,
       }),
     },
-    openAiRequestTimeoutMs
+    openAiRequestTimeoutMs,
   );
 
   if (!response.ok) {
     const body = await response.text();
     throw new Error(
-      `OpenAI chat failed (${response.status}): ${body.slice(0, 400)}`
+      `OpenAI chat failed (${response.status}): ${body.slice(0, 400)}`,
     );
   }
 
@@ -544,7 +558,7 @@ const chatJson = async (messages, model = textModel, temperature = 0.35) => {
 
   const content = payload?.choices?.[0]?.message?.content;
   if (!content) {
-    throw new Error('OpenAI chat returned empty content.');
+    throw new Error("OpenAI chat returned empty content.");
   }
 
   return parseJsonLoose(content);
@@ -557,10 +571,10 @@ const chatJsonWithImages = async ({
   imageDataUris = [],
   temperature = 0.1,
 }) => {
-  const multimodalContent = [{ type: 'text', text: userText }];
+  const multimodalContent = [{ type: "text", text: userText }];
   for (const imageDataUri of imageDataUris) {
     multimodalContent.push({
-      type: 'image_url',
+      type: "image_url",
       image_url: { url: imageDataUri },
     });
   }
@@ -568,28 +582,28 @@ const chatJsonWithImages = async ({
   const response = await fetchWithTimeout(
     `${openAiBaseUrl}/chat/completions`,
     {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'content-type': 'application/json',
+        "content-type": "application/json",
         authorization: `Bearer ${openAiKey}`,
       },
       body: JSON.stringify({
         model,
         temperature,
-        response_format: { type: 'json_object' },
+        response_format: { type: "json_object" },
         messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: multimodalContent },
+          { role: "system", content: systemPrompt },
+          { role: "user", content: multimodalContent },
         ],
       }),
     },
-    openAiRequestTimeoutMs
+    openAiRequestTimeoutMs,
   );
 
   if (!response.ok) {
     const body = await response.text();
     throw new Error(
-      `OpenAI multimodal chat failed (${response.status}): ${body.slice(0, 400)}`
+      `OpenAI multimodal chat failed (${response.status}): ${body.slice(0, 400)}`,
     );
   }
 
@@ -598,20 +612,20 @@ const chatJsonWithImages = async ({
 
   const content = payload?.choices?.[0]?.message?.content;
   if (!content) {
-    throw new Error('OpenAI multimodal chat returned empty content.');
+    throw new Error("OpenAI multimodal chat returned empty content.");
   }
 
   return parseJsonLoose(content);
 };
 
-const imageBufferToDataUri = imageBuffer =>
-  `data:image/png;base64,${imageBuffer.toString('base64')}`;
+const imageBufferToDataUri = (imageBuffer) =>
+  `data:image/png;base64,${imageBuffer.toString("base64")}`;
 
-const accumulateImageUsage = payload => {
+const accumulateImageUsage = (payload) => {
   const usage = payload?.usage || {};
   const promptTokens =
     Number(
-      usage.prompt_tokens || usage.input_tokens || usage.input_text_tokens || 0
+      usage.prompt_tokens || usage.input_tokens || usage.input_text_tokens || 0,
     ) || 0;
   const totalTokens = Number(usage.total_tokens || promptTokens) || 0;
   usageMetrics.image_calls += 1;
@@ -619,54 +633,54 @@ const accumulateImageUsage = payload => {
   usageMetrics.image_total_tokens += totalTokens;
 };
 
-const imagePayloadToBuffer = async payload => {
+const imagePayloadToBuffer = async (payload) => {
   accumulateImageUsage(payload);
 
   const image = payload?.data?.[0];
   if (image?.b64_json) {
-    return Buffer.from(image.b64_json, 'base64');
+    return Buffer.from(image.b64_json, "base64");
   }
 
   if (image?.url) {
     const imageResponse = await fetchWithTimeout(
       image.url,
       {},
-      openAiRequestTimeoutMs
+      openAiRequestTimeoutMs,
     );
     if (!imageResponse.ok) {
       throw new Error(
-        `OpenAI image URL fetch failed (${imageResponse.status}).`
+        `OpenAI image URL fetch failed (${imageResponse.status}).`,
       );
     }
     const imageArrayBuffer = await imageResponse.arrayBuffer();
     return Buffer.from(imageArrayBuffer);
   }
 
-  throw new Error('OpenAI image response did not include b64_json or url.');
+  throw new Error("OpenAI image response did not include b64_json or url.");
 };
 
-const generateImage = async prompt => {
+const generateImage = async (prompt) => {
   const response = await fetchWithTimeout(
     `${openAiBaseUrl}/images/generations`,
     {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'content-type': 'application/json',
+        "content-type": "application/json",
         authorization: `Bearer ${openAiKey}`,
       },
       body: JSON.stringify({
         model: imageModel,
         prompt,
-        size: '1536x1024',
+        size: "1536x1024",
       }),
     },
-    openAiImageRequestTimeoutMs
+    openAiImageRequestTimeoutMs,
   );
 
   if (!response.ok) {
     const body = await response.text();
     throw new Error(
-      `OpenAI image failed (${response.status}): ${body.slice(0, 400)}`
+      `OpenAI image failed (${response.status}): ${body.slice(0, 400)}`,
     );
   }
 
@@ -676,31 +690,31 @@ const generateImage = async prompt => {
 
 const generateImageFromReference = async ({ prompt, referenceBuffer }) => {
   const form = new FormData();
-  form.append('model', imageModel);
-  form.append('prompt', prompt);
-  form.append('size', '1536x1024');
+  form.append("model", imageModel);
+  form.append("prompt", prompt);
+  form.append("size", "1536x1024");
   form.append(
-    'image',
-    new Blob([referenceBuffer], { type: 'image/png' }),
-    'style-reference.png'
+    "image",
+    new Blob([referenceBuffer], { type: "image/png" }),
+    "style-reference.png",
   );
 
   const response = await fetchWithTimeout(
     `${openAiBaseUrl}/images/edits`,
     {
-      method: 'POST',
+      method: "POST",
       headers: {
         authorization: `Bearer ${openAiKey}`,
       },
       body: form,
     },
-    openAiImageRequestTimeoutMs
+    openAiImageRequestTimeoutMs,
   );
 
   if (!response.ok) {
     const body = await response.text();
     throw new Error(
-      `OpenAI image edit failed (${response.status}): ${body.slice(0, 400)}`
+      `OpenAI image edit failed (${response.status}): ${body.slice(0, 400)}`,
     );
   }
 
@@ -708,55 +722,185 @@ const generateImageFromReference = async ({ prompt, referenceBuffer }) => {
   return imagePayloadToBuffer(payload);
 };
 
-const normalizeCategory = value => {
+const normalizeCategory = (value) => {
   const allowed = new Set([
-    'cursor-features',
-    'methodology',
-    'ai-coding',
-    'open-source',
+    "cursor-features",
+    "methodology",
+    "ai-coding",
+    "open-source",
   ]);
-  return allowed.has(value) ? value : 'ai-coding';
+  return allowed.has(value) ? value : "ai-coding";
 };
 
-const normalizeTags = tags => {
+const normalizeTags = (tags) => {
   if (!Array.isArray(tags)) {
     return [
-      'agentic coding',
-      'ai coding workflows',
-      'engineering productivity',
+      "agentic coding",
+      "ai coding workflows",
+      "engineering productivity",
     ];
   }
   const cleaned = [
-    ...new Set(tags.map(t => String(t || '').trim()).filter(Boolean)),
+    ...new Set(tags.map((t) => String(t || "").trim()).filter(Boolean)),
   ];
   return cleaned.slice(0, 8);
 };
 
+const METHODOLOGY_STEPS = [
+  {
+    title: "Plan",
+    matchers: [
+      /\bplan|planning|scope|priority|priorities|requirements|roadmap|workflow\b/i,
+      /\borchestrat|coordination|adoption|sequencing\b/i,
+    ],
+    bridge:
+      "delegate first-pass decomposition and dependency mapping, review the sequencing and assumptions, and keep ownership of scope and priorities.",
+  },
+  {
+    title: "Design",
+    matchers: [
+      /\bdesign|architecture|architectural|api|contract|interface|integration\b/i,
+      /\bcodebase|structure|system shape|boundary|boundaries\b/i,
+    ],
+    bridge:
+      "delegate option mapping and pattern exploration, review the interfaces and tradeoffs, and keep ownership of architecture and contracts.",
+  },
+  {
+    title: "Build",
+    matchers: [
+      /\bbuild|implementation|implement|tooling|editor|coding|code generation\b/i,
+      /\bcursor|codex|claude code|agentic coding\b/i,
+    ],
+    bridge:
+      "delegate repetitive implementation and boilerplate, review the boundaries and edge cases, and keep ownership of the core system decision.",
+  },
+  {
+    title: "Test",
+    matchers: [
+      /\btest|testing|coverage|eval|evals|benchmark|regression|quality bar\b/i,
+    ],
+    bridge:
+      "delegate coverage expansion and regression scaffolding, review whether the checks prove the right thing, and keep ownership of acceptance criteria.",
+  },
+  {
+    title: "Review",
+    matchers: [/\breview|approval|security|audit|merge|risk triage\b/i],
+    bridge:
+      "delegate first-pass diff reading and risk triage, review business logic and failure modes, and keep ownership of the approval bar.",
+  },
+  {
+    title: "Document",
+    matchers: [
+      /\bdocument|documentation|knowledge|playbook|skill|guide|mcp\b/i,
+    ],
+    bridge:
+      "delegate the first draft of the notes, review the accuracy and missing context, and keep ownership of the canonical explanation.",
+  },
+  {
+    title: "Deploy",
+    matchers: [
+      /\bdeploy|deployment|release|incident|ops|operat|production|rollout|rollback\b/i,
+      /\blog|monitor|diagnostic|debug\b/i,
+    ],
+    bridge:
+      "delegate log parsing and first-pass diagnostics, review the real blast radius, and keep ownership of production decisions.",
+  },
+];
+
+const hasMethodologyReference = (body) =>
+  /\]\(\/methodology\)/.test(body) ||
+  /href=["']\/methodology["']/.test(body) ||
+  /how this (fits|relates to|maps to) our methodology/i.test(body) ||
+  /one methodology lens/i.test(body);
+
+const pickMethodologyStep = ({ candidate, title, body }) => {
+  const topic = String(candidate?.topic || "");
+  const combined = [topic, title, body].filter(Boolean).join("\n");
+
+  const topicDefaults = new Map([
+    ["multi-agent orchestration", "Plan"],
+    ["mcp and integrations", "Design"],
+    ["evals and measurement", "Test"],
+    ["ai coding tooling", "Build"],
+    ["team workflow design", "Plan"],
+    ["codebase architecture", "Design"],
+    ["agentic coding signals", "Build"],
+  ]);
+
+  for (const step of METHODOLOGY_STEPS) {
+    if (step.matchers.some((matcher) => matcher.test(combined))) {
+      return step;
+    }
+  }
+
+  const topicDefault = topicDefaults.get(topic);
+  if (topicDefault) {
+    return (
+      METHODOLOGY_STEPS.find((step) => step.title === topicDefault) ||
+      METHODOLOGY_STEPS[2]
+    );
+  }
+
+  return METHODOLOGY_STEPS[2];
+};
+
+const buildMethodologySection = ({ candidate, title, body }) => {
+  const step = pickMethodologyStep({ candidate, title, body });
+
+  return `## One methodology lens
+
+One useful way to read this through our [methodology](/methodology) is the **${step.title}** step: ${step.bridge} If that split is still fuzzy, the workflow usually is too.
+`.trim();
+};
+
+const ensureMethodologyReference = ({ candidate, title, body }) => {
+  const cleanedBody = String(body || "").trim();
+  if (!cleanedBody) return cleanedBody;
+  if (hasMethodologyReference(cleanedBody)) return cleanedBody;
+
+  const methodologySection = buildMethodologySection({
+    candidate,
+    title,
+    body: cleanedBody,
+  });
+  const reservedWords = countWords(methodologySection) + 8;
+  const maxWordsBeforeAppend = Math.max(
+    minWordCount,
+    maxWordCount - reservedWords,
+  );
+  const trimmedBody =
+    countWords(cleanedBody) > maxWordsBeforeAppend
+      ? trimMarkdownToWordLimit(cleanedBody, maxWordsBeforeAppend)
+      : cleanedBody;
+
+  return `${trimmedBody.trim()}\n\n${methodologySection}\n`.trim();
+};
+
 const sanitizeBody = (body, title) => {
-  let value = String(body || '').trim();
-  value = value.replace(/^```[a-z]*\n?/i, '').replace(/\n?```$/, '');
+  let value = String(body || "").trim();
+  value = value.replace(/^```[a-z]*\n?/i, "").replace(/\n?```$/, "");
   // Normalize deep heading levels to keep house style (# and ## only).
-  value = value.replace(/^#{3,}\s+/gm, '## ');
-  if (!value.startsWith('# ')) {
+  value = value.replace(/^#{3,}\s+/gm, "## ");
+  if (!value.startsWith("# ")) {
     value = `# ${title}\n\n${value}`;
   }
   return value.trim();
 };
 
-const countWords = text =>
-  String(text || '')
+const countWords = (text) =>
+  String(text || "")
     .trim()
     .split(/\s+/)
     .filter(Boolean).length;
 
 const trimMarkdownToWordLimit = (body, maxWords) => {
-  const source = String(body || '').trim();
+  const source = String(body || "").trim();
   if (!source) return source;
   if (countWords(source) <= maxWords) return source;
 
   const blocks = source
     .split(/\n{2,}/)
-    .map(block => block.trim())
+    .map((block) => block.trim())
     .filter(Boolean);
 
   const kept = [];
@@ -786,14 +930,14 @@ const trimMarkdownToWordLimit = (body, maxWords) => {
     }
 
     if (partial.length === 0) {
-      partial.push(block.split(/\s+/).slice(0, remaining).join(' '));
+      partial.push(block.split(/\s+/).slice(0, remaining).join(" "));
     }
 
-    kept.push(partial.join(' ').trim());
+    kept.push(partial.join(" ").trim());
     break;
   }
 
-  return kept.join('\n\n').trim();
+  return kept.join("\n\n").trim();
 };
 
 const ensureUniqueSlug = (baseSlug, dir) => {
@@ -812,27 +956,32 @@ const validateDraft = ({ body, title, description }) => {
   const words = countWords(body);
 
   if (!title || title.length < 12) {
-    errors.push('Title is too short.');
+    errors.push("Title is too short.");
   }
   if (!description || description.length < 40) {
-    errors.push('Description is too short.');
+    errors.push("Description is too short.");
   }
   if (/^#{1,2}\s*\d+[.)]\s+/m.test(body)) {
     errors.push(
-      'Do not use numbered section headings (for example: ## 1. Heading).'
+      "Do not use numbered section headings (for example: ## 1. Heading).",
     );
   }
-  if (body.includes('\n### ')) {
-    errors.push('Use only # and ## headings. Found ### heading.');
+  if (body.includes("\n### ")) {
+    errors.push("Use only # and ## headings. Found ### heading.");
+  }
+  if (!hasMethodologyReference(body)) {
+    errors.push(
+      "Article must include a short methodology reference linking to /methodology.",
+    );
   }
   if (words < requiredWords) {
     errors.push(
-      `Article is too short (${words} words). Minimum is ${requiredWords}.`
+      `Article is too short (${words} words). Minimum is ${requiredWords}.`,
     );
   }
   if (words > maxWordCount) {
     errors.push(
-      `Article is too long (${words} words). Maximum is ${maxWordCount} to keep read time around 5-6 minutes.`
+      `Article is too long (${words} words). Maximum is ${maxWordCount} to keep read time around 5-6 minutes.`,
     );
   }
   return errors;
@@ -840,56 +989,56 @@ const validateDraft = ({ body, title, description }) => {
 
 const candidate = readJson(candidateJsonPath);
 
-if (candidate.status !== 'ok') {
-  console.log('No publishable candidate status. Exiting without changes.');
+if (candidate.status !== "ok") {
+  console.log("No publishable candidate status. Exiting without changes.");
   process.exit(0);
 }
 
 if (Number(candidate.relevance_percent || 0) < minRelevance) {
   console.log(
-    `Candidate below threshold (${candidate.relevance_percent} < ${minRelevance}). Skipping.`
+    `Candidate below threshold (${candidate.relevance_percent} < ${minRelevance}). Skipping.`,
   );
   process.exit(0);
 }
 
 const slugDateTime = new Date()
   .toISOString()
-  .replace(/[-:]/g, '')
+  .replace(/[-:]/g, "")
   .slice(0, 13)
-  .replace('T', '-');
+  .replace("T", "-");
 const slugTopic = slugify(
   candidate.topic ||
     candidate.article_working_title ||
     candidate.candidate_slug ||
-    'research'
+    "research",
 );
 const baseSlug = slugify(`${slugTopic}-${slugDateTime}`);
 if (!baseSlug) {
-  throw new Error('Could not derive slug from candidate.');
+  throw new Error("Could not derive slug from candidate.");
 }
 
 const articleDraftSchema = {
-  title: 'string',
-  description: 'string',
-  category: 'cursor-features|methodology|ai-coding|open-source',
-  tags: ['string'],
-  metaTitle: 'string',
-  metaDescription: 'string',
-  articleMarkdown: 'string',
-  imagePrompt: 'string',
+  title: "string",
+  description: "string",
+  category: "cursor-features|methodology|ai-coding|open-source",
+  tags: ["string"],
+  metaTitle: "string",
+  metaDescription: "string",
+  articleMarkdown: "string",
+  imagePrompt: "string",
 };
 
 const gradientPalettes = [
-  { name: 'powder blue paper', start: '#dfe9f3', end: '#eef3f8' },
-  { name: 'sage paper', start: '#dbe7dc', end: '#edf3ed' },
-  { name: 'blush paper', start: '#ecd8dc', end: '#f5ebee' },
-  { name: 'buttercream paper', start: '#efe3c8', end: '#f7f1e3' },
-  { name: 'lilac paper', start: '#e4def0', end: '#f2eef8' },
+  { name: "powder blue paper", start: "#dfe9f3", end: "#eef3f8" },
+  { name: "sage paper", start: "#dbe7dc", end: "#edf3ed" },
+  { name: "blush paper", start: "#ecd8dc", end: "#f5ebee" },
+  { name: "buttercream paper", start: "#efe3c8", end: "#f7f1e3" },
+  { name: "lilac paper", start: "#e4def0", end: "#f2eef8" },
 ];
 
-const hashString = input => {
+const hashString = (input) => {
   let h = 0;
-  const value = String(input || '');
+  const value = String(input || "");
   for (let i = 0; i < value.length; i += 1) {
     h = (h << 5) - h + value.charCodeAt(i);
     h |= 0;
@@ -897,10 +1046,10 @@ const hashString = input => {
   return Math.abs(h);
 };
 
-const SCENE_CONTEXT_TYPES = ['workspace', 'artifact_focus', 'workflow_moment'];
-const SCENE_CONTEXT_CYCLE = ['artifact_focus', 'workflow_moment', 'workspace'];
+const SCENE_CONTEXT_TYPES = ["workspace", "artifact_focus", "workflow_moment"];
+const SCENE_CONTEXT_CYCLE = ["artifact_focus", "workflow_moment", "workspace"];
 
-const pickGradientPalette = seed =>
+const pickGradientPalette = (seed) =>
   gradientPalettes[hashString(seed) % gradientPalettes.length];
 
 const styleDnaLinework = Array.isArray(styleTemplateStyleDna.linework)
@@ -914,11 +1063,11 @@ const styleDnaTone = Array.isArray(styleTemplateStyleDna.tone)
   : [];
 const subjectScaleTargetPct = Math.round(subjectScaleTarget * 100);
 const negativeSpaceTargetPct = Math.round(negativeSpaceTarget * 100);
-const subjectScaleRangePct = subjectScaleRange.map(value =>
-  Math.round(value * 100)
+const subjectScaleRangePct = subjectScaleRange.map((value) =>
+  Math.round(value * 100),
 );
-const negativeSpaceRangePct = negativeSpaceRange.map(value =>
-  Math.round(value * 100)
+const negativeSpaceRangePct = negativeSpaceRange.map((value) =>
+  Math.round(value * 100),
 );
 
 const imageStyleGuide = `
@@ -931,9 +1080,9 @@ Image style requirements:
 - Hard device ban: no computers, monitors, laptops, screens, phones, tablets, browser windows, terminal windows, dashboards, or literal UI panels.
 - Prioritize roughness: jittery strokes, visible construction lines, imperfect perspective.
 - Keep linework sketch-first, not polished. Avoid smooth vector-like edges.
-- Style DNA linework lock: ${styleDnaLinework.join('; ') || 'scratchy rough pen lines'}.
-- Style DNA hatching lock: ${styleDnaHatching.join('; ') || 'local low-density hatching only'}.
-- Style DNA tonal lock: ${styleDnaTone.join('; ') || 'soft pastel paper background, explicitly not white, clean and near-flat, with only a very smooth tonal wash allowed'}.
+- Style DNA linework lock: ${styleDnaLinework.join("; ") || "scratchy rough pen lines"}.
+- Style DNA hatching lock: ${styleDnaHatching.join("; ") || "local low-density hatching only"}.
+- Style DNA tonal lock: ${styleDnaTone.join("; ") || "soft pastel paper background, explicitly not white, clean and near-flat, with only a very smooth tonal wash allowed"}.
 - Background must use a soft pastel paper tone and must not be plain white or near-white.
 - Background cleanliness lock: keep the pastel field smooth, calm, and near-flat; avoid visible paper grain, fibers, speckle, mottling, or texture noise.
 - Keep the drawing language in black graphite/pencil, but allow the paper/background itself to carry muted pastel color.
@@ -943,14 +1092,14 @@ Image style requirements:
 - No floating arrows/icons/callouts.
 - Subject scale target: ${subjectScaleTargetPct}% (range ${subjectScaleRangePct[0]}-${subjectScaleRangePct[1]}%).
 - Negative space target: ${negativeSpaceTargetPct}% (range ${negativeSpaceRangePct[0]}-${negativeSpaceRangePct[1]}%).
-- Hard negatives: ${styleTemplateHardNegatives.join(', ') || 'none'}.
+- Hard negatives: ${styleTemplateHardNegatives.join(", ") || "none"}.
 - Professional editorial mood, but intentionally unfinished.
 - Match this reference fingerprint:
-${imageStyleSpecText || '- reference-style-spec.md not found; fallback to generic sketch style.'}
+${imageStyleSpecText || "- reference-style-spec.md not found; fallback to generic sketch style."}
 `.trim();
 
 const defaultImagePrompt =
-  'A single focal technical artifact composition (logs, config notes, and workflow marks) in rough editorial pen sketch style.';
+  "A single focal technical artifact composition (logs, config notes, and workflow marks) in rough editorial pen sketch style.";
 
 const buildFinalImagePrompt = ({
   title,
@@ -961,67 +1110,67 @@ const buildFinalImagePrompt = ({
   sceneBrief,
 }) =>
   [
-    'Create a 16:9 editorial hero illustration for a technical research article.',
-    'Style lock: rough notebook black-pencil sketch, visibly hand-drawn and unfinished, with broken jittery strokes.',
-    'Important: do NOT clean up lines. Keep sketch construction marks and small perspective imperfections.',
-    'Line color lock: single black graphite/pencil line family only (no multicolor inking).',
-    `Style DNA linework lock: ${styleDnaLinework.join('; ') || 'scratchy rough pen lines'}.`,
-    `Style DNA hatching lock: ${styleDnaHatching.join('; ') || 'local low-density hatching only'}.`,
-    `Style DNA tonal lock: ${styleDnaTone.join('; ') || 'soft pastel paper background, explicitly not white, clean and near-flat, with only a very smooth tonal wash allowed'}.`,
+    "Create a 16:9 editorial hero illustration for a technical research article.",
+    "Style lock: rough notebook black-pencil sketch, visibly hand-drawn and unfinished, with broken jittery strokes.",
+    "Important: do NOT clean up lines. Keep sketch construction marks and small perspective imperfections.",
+    "Line color lock: single black graphite/pencil line family only (no multicolor inking).",
+    `Style DNA linework lock: ${styleDnaLinework.join("; ") || "scratchy rough pen lines"}.`,
+    `Style DNA hatching lock: ${styleDnaHatching.join("; ") || "local low-density hatching only"}.`,
+    `Style DNA tonal lock: ${styleDnaTone.join("; ") || "soft pastel paper background, explicitly not white, clean and near-flat, with only a very smooth tonal wash allowed"}.`,
     `Background color lock: use ${palette.name} with soft muted tones around ${palette.start} to ${palette.end}; the background must not be white or near-white.`,
-    'Color policy: keep linework and drawing marks predominantly black graphite/pencil, while the paper/background carries the pastel tone.',
-    'Background cleanliness lock: keep the pastel field smooth and calm, with no visible paper grain, fibers, speckle, mottling, distressed stock texture, or noisy wash.',
-    `Topic focus (semantic only, never render as text): ${topic || 'agentic coding workflows'}.`,
+    "Color policy: keep linework and drawing marks predominantly black graphite/pencil, while the paper/background carries the pastel tone.",
+    "Background cleanliness lock: keep the pastel field smooth and calm, with no visible paper grain, fibers, speckle, mottling, distressed stock texture, or noisy wash.",
+    `Topic focus (semantic only, never render as text): ${topic || "agentic coding workflows"}.`,
     `Article title context (semantic only, never render as words): ${title}.`,
     coreAngle
       ? `Core angle (semantic only, no literal text rendering): ${coreAngle}.`
-      : '',
+      : "",
     sceneBrief?.context_type
       ? `Scene brief context type: ${sceneBrief.context_type}.`
-      : '',
-    sceneBrief?.headline ? `Scene brief headline: ${sceneBrief.headline}.` : '',
+      : "",
+    sceneBrief?.headline ? `Scene brief headline: ${sceneBrief.headline}.` : "",
     sceneBrief?.article_grounding
       ? `Scene grounding: ${sceneBrief.article_grounding}.`
-      : '',
-    sceneBrief?.context_type === 'artifact_focus'
-      ? 'Human lock for artifact_focus: no visible person; center composition on technical artifacts.'
-      : '',
-    sceneBrief?.context_type === 'workflow_moment'
-      ? 'Human lock for workflow_moment: no dominant person portrait; depict workflow transition through artifacts and state marks.'
-      : '',
+      : "",
+    sceneBrief?.context_type === "artifact_focus"
+      ? "Human lock for artifact_focus: no visible person; center composition on technical artifacts."
+      : "",
+    sceneBrief?.context_type === "workflow_moment"
+      ? "Human lock for workflow_moment: no dominant person portrait; depict workflow transition through artifacts and state marks."
+      : "",
     `Scene concept to depict: ${concept || defaultImagePrompt}.`,
-    'Composition lock: one clear focal subject or object; human optional.',
-    'Anti-trope lock: avoid defaulting to a person behind a computer.',
-    'Abstraction lock: make the scene conceptual and artsy, using symbolic forms and high-level visual metaphors.',
-    'Hard device ban: no computers, monitors, laptops, screens, phones, tablets, browser windows, terminal windows, dashboards, or literal UI panels.',
+    "Composition lock: one clear focal subject or object; human optional.",
+    "Anti-trope lock: avoid defaulting to a person behind a computer.",
+    "Abstraction lock: make the scene conceptual and artsy, using symbolic forms and high-level visual metaphors.",
+    "Hard device ban: no computers, monitors, laptops, screens, phones, tablets, browser windows, terminal windows, dashboards, or literal UI panels.",
     `Subject scale lock: keep the focal subject modest (${subjectScaleRangePct[0]}-${subjectScaleRangePct[1]}% canvas), target about ${subjectScaleTargetPct}%.`,
     `Negative-space lock: keep ${negativeSpaceRangePct[0]}-${negativeSpaceRangePct[1]}% empty paper/desk/background, target about ${negativeSpaceTargetPct}%.`,
-    'Include only minimal supporting props that reinforce the article scene.',
-    'No additional characters, no split panels, no storyboard, no collage, no literal network diagrams.',
-    'No floating arrows, icons, labels, callouts, or decorative symbols.',
-    'Hard text ban: no readable text, words, letters, numbers, titles, or labels anywhere in the image.',
-    'No logos, no watermarks, no branding, no polished UI labels.',
-    'Render with physical/symbolic shape language only; no digital interface motifs.',
-    'Do not draw polished box-arrow flowcharts or literal UI modules.',
-    'Stroke-density lock: keep hatching sparse and selective only. Do NOT fill hoodie/chair/body with dense crosshatching.',
-    'Preserve large pastel-paper areas and lightness; keep overall line density low-to-medium.',
-    'Tonal-surface lock: background should read clean and almost flat, not textured or noisy.',
-    'Line-weight lock: thin scratchy strokes, avoid thick dark contour blocks.',
-    'If a reference image is provided as edit input, preserve style DNA closely but do not force identical framing every time.',
-    'The style must look hand-sketched first, not polished illustration.',
-    'Negative style constraints: not photorealistic, not 3D render, not glossy ad, not comic/cartoon style, not fantasy art, and no neon or saturated color accents.',
+    "Include only minimal supporting props that reinforce the article scene.",
+    "No additional characters, no split panels, no storyboard, no collage, no literal network diagrams.",
+    "No floating arrows, icons, labels, callouts, or decorative symbols.",
+    "Hard text ban: no readable text, words, letters, numbers, titles, or labels anywhere in the image.",
+    "No logos, no watermarks, no branding, no polished UI labels.",
+    "Render with physical/symbolic shape language only; no digital interface motifs.",
+    "Do not draw polished box-arrow flowcharts or literal UI modules.",
+    "Stroke-density lock: keep hatching sparse and selective only. Do NOT fill hoodie/chair/body with dense crosshatching.",
+    "Preserve large pastel-paper areas and lightness; keep overall line density low-to-medium.",
+    "Tonal-surface lock: background should read clean and almost flat, not textured or noisy.",
+    "Line-weight lock: thin scratchy strokes, avoid thick dark contour blocks.",
+    "If a reference image is provided as edit input, preserve style DNA closely but do not force identical framing every time.",
+    "The style must look hand-sketched first, not polished illustration.",
+    "Negative style constraints: not photorealistic, not 3D render, not glossy ad, not comic/cartoon style, not fantasy art, and no neon or saturated color accents.",
     styleTemplateHardNegatives.length
-      ? `Template hard negatives to enforce: ${styleTemplateHardNegatives.join(', ')}.`
-      : '',
-    'Keep the scene minimal, with generous negative space and a clear silhouette.',
-    'At thumbnail size, first impression must be: rough notebook-style technical editorial sketch.',
+      ? `Template hard negatives to enforce: ${styleTemplateHardNegatives.join(", ")}.`
+      : "",
+    "Keep the scene minimal, with generous negative space and a clear silhouette.",
+    "At thumbnail size, first impression must be: rough notebook-style technical editorial sketch.",
     `Quality gate targets: style >= ${imageMinScore}, composition >= ${imageCompositionMinScore}.`,
     imageStyleSpecText
       ? `Reference fingerprint to follow exactly:\n${imageStyleSpecText}`
-      : '',
+      : "",
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
 const referenceEditDirective = `
 Reference edit lock:
@@ -1043,7 +1192,7 @@ const evaluateImageStyle = async ({
   sceneBrief,
 }) => {
   const systemPrompt =
-    'You are a strict art-direction QA reviewer. Score against constraints and return JSON only.';
+    "You are a strict art-direction QA reviewer. Score against constraints and return JSON only.";
   const userText = `
 Evaluate the FIRST image (candidate output) against the target style and hard constraints.
 If a SECOND image is provided, it is the style reference to match.
@@ -1053,8 +1202,8 @@ Context:
 - clean background policy: pastel field should read smooth and calm, without visible paper grain, fibers, speckle, mottling, or texture noise
 - concept: ${concept}
 - attempt: ${attempt}
-- scene context type: ${sceneBrief?.context_type || 'unknown'}
-${imageStyleSpecText ? `\nReference style fingerprint:\n${imageStyleSpecText}\n` : ''}
+- scene context type: ${sceneBrief?.context_type || "unknown"}
+${imageStyleSpecText ? `\nReference style fingerprint:\n${imageStyleSpecText}\n` : ""}
 
 Calibration notes:
 - Use full score range: 100 means near-identical style match, 90 means very close, 80 means moderately close.
@@ -1114,12 +1263,12 @@ Pass criteria:
   const compositionScore =
     Number.parseInt(String(review.compositionScore ?? 0), 10) || 0;
   const hardFails = Array.isArray(review.hardFails)
-    ? review.hardFails.map(item => String(item || '').trim()).filter(Boolean)
+    ? review.hardFails.map((item) => String(item || "").trim()).filter(Boolean)
     : [];
   const issues = Array.isArray(review.issues)
-    ? review.issues.map(item => String(item || '').trim()).filter(Boolean)
+    ? review.issues.map((item) => String(item || "").trim()).filter(Boolean)
     : [];
-  const retryPromptAddendum = String(review.retryPromptAddendum || '').trim();
+  const retryPromptAddendum = String(review.retryPromptAddendum || "").trim();
   const passesByScore =
     styleScore >= imageMinScore && compositionScore >= imageCompositionMinScore;
   const pass = hardFails.length === 0 && passesByScore;
@@ -1143,42 +1292,42 @@ const extractSceneBriefsFromArticle = async ({
   if (dryRun) {
     return [
       {
-        id: 'scene-workspace',
-        context_type: 'workspace',
-        headline: 'Workspace Snapshot',
+        id: "scene-workspace",
+        context_type: "workspace",
+        headline: "Workspace Snapshot",
         scene:
-          'An abstract tabletop composition with blank index cards, thread-like connectors, and geometric tokens, with airy negative space and no digital devices.',
-        article_grounding: 'Represents the article implementation environment.',
+          "An abstract tabletop composition with blank index cards, thread-like connectors, and geometric tokens, with airy negative space and no digital devices.",
+        article_grounding: "Represents the article implementation environment.",
       },
       {
-        id: 'scene-artifact',
-        context_type: 'artifact_focus',
-        headline: 'Artifact Focus',
+        id: "scene-artifact",
+        context_type: "artifact_focus",
+        headline: "Artifact Focus",
         scene:
-          'A non-human artifact tableau of symbolic modules, cables, and stacked physical fragments arranged as one focal composition; no screens or labels.',
+          "A non-human artifact tableau of symbolic modules, cables, and stacked physical fragments arranged as one focal composition; no screens or labels.",
         article_grounding:
-          'Represents concrete technical artifacts discussed in the article.',
+          "Represents concrete technical artifacts discussed in the article.",
       },
       {
-        id: 'scene-workflow',
-        context_type: 'workflow_moment',
-        headline: 'Workflow Moment',
+        id: "scene-workflow",
+        context_type: "workflow_moment",
+        headline: "Workflow Moment",
         scene:
-          'A workflow transition moment depicted with abstract state shapes, rhythm marks, and relay-like physical tokens, minimal and conceptual; no digital devices.',
+          "A workflow transition moment depicted with abstract state shapes, rhythm marks, and relay-like physical tokens, minimal and conceptual; no digital devices.",
         article_grounding:
-          'Represents a workflow decision moment from the article.',
+          "Represents a workflow decision moment from the article.",
       },
     ];
   }
 
   const response = await chatJson([
     {
-      role: 'system',
+      role: "system",
       content:
-        'You extract concise, concrete visual scene briefs from technical writing for editorial hero images.',
+        "You extract concise, concrete visual scene briefs from technical writing for editorial hero images.",
     },
     {
-      role: 'user',
+      role: "user",
       content: `Extract 3 scene briefs grounded in this finalized article.
 
 Rules:
@@ -1196,7 +1345,7 @@ Rules:
 
 Title: ${title}
 Description: ${description}
-Topic: ${topic || 'agentic coding'}
+Topic: ${topic || "agentic coding"}
 
 Article body:
 ${body}
@@ -1220,45 +1369,45 @@ Return JSON:
   const allowedTypes = new Set(SCENE_CONTEXT_TYPES);
   const normalized = raw
     .map((item, index) => {
-      const contextType = String(item?.context_type || '').trim();
+      const contextType = String(item?.context_type || "").trim();
       return {
         id: String(item?.id || `scene-${index + 1}`).trim(),
         context_type: allowedTypes.has(contextType)
           ? contextType
           : SCENE_CONTEXT_TYPES[index % SCENE_CONTEXT_TYPES.length],
         headline: String(item?.headline || `Scene ${index + 1}`).trim(),
-        scene: String(item?.scene || '').trim(),
-        article_grounding: String(item?.article_grounding || '').trim(),
+        scene: String(item?.scene || "").trim(),
+        article_grounding: String(item?.article_grounding || "").trim(),
       };
     })
-    .filter(item => item.scene);
+    .filter((item) => item.scene);
 
   const fallback = [
     {
-      id: 'scene-workspace',
-      context_type: 'workspace',
-      headline: 'Workspace Snapshot',
+      id: "scene-workspace",
+      context_type: "workspace",
+      headline: "Workspace Snapshot",
       scene:
-        'An abstract tabletop composition with blank index cards, thread-like connectors, and geometric tokens, with airy negative space and no digital devices.',
-      article_grounding: 'Represents the article implementation environment.',
+        "An abstract tabletop composition with blank index cards, thread-like connectors, and geometric tokens, with airy negative space and no digital devices.",
+      article_grounding: "Represents the article implementation environment.",
     },
     {
-      id: 'scene-artifact',
-      context_type: 'artifact_focus',
-      headline: 'Artifact Focus',
+      id: "scene-artifact",
+      context_type: "artifact_focus",
+      headline: "Artifact Focus",
       scene:
-        'A non-human artifact tableau of symbolic modules, cables, and stacked physical fragments arranged as one focal composition; no screens or labels.',
+        "A non-human artifact tableau of symbolic modules, cables, and stacked physical fragments arranged as one focal composition; no screens or labels.",
       article_grounding:
-        'Represents concrete technical artifacts discussed in the article.',
+        "Represents concrete technical artifacts discussed in the article.",
     },
     {
-      id: 'scene-workflow',
-      context_type: 'workflow_moment',
-      headline: 'Workflow Moment',
+      id: "scene-workflow",
+      context_type: "workflow_moment",
+      headline: "Workflow Moment",
       scene:
-        'A workflow transition moment depicted with abstract state shapes, rhythm marks, and relay-like physical tokens, minimal and conceptual; no digital devices.',
+        "A workflow transition moment depicted with abstract state shapes, rhythm marks, and relay-like physical tokens, minimal and conceptual; no digital devices.",
       article_grounding:
-        'Represents a workflow decision moment from the article.',
+        "Represents a workflow decision moment from the article.",
     },
   ];
 
@@ -1269,63 +1418,64 @@ Return JSON:
     }
   }
 
-  const anchoredByType = SCENE_CONTEXT_CYCLE.map(type => {
+  const anchoredByType = SCENE_CONTEXT_CYCLE.map((type) => {
     const preferred = byType.get(type);
-    const fallbackItem = fallback.find(scene => scene.context_type === type);
+    const fallbackItem = fallback.find((scene) => scene.context_type === type);
     return preferred || fallbackItem;
   }).filter(Boolean);
 
-  const constrained = anchoredByType.map(item => {
-    const scene = String(item.scene || '');
+  const constrained = anchoredByType.map((item) => {
+    const scene = String(item.scene || "");
     const humanHeavy = /\b(developer|engineer|person|human|worker)\b/i.test(
-      scene
+      scene,
     );
     const textHeavy =
       /\b(text|label|labels|title|banner|words|letters|numbers|readable|caption)\b/i.test(
-        scene
+        scene,
       );
     const deviceHeavy =
       /\b(computer|monitor|screen|laptop|desktop|browser|terminal|dashboard|window|ui|display|tablet|phone)\b/i.test(
-        scene
+        scene,
       );
-    if (item.context_type === 'artifact_focus' && humanHeavy) {
-      return fallback.find(s => s.context_type === 'artifact_focus') || item;
+    if (item.context_type === "artifact_focus" && humanHeavy) {
+      return fallback.find((s) => s.context_type === "artifact_focus") || item;
     }
-    if (item.context_type === 'workflow_moment' && humanHeavy) {
-      return fallback.find(s => s.context_type === 'workflow_moment') || item;
+    if (item.context_type === "workflow_moment" && humanHeavy) {
+      return fallback.find((s) => s.context_type === "workflow_moment") || item;
     }
     if (textHeavy) {
-      return fallback.find(s => s.context_type === item.context_type) || item;
+      return fallback.find((s) => s.context_type === item.context_type) || item;
     }
     if (deviceHeavy) {
-      return fallback.find(s => s.context_type === item.context_type) || item;
+      return fallback.find((s) => s.context_type === item.context_type) || item;
     }
     return item;
   });
 
   const hasNonHuman = constrained.some(
-    item =>
+    (item) =>
       !/\b(developer|engineer|person|human|worker)\b/i.test(
-        String(item.scene || '')
-      )
+        String(item.scene || ""),
+      ),
   );
   if (!hasNonHuman) {
     constrained[0] =
-      fallback.find(s => s.context_type === 'artifact_focus') || constrained[0];
+      fallback.find((s) => s.context_type === "artifact_focus") ||
+      constrained[0];
   }
 
   return constrained.slice(0, 3);
 };
 
 const draftSystem =
-  'You are a technical editor for claudeworkshop.com/research. Be practical, concrete, and evidence-led. Avoid hype and generic claims.';
+  "You are a technical editor for claudeworkshop.com/research. Be practical, concrete, and evidence-led. Avoid hype and generic claims.";
 const humanizerSystem =
-  'You are applying a humanizer pass to technical writing. Keep facts intact, remove AI-sounding phrasing, use direct language, and keep a natural human cadence. Remove inflated significance claims, vague attribution, rule-of-three filler, em-dash overuse, and buzzword-heavy AI vocabulary.';
+  "You are applying a humanizer pass to technical writing. Keep facts intact, remove AI-sounding phrasing, use direct language, and keep a natural human cadence. Remove inflated significance claims, vague attribution, rule-of-three filler, em-dash overuse, and buzzword-heavy AI vocabulary.";
 
 let finalDraft = null;
-let finalBody = '';
+let finalBody = "";
 let lastErrors = [];
-let feedback = '';
+let feedback = "";
 
 for (let attempt = 1; attempt <= maxDraftAttempts; attempt += 1) {
   const draftUser = `
@@ -1338,6 +1488,9 @@ Rules:
 - Keep section headings unnumbered (no "## 1. ..." patterns).
 - Include practical implementation steps.
 - Include tradeoffs and limitations.
+- Include one short, practical methodology reflection that links to [our methodology](/methodology).
+- That methodology reflection should pick one relevant step from Plan, Design, Build, Test, Review, Document, or Deploy.
+- Keep the methodology reference grounded and subtle, not promotional.
 - Do not invent facts. If uncertain, state uncertainty.
 - No fluff. No promotional tone.
 - Prefer paragraph-first writing. Use a short bullet list only when it clearly improves scanability.
@@ -1347,7 +1500,7 @@ Rules:
 - The system will apply styling automatically.
 - Scene concept should follow this style guide:
 ${imageStyleGuide}
-${feedback ? `\nFix these quality issues from previous attempt:\n${feedback}` : ''}
+${feedback ? `\nFix these quality issues from previous attempt:\n${feedback}` : ""}
 
 Return JSON with schema:
 ${JSON.stringify(articleDraftSchema, null, 2)}
@@ -1357,28 +1510,28 @@ ${JSON.stringify(articleDraftSchema, null, 2)}
     ? {
         title:
           candidate.article_working_title ||
-          'What this signal means for agentic coding teams',
+          "What this signal means for agentic coding teams",
         description:
-          'A practical analysis of one high-signal X bookmark and what engineering teams should do next.',
-        category: 'ai-coding',
-        tags: ['agentic coding', 'engineering teams', 'workflow design'],
-        metaTitle: 'Dry run research draft',
-        metaDescription: 'Dry run output generated by Nautilus.',
-        articleMarkdown: `# ${candidate.article_working_title || 'Dry run draft'}\n\n## Why this matters\n\nThis is a dry run artifact.\n\n## What to test next\n\n- Validate pipeline wiring.\n- Validate content export.\n- Validate distribution handoff.`,
+          "A practical analysis of one high-signal X bookmark and what engineering teams should do next.",
+        category: "ai-coding",
+        tags: ["agentic coding", "engineering teams", "workflow design"],
+        metaTitle: "Dry run research draft",
+        metaDescription: "Dry run output generated by Nautilus.",
+        articleMarkdown: `# ${candidate.article_working_title || "Dry run draft"}\n\n## Why this matters\n\nThis is a dry run artifact.\n\n## What to test next\n\n- Validate pipeline wiring.\n- Validate content export.\n- Validate distribution handoff.`,
         imagePrompt:
-          'A developer reviewing autonomous coding tasks on a workstation while lightweight process diagrams float around the desk.',
+          "A developer reviewing autonomous coding tasks on a workstation while lightweight process diagrams float around the desk.",
       }
     : await chatJson([
-        { role: 'system', content: draftSystem },
-        { role: 'user', content: draftUser },
+        { role: "system", content: draftSystem },
+        { role: "user", content: draftUser },
       ]);
 
   const humanized = dryRun
     ? { articleMarkdown: draft.articleMarkdown }
     : await chatJson([
-        { role: 'system', content: humanizerSystem },
+        { role: "system", content: humanizerSystem },
         {
-          role: 'user',
+          role: "user",
           content: `Humanize this article body while preserving facts.
 
 Hard constraints:
@@ -1386,13 +1539,14 @@ Hard constraints:
 - Replace vague attributions ("experts say", "industry reports") with direct phrasing unless explicitly sourced in text.
 - Remove inflated framing ("pivotal moment", "evolving landscape", "testament to").
 - Remove marketing tone and AI-buzzword stuffing.
+- Preserve any methodology reference and link to /methodology if present.
 - Avoid formulaic "not just X, but Y" and forced rule-of-three patterns.
 - Keep sentence rhythm varied and natural.
 - Keep the tone practical for engineers.
 - Keep section headings unnumbered (no "## 1. ..." patterns).
 - Keep paragraph flow primary; keep lists short and occasional.
 
-Respect this additional guidance: ${candidate.humanizer_notes || 'Keep direct and specific wording.'}
+Respect this additional guidance: ${candidate.humanizer_notes || "Keep direct and specific wording."}
 
 Return JSON with only key articleMarkdown.
 
@@ -1402,17 +1556,15 @@ ${draft.articleMarkdown}`,
       ]);
 
   const title = String(
-    draft.title || candidate.article_working_title || 'Research Update'
+    draft.title || candidate.article_working_title || "Research Update",
   ).trim();
-  const description = String(draft.description || '').trim();
+  const description = String(draft.description || "").trim();
 
   let body = sanitizeBody(
     humanized.articleMarkdown || draft.articleMarkdown,
-    title
+    title,
   );
-  if (countWords(body) > maxWordCount) {
-    body = trimMarkdownToWordLimit(body, maxWordCount);
-  }
+  body = ensureMethodologyReference({ candidate, title, body });
   const errors = validateDraft({ body, title, description });
 
   if (errors.length === 0) {
@@ -1427,15 +1579,15 @@ ${draft.articleMarkdown}`,
   }
 
   lastErrors = errors;
-  feedback = errors.map(err => `- ${err}`).join('\n');
+  feedback = errors.map((err) => `- ${err}`).join("\n");
   console.warn(
-    `Quality gate failed on attempt ${attempt}/${maxDraftAttempts}:\n${feedback}`
+    `Quality gate failed on attempt ${attempt}/${maxDraftAttempts}:\n${feedback}`,
   );
 }
 
 if (!finalDraft) {
   throw new Error(
-    `Quality gate failed after ${maxDraftAttempts} attempts:\n${lastErrors.join('\n')}`
+    `Quality gate failed after ${maxDraftAttempts} attempts:\n${lastErrors.join("\n")}`,
   );
 }
 
@@ -1449,7 +1601,7 @@ const category = normalizeCategory(finalDraft.category);
 const tags = normalizeTags(finalDraft.tags);
 const metaTitle = String(finalDraft.metaTitle || title).trim();
 const metaDescription = String(
-  finalDraft.metaDescription || description
+  finalDraft.metaDescription || description,
 ).trim();
 const publishedAt = new Date().toISOString().slice(0, 10);
 const sceneBriefs = await extractSceneBriefsFromArticle({
@@ -1463,17 +1615,17 @@ const sceneTypeStart =
   SCENE_CONTEXT_CYCLE.length;
 const preferredSceneTypes = SCENE_CONTEXT_CYCLE.map(
   (_, offset) =>
-    SCENE_CONTEXT_CYCLE[(sceneTypeStart + offset) % SCENE_CONTEXT_CYCLE.length]
+    SCENE_CONTEXT_CYCLE[(sceneTypeStart + offset) % SCENE_CONTEXT_CYCLE.length],
 );
 const selectedSceneBrief =
   preferredSceneTypes
-    .map(type => sceneBriefs.find(item => item?.context_type === type))
+    .map((type) => sceneBriefs.find((item) => item?.context_type === type))
     .find(Boolean) ||
   sceneBriefs[0] ||
   null;
 
 const frontmatter = [
-  '---',
+  "---",
   `title: '${escapeSingleQuotedYaml(title)}'`,
   `description: '${escapeSingleQuotedYaml(description)}'`,
   `image: '${escapeSingleQuotedYaml(articleImagePath)}'`,
@@ -1481,26 +1633,26 @@ const frontmatter = [
   `authorUrl: '${escapeSingleQuotedYaml(authorUrl)}'`,
   `publishedAt: '${publishedAt}'`,
   `category: '${escapeSingleQuotedYaml(category)}'`,
-  'tags:',
-  ...tags.map(tag => `  - '${escapeSingleQuotedYaml(tag)}'`),
-  'publicResearch: true',
-  'featured: false',
+  "tags:",
+  ...tags.map((tag) => `  - '${escapeSingleQuotedYaml(tag)}'`),
+  "publicResearch: true",
+  "featured: false",
   `metaTitle: '${escapeSingleQuotedYaml(metaTitle)}'`,
   `metaDescription: '${escapeSingleQuotedYaml(metaDescription)}'`,
-  '---',
-  '',
-].join('\n');
+  "---",
+  "",
+].join("\n");
 
 const articleMdx = `${frontmatter}${finalBody.trim()}\n`;
 
-const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+const stamp = new Date().toISOString().replace(/[:.]/g, "-");
 const runDir = path.join(outboxDir, `${stamp}-${slug}`);
 fs.mkdirSync(runDir, { recursive: true });
-const imageAttemptsDir = path.join(runDir, 'image-attempts');
+const imageAttemptsDir = path.join(runDir, "image-attempts");
 fs.mkdirSync(imageAttemptsDir, { recursive: true });
 writeText(
-  path.join(runDir, 'scene-briefs.json'),
-  `${JSON.stringify(sceneBriefs, null, 2)}\n`
+  path.join(runDir, "scene-briefs.json"),
+  `${JSON.stringify(sceneBriefs, null, 2)}\n`,
 );
 
 let imageGenerated = false;
@@ -1515,10 +1667,10 @@ const imageConcept = String(
   selectedSceneBrief?.scene ||
     finalDraft.imagePrompt ||
     candidate.image_prompt_draft ||
-    defaultImagePrompt
+    defaultImagePrompt,
 ).trim();
 const gradientPalette = pickGradientPalette(
-  `${candidate.id}-${slug}-${publishedAt}`
+  `${candidate.id}-${slug}-${publishedAt}`,
 );
 const imagePrompt = buildFinalImagePrompt({
   title,
@@ -1533,26 +1685,26 @@ if (!dryRun && imagePrompt) {
   try {
     let selectedImageBuffer = null;
     let selectedImageAttempt = null;
-    let retryAddendum = '';
+    let retryAddendum = "";
     let bestImageBuffer = null;
     let bestImageScore = -1;
     let bestImageAttempt = null;
 
     for (let attempt = 1; attempt <= imageMaxAttempts; attempt += 1) {
       imageStyleAttempts = attempt;
-      const attemptLabel = String(attempt).padStart(2, '0');
+      const attemptLabel = String(attempt).padStart(2, "0");
       const promptForAttempt = [
         imagePrompt,
         preferReferenceEdit && styleReferenceImageBuffer
           ? referenceEditDirective
-          : '',
+          : "",
         retryAddendum
           ? `Revision notes from failed style QA: ${retryAddendum}`
-          : '',
+          : "",
         `Attempt ${attempt}/${imageMaxAttempts}. Respect all hard constraints.`,
       ]
         .filter(Boolean)
-        .join('\n\n');
+        .join("\n\n");
 
       let imageBuffer = null;
       if (preferReferenceEdit && styleReferenceImageBuffer) {
@@ -1565,7 +1717,7 @@ if (!dryRun && imagePrompt) {
           const reason =
             editError instanceof Error ? editError.message : String(editError);
           console.warn(
-            `Image edit fallback to generations on attempt ${attempt}: ${reason}`
+            `Image edit fallback to generations on attempt ${attempt}: ${reason}`,
           );
           imageBuffer = await generateImage(promptForAttempt);
         }
@@ -1574,7 +1726,7 @@ if (!dryRun && imagePrompt) {
       }
       fs.writeFileSync(
         path.join(imageAttemptsDir, `attempt-${attemptLabel}.png`),
-        imageBuffer
+        imageBuffer,
       );
       let styleReview = null;
       try {
@@ -1591,14 +1743,14 @@ if (!dryRun && imagePrompt) {
           styleScore: 0,
           compositionScore: 0,
           pass: false,
-          hardFails: ['Style review failed'],
+          hardFails: ["Style review failed"],
           issues: [
             reviewError instanceof Error
               ? reviewError.message
               : String(reviewError),
           ],
           retryPromptAddendum:
-            'Make the drawing rougher and more human-like in stroke quality, keep one clear focal subject or object, avoid person-behind-computer defaults, keep it conceptual/abstract, remove floating arrows/icons, remove all readable text/labels, and remove all computer/screen/device motifs.',
+            "Make the drawing rougher and more human-like in stroke quality, keep one clear focal subject or object, avoid person-behind-computer defaults, keep it conceptual/abstract, remove floating arrows/icons, remove all readable text/labels, and remove all computer/screen/device motifs.",
         };
       }
 
@@ -1631,12 +1783,12 @@ if (!dryRun && imagePrompt) {
             promptForAttempt,
           },
           null,
-          2
-        )}\n`
+          2,
+        )}\n`,
       );
 
       console.log(
-        `Image style QA attempt ${attempt}/${imageMaxAttempts}: style=${styleReview.styleScore}, composition=${styleReview.compositionScore}, pass=${styleReview.pass}`
+        `Image style QA attempt ${attempt}/${imageMaxAttempts}: style=${styleReview.styleScore}, composition=${styleReview.compositionScore}, pass=${styleReview.pass}`,
       );
 
       if (styleReview.pass) {
@@ -1654,10 +1806,10 @@ if (!dryRun && imagePrompt) {
         [
           ...styleReview.hardFails,
           ...styleReview.issues,
-          'Keep one clear focal subject/object, preserve rough unfinished linework, keep the scene abstract/conceptual, avoid repetitive person-at-computer tropes, remove floating arrows/icons, remove all readable text/labels, and remove all computer/screen/device motifs.',
+          "Keep one clear focal subject/object, preserve rough unfinished linework, keep the scene abstract/conceptual, avoid repetitive person-at-computer tropes, remove floating arrows/icons, remove all readable text/labels, and remove all computer/screen/device motifs.",
         ]
           .filter(Boolean)
-          .join(' ');
+          .join(" ");
       imageStylePass = false;
       imageStyleScore = styleReview.styleScore;
       imageCompositionScore = styleReview.compositionScore;
@@ -1665,49 +1817,49 @@ if (!dryRun && imagePrompt) {
 
     if (!selectedImageBuffer) {
       if (bestImageBuffer) {
-        fs.writeFileSync(path.join(runDir, 'image-best.png'), bestImageBuffer);
+        fs.writeFileSync(path.join(runDir, "image-best.png"), bestImageBuffer);
         writeText(
-          path.join(runDir, 'image-best.json'),
+          path.join(runDir, "image-best.json"),
           `${JSON.stringify(
             {
               bestImageScore,
               bestImageAttempt,
             },
             null,
-            2
-          )}\n`
+            2,
+          )}\n`,
         );
         selectedImageBuffer = bestImageBuffer;
         imageStyleFallbackUsed = true;
         writeText(
-          path.join(runDir, 'image-best-fallback.json'),
+          path.join(runDir, "image-best-fallback.json"),
           `${JSON.stringify(
             {
               reason:
-                'Style QA did not pass configured threshold; using best generated attempt instead of reference image.',
+                "Style QA did not pass configured threshold; using best generated attempt instead of reference image.",
               configuredMinScore: imageMinScore,
               configuredCompositionMinScore: imageCompositionMinScore,
               bestScore: bestImageScore,
               bestAttempt: bestImageAttempt,
             },
             null,
-            2
-          )}\n`
+            2,
+          )}\n`,
         );
         console.warn(
-          `Image style QA did not pass. Using best generated attempt from this run (attempt ${bestImageAttempt}, score ${bestImageScore}).`
+          `Image style QA did not pass. Using best generated attempt from this run (attempt ${bestImageAttempt}, score ${bestImageScore}).`,
         );
       } else {
         throw new Error(
-          `Image style QA failed after ${imageMaxAttempts} attempts. Last scores: style=${imageStyleScore}, composition=${imageCompositionScore}. Best style score: ${bestImageScore} (attempt ${bestImageAttempt}).`
+          `Image style QA failed after ${imageMaxAttempts} attempts. Last scores: style=${imageStyleScore}, composition=${imageCompositionScore}. Best style score: ${bestImageScore} (attempt ${bestImageAttempt}).`,
         );
       }
     }
 
-    fs.writeFileSync(path.join(runDir, 'image.png'), selectedImageBuffer);
+    fs.writeFileSync(path.join(runDir, "image.png"), selectedImageBuffer);
     if (selectedImageAttempt != null) {
       writeText(
-        path.join(runDir, 'image-selected.json'),
+        path.join(runDir, "image-selected.json"),
         `${JSON.stringify(
           {
             selectedImageAttempt,
@@ -1715,8 +1867,8 @@ if (!dryRun && imagePrompt) {
             selectedImageCompositionScore: imageCompositionScore,
           },
           null,
-          2
-        )}\n`
+          2,
+        )}\n`,
       );
     }
     imageGenerated = true;
@@ -1728,11 +1880,11 @@ if (!dryRun && imagePrompt) {
 
 if (!dryRun && !imageGenerated) {
   throw new Error(
-    'Custom hero image generation is required before packaging the research article.'
+    "Custom hero image generation is required before packaging the research article.",
   );
 }
 
-writeText(path.join(runDir, 'article.mdx'), articleMdx);
+writeText(path.join(runDir, "article.mdx"), articleMdx);
 
 const packageManifest = {
   usage: {
@@ -1756,7 +1908,7 @@ const packageManifest = {
   dry_run: dryRun,
   slug,
   article_url: articleUrl,
-  image_file: imageGenerated ? 'image.png' : null,
+  image_file: imageGenerated ? "image.png" : null,
   image_generation_error: imageError,
   candidate,
   package: {
@@ -1790,8 +1942,8 @@ const packageManifest = {
 };
 
 writeText(
-  path.join(runDir, 'package.json'),
-  `${JSON.stringify(packageManifest, null, 2)}\n`
+  path.join(runDir, "package.json"),
+  `${JSON.stringify(packageManifest, null, 2)}\n`,
 );
 
 const latestState = {
@@ -1805,8 +1957,8 @@ const latestState = {
 };
 
 writeText(
-  path.join(stateDir, 'latest-publish.json'),
-  `${JSON.stringify(latestState, null, 2)}\n`
+  path.join(stateDir, "latest-publish.json"),
+  `${JSON.stringify(latestState, null, 2)}\n`,
 );
 updateSelectionStateAfterPublish({
   stateDirPath: stateDir,
@@ -1826,14 +1978,14 @@ console.log(`Packaged slug: ${slug}`);
 console.log(`Article URL: ${articleUrl}`);
 console.log(`Outbox: ${runDir}`);
 console.log(
-  `Usage: chat_calls=${usageMetrics.chat_calls}, prompt_tokens=${usageMetrics.chat_prompt_tokens}, completion_tokens=${usageMetrics.chat_completion_tokens}, image_calls=${usageMetrics.image_calls}, image_review_calls=${usageMetrics.image_review_calls}, image_review_passes=${usageMetrics.image_review_passes}`
+  `Usage: chat_calls=${usageMetrics.chat_calls}, prompt_tokens=${usageMetrics.chat_prompt_tokens}, completion_tokens=${usageMetrics.chat_completion_tokens}, image_calls=${usageMetrics.image_calls}, image_review_calls=${usageMetrics.image_review_calls}, image_review_passes=${usageMetrics.image_review_passes}`,
 );
 console.log(
   `Estimated API cost (generation only): $${(
     (usageMetrics.chat_prompt_tokens / 1_000_000) * textInputUsdPer1M +
     (usageMetrics.chat_completion_tokens / 1_000_000) * textOutputUsdPer1M +
     (imageGenerated ? image1536x1024UsdEach : 0)
-  ).toFixed(4)}`
+  ).toFixed(4)}`,
 );
 if (imageError) {
   console.log(`Image warning: ${imageError}`);
