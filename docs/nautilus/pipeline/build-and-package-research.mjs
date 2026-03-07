@@ -1276,6 +1276,7 @@ const frontmatter = [
   `category: '${escapeSingleQuotedYaml(category)}'`,
   'tags:',
   ...tags.map(tag => `  - '${escapeSingleQuotedYaml(tag)}'`),
+  'publicResearch: true',
   'featured: false',
   `metaTitle: '${escapeSingleQuotedYaml(metaTitle)}'`,
   `metaDescription: '${escapeSingleQuotedYaml(metaDescription)}'`,

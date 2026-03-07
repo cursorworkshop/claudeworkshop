@@ -8,6 +8,7 @@ export type ResearchArticle = {
   title: string;
   description: string;
   image?: string;
+  publicResearch?: boolean;
   author: string;
   authorRole?: string;
   authorUrl?: string;
@@ -33,7 +34,9 @@ export type ResearchArticleWithContent = ResearchArticle & {
 const RESEARCH_DIR = path.join(process.cwd(), 'content', 'editorials');
 const CANONICAL_MULTI_AGENT_SLUG =
   'multi-agent-orchestration-2019564738649505882';
-const PUBLIC_RESEARCH_SLUGS = new Set([CANONICAL_MULTI_AGENT_SLUG]);
+const NON_PUBLIC_RESEARCH_SLUGS = new Set([
+  'multi-agent-orchestration-20260307-0820',
+]);
 
 const calculateReadingTime = (content: string): number => {
   const wordsPerMinute = 200;
@@ -41,8 +44,20 @@ const calculateReadingTime = (content: string): number => {
   return Math.ceil(words / wordsPerMinute);
 };
 
-const isPublicResearchSlug = (slug: string): boolean =>
-  PUBLIC_RESEARCH_SLUGS.has(slug);
+const isPublicResearchEntry = (
+  slug: string,
+  data: Record<string, unknown>
+): boolean => {
+  if (NON_PUBLIC_RESEARCH_SLUGS.has(slug)) {
+    return false;
+  }
+
+  if (slug === CANONICAL_MULTI_AGENT_SLUG) {
+    return true;
+  }
+
+  return data.publicResearch === true;
+};
 
 export const getAllResearchArticles = (): ResearchArticle[] => {
   if (!fs.existsSync(RESEARCH_DIR)) {
@@ -63,6 +78,7 @@ export const getAllResearchArticles = (): ResearchArticle[] => {
         title: data.title || slug,
         description: data.description || '',
         image: data.image,
+        publicResearch: data.publicResearch === true,
         author: data.author || 'Rogier Muller',
         authorRole: data.authorRole,
         authorUrl: data.authorUrl,
@@ -84,13 +100,17 @@ export const getAllResearchArticles = (): ResearchArticle[] => {
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     );
 
-  return articles.filter(article => isPublicResearchSlug(article.slug));
+  return articles.filter(article =>
+    isPublicResearchEntry(article.slug, {
+      publicResearch: article.publicResearch === true,
+    })
+  );
 };
 
 export const getResearchArticle = (
   slug: string
 ): ResearchArticleWithContent | null => {
-  if (!isPublicResearchSlug(slug)) {
+  if (NON_PUBLIC_RESEARCH_SLUGS.has(slug)) {
     return null;
   }
 
@@ -103,11 +123,16 @@ export const getResearchArticle = (
   const fileContent = fs.readFileSync(filePath, 'utf-8');
   const { data, content } = matter(fileContent);
 
+  if (!isPublicResearchEntry(slug, data)) {
+    return null;
+  }
+
   return {
     slug,
     title: data.title || slug,
     description: data.description || '',
     image: data.image,
+    publicResearch: data.publicResearch === true,
     author: data.author || 'Rogier Muller',
     authorRole: data.authorRole,
     authorUrl: data.authorUrl,

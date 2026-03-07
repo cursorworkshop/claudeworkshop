@@ -12,10 +12,12 @@ tags:
   - 'ai-coding'
   - 'engineering-teams'
   - 'workflows'
+publicResearch: true
 featured: false
 metaTitle: 'What Multi‑Agent Orchestration Changes for Teams Shipping with Coding Agents'
 metaDescription: 'For engineering teams using coding agents, multi‑agent orchestration changes how you design workflows, reviews, and ownership. This article covers patterns, tradeoffs, and concrete implementation steps.'
 ---
+
 # What Multi‑Agent Orchestration Changes for Teams Shipping with Coding Agents
 
 Most teams start with one coding agent: autocomplete in the editor and a chat sidebar. Helpful, but it rarely changes how a team ships.
@@ -31,33 +33,39 @@ This only works when the work is structured. You need clear acceptance criteria,
 ## Minimal Orchestration Pattern
 
 **Roles**
+
 - **Coordinator (high‑end model)**: reads the ticket, repo context, and constraints; proposes a plan; selects workers; decides when the work is review‑ready.
 - **Implementer (worker model)**: applies edits file‑by‑file with a patch tool.
 - **Tester (worker model)**: writes or updates tests and runs them through a test tool; reports failures.
 - **Refiner (worker model)**: tidies style, docs, and edge cases once tests pass.
 
 **Loop**
-1) Human supplies a ticket with goal, acceptance criteria, and constraints.
-2) Coordinator inspects the repo via tools and drafts a step list with target files; it either asks for approval or proceeds under policy.
-3) Implementer edits following the plan, keeping changes localized.
-4) Tester generates or adjusts tests and runs them; failures go back to the coordinator.
-5) Coordinator repeats Implementer ↔ Tester until tests pass or a budget is hit, then calls Refiner and prepares a diff and summary for review.
-6) Human reviews the diff and test results; approval or structured feedback drives the next loop.
+
+1. Human supplies a ticket with goal, acceptance criteria, and constraints.
+2. Coordinator inspects the repo via tools and drafts a step list with target files; it either asks for approval or proceeds under policy.
+3. Implementer edits following the plan, keeping changes localized.
+4. Tester generates or adjusts tests and runs them; failures go back to the coordinator.
+5. Coordinator repeats Implementer ↔ Tester until tests pass or a budget is hit, then calls Refiner and prepares a diff and summary for review.
+6. Human reviews the diff and test results; approval or structured feedback drives the next loop.
 
 The strongest model stays focused on planning and decisions. Token‑heavy editing and test churn move to cheaper calls.
 
 ## Practical Implementation Steps
 
 ## Define tools first
+
 Start with a small, auditable tool set: `read_file(path)`, `write_file(path, diff)` or `apply_patch`, `list_files(pattern)`, and `run_tests(command)` with timeouts and truncated output. Prompts should assume these tools instead of relying on giant context pastes.
 
 ## Encode tasks as data
+
 Store tickets as structured data the coordinator can read and emit. A JSON record with goal, acceptance criteria, and constraints is enough. Require the coordinator to return a machine‑readable plan (steps plus target files) so the orchestrator can log and validate it.
 
 ## Keep the orchestrator simple
+
 A small service is sufficient: hold task state, call the coordinator with current state and tool results, dispatch to workers, and enforce budgets on steps, tokens, and wall‑clock time. Keep control flow in code, not hidden inside prompts.
 
 ## Start narrow and measure
+
 Pilot on internal tools, non‑critical paths, or refactors with strong tests. Track time from ticket to reviewable diff, number of review comments, and first‑CI pass rate. Expand scope only when these stabilize.
 
 ## Where Orchestration Helps
@@ -72,15 +80,19 @@ The common thread is sustained progress tracking. A single chat thread usually l
 ## Tradeoffs and Limits
 
 **Complexity and observability**
+
 - More agents mean more moving parts. Keep logs that show which agent acted, which tools ran with which arguments, and how the plan changed. Otherwise debugging stalls.
 
 **Cost and latency**
+
 - A strong coordinator model is expensive per token. Multiple worker calls plus tool invocations add latency. For one‑file fixes, a single good model is faster and cheaper.
 
 **Quality ceilings**
+
 - Models still hallucinate APIs, misread errors, and over‑edit. Coordinators can over‑plan. Without solid tests, the system can ship confident but wrong diffs.
 
 **Human factors**
+
 - If diffs feel opaque, reviewers will distrust them. Code ownership blurs when agents touch many files. Review workload can shift from writing code to policing changes.
 
 These limits define where orchestration fits, not reasons to avoid it entirely.
@@ -88,6 +100,7 @@ These limits define where orchestration fits, not reasons to avoid it entirely.
 ## Should You Invest?
 
 Multi‑agent orchestration is worth the effort when you have:
+
 - A steady flow of tickets that span multiple files or services.
 - Reliable automated tests and people who will expand them when gaps appear.
 - Budget tolerance for a high‑end coordinator model.
