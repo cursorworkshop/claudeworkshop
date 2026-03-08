@@ -91,6 +91,38 @@ const classifyTopic = text => {
   return 'agentic coding signals';
 };
 
+const hasPublishableEngineeringSignal = row => {
+  const text = `${row?.text || ''} ${row?.relevance_reason || ''}`.toLowerCase();
+
+  const strongSignals = [
+    /\bmcp\b|model context protocol/,
+    /\bplaywright\b/,
+    /\bagent(ic)?\b/,
+    /\bprompt engineering\b|\bprompts?\b/,
+    /\be2e\b|\bregression\b|\btests?\b|\btesting\b/,
+    /\bdocs?\b|\bsitemap\b|\bmarkdown\b/,
+    /\bci\b|\bcron\b|\bworkflow\b/,
+    /\bintegration(?:s)?\b|\btooling\b|\bapi\b/,
+    /\bcursor\b|\bcodex\b|\bclaude code\b|\bgemini\b/,
+    /\bevals?\b|\bbenchmark/,
+    /\bcodebase\b|\barchitecture\b/,
+    /\bshipping\b|\biteration\b/,
+  ];
+
+  const hardRejects = [
+    /\bhiring\b|\bwe['’]?re expanding labs\b|\bjoin our team\b/,
+    /\bzero-person billion dollar companies\b/,
+    /\bviral\b.*\bdeepfake\b/,
+    /\bexclusive devday conversation\b/,
+  ];
+
+  if (hardRejects.some(pattern => pattern.test(text))) {
+    return false;
+  }
+
+  return strongSignals.some(pattern => pattern.test(text));
+};
+
 const extractFrontmatter = raw => {
   const match = String(raw || '').match(/^---\n([\s\S]*?)\n---/);
   return match ? match[1] : '';
@@ -178,9 +210,15 @@ const ranked = [...rows]
 const existingPublicResearchTitles =
   loadExistingPublicResearchTitles(cursorRepoPath);
 let skippedDuplicateTopicCount = 0;
+let skippedNonEngineeringCount = 0;
 
 const unpublishedRanked = ranked.filter(row => {
   if (publishedIds.has(row.id)) return false;
+
+  if (!hasPublishableEngineeringSignal(row)) {
+    skippedNonEngineeringCount += 1;
+    return false;
+  }
 
   if (existingPublicResearchTitles.size === 0) {
     return true;
@@ -211,9 +249,15 @@ if (!pick) {
     message:
       'No unpublished candidate found above threshold. Add fresh bookmarks or explicitly allow selected-candidate reuse.',
     skipped_duplicate_topics: skippedDuplicateTopicCount,
+    skipped_non_engineering: skippedNonEngineeringCount,
   };
   writeJson(outputJson, noPick);
   console.log('No candidate found.');
+  if (skippedNonEngineeringCount > 0) {
+    console.log(
+      `Skipped ${skippedNonEngineeringCount} candidate(s) because they were not publishable engineering or agentic-coding signals.`
+    );
+  }
   if (skippedDuplicateTopicCount > 0) {
     console.log(
       `Skipped ${skippedDuplicateTopicCount} candidate(s) because their working title already exists in public research.`
@@ -279,6 +323,11 @@ if (reusedSelectedCandidate) {
 if (skippedDuplicateTopicCount > 0) {
   console.log(
     `Skipped ${skippedDuplicateTopicCount} candidate(s) because their working title already exists in public research.`
+  );
+}
+if (skippedNonEngineeringCount > 0) {
+  console.log(
+    `Skipped ${skippedNonEngineeringCount} candidate(s) because they were not publishable engineering or agentic-coding signals.`
   );
 }
 console.log(`Output: ${outputJson}`);

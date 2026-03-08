@@ -25,6 +25,7 @@ When working on the automated research/image pipeline:
 10. Once a bookmark candidate has been published, it must be marked as `done` in the scored CSV/JSON state and must not be selected again unless reuse is explicitly forced for debugging.
 11. The default nightly research floor is `25` relevance. The selector should still choose top-down from the ranked list, but should not drop below that floor unless someone explicitly overrides it for a manual debug run.
 12. Never publish a research article whose headline or angle duplicates an existing public research page. If a candidate maps to an already-covered topic, skip it or fail the publish before it reaches `/research`.
+13. Even above the `25` floor, skip hiring posts, generic hype, and other non-publishable items. The selector should prefer the highest-scoring publishable engineering or agentic-coding signal, not merely the highest raw score.
 
 ## Supabase Project
 
