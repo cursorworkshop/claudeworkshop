@@ -39,6 +39,13 @@ const stateDir = path.resolve(
 const outboxDir = path.resolve(
   getArgValue("--outbox-dir", path.join(PROJECT_ROOT, "data", "outbox")),
 );
+const cursorRepoPath = (() => {
+  const raw = getArgValue(
+    "--cursor-repo",
+    process.env.CURSORWORKSHOP_REPO_PATH || "",
+  );
+  return raw ? path.resolve(raw) : "";
+})();
 const minRelevance = Math.max(
   0,
   Math.min(
@@ -942,6 +949,75 @@ const countWords = (text) =>
     .split(/\s+/)
     .filter(Boolean).length;
 
+const normalizeTitle = (input) =>
+  String(input || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+
+const extractFrontmatter = (raw) => {
+  const match = String(raw || "").match(/^---\n([\s\S]*?)\n---/);
+  return match ? match[1] : "";
+};
+
+const extractFrontmatterValue = (frontmatter, key) => {
+  const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const quotedMatch = frontmatter.match(
+    new RegExp(`^${escapedKey}:\\s*['"](.+?)['"]\\s*$`, "m"),
+  );
+  if (quotedMatch) return quotedMatch[1].trim();
+
+  const plainMatch = frontmatter.match(
+    new RegExp(`^${escapedKey}:\\s*(.+?)\\s*$`, "m"),
+  );
+  return plainMatch ? plainMatch[1].trim() : "";
+};
+
+const isPublicResearchEntry = (slug, frontmatter) =>
+  /^publicResearch:\s*true\s*$/m.test(frontmatter) ||
+  slug === "multi-agent-orchestration-2019564738649505882";
+
+const loadExistingPublicResearch = (repoPath) => {
+  if (!repoPath) return [];
+
+  const editorialsDir = path.join(repoPath, "content", "editorials");
+  if (!fs.existsSync(editorialsDir)) return [];
+
+  const articles = [];
+
+  for (const filename of fs.readdirSync(editorialsDir)) {
+    if (!filename.endsWith(".mdx")) continue;
+    const slug = filename.replace(/\.mdx$/, "");
+    const raw = fs.readFileSync(path.join(editorialsDir, filename), "utf8");
+    const frontmatter = extractFrontmatter(raw);
+    if (!isPublicResearchEntry(slug, frontmatter)) continue;
+
+    const title = extractFrontmatterValue(frontmatter, "title");
+    if (!title) continue;
+
+    articles.push({
+      slug,
+      title,
+      normalizedTitle: normalizeTitle(title),
+      description: extractFrontmatterValue(frontmatter, "description"),
+      publishedAt: extractFrontmatterValue(frontmatter, "publishedAt"),
+    });
+  }
+
+  return articles.sort(
+    (a, b) => Date.parse(b.publishedAt || "") - Date.parse(a.publishedAt || ""),
+  );
+};
+
+const findExistingTitleCollision = (title, existingArticles) => {
+  const normalized = normalizeTitle(title);
+  if (!normalized) return null;
+  return (
+    existingArticles.find((article) => article.normalizedTitle === normalized) ||
+    null
+  );
+};
+
 const trimMarkdownToWordLimit = (body, maxWords) => {
   const source = String(body || "").trim();
   if (!source) return source;
@@ -999,13 +1075,19 @@ const ensureUniqueSlug = (baseSlug, dir) => {
   return slug;
 };
 
-const validateDraft = ({ body, title, description }) => {
+const validateDraft = ({ body, title, description, existingArticles }) => {
   const errors = [];
   const requiredWords = dryRun ? 30 : minWordCount;
   const words = countWords(body);
+  const titleCollision = findExistingTitleCollision(title, existingArticles);
 
   if (!title || title.length < 12) {
     errors.push("Title is too short.");
+  }
+  if (titleCollision) {
+    errors.push(
+      `Title duplicates existing public research article "${titleCollision.title}" (${titleCollision.slug}).`,
+    );
   }
   if (!description || description.length < 40) {
     errors.push("Description is too short.");
@@ -1525,6 +1607,14 @@ let finalDraft = null;
 let finalBody = "";
 let lastErrors = [];
 let feedback = "";
+const existingPublicResearch = loadExistingPublicResearch(cursorRepoPath);
+const existingPublicResearchContext = existingPublicResearch
+  .slice(0, 8)
+  .map(
+    (article) =>
+      `- ${article.title}${article.description ? ` — ${article.description}` : ""}`,
+  )
+  .join("\n");
 
 for (let attempt = 1; attempt <= maxDraftAttempts; attempt += 1) {
   const draftUser = `
@@ -1540,6 +1630,7 @@ Rules:
 - Include one short, practical methodology reflection that links to [our methodology](/methodology).
 - That methodology reflection should pick one relevant step from Plan, Design, Build, Test, Review, Document, or Deploy.
 - Keep the methodology reference grounded and subtle, not promotional.
+- Do not reuse an existing published research headline or obviously overlapping framing.
 - Do not invent facts. If uncertain, state uncertainty.
 - No fluff. No promotional tone.
 - Prefer paragraph-first writing. Use a short bullet list only when it clearly improves scanability.
@@ -1549,6 +1640,7 @@ Rules:
 - The system will apply styling automatically.
 - Scene concept should follow this style guide:
 ${imageStyleGuide}
+${existingPublicResearchContext ? `\nExisting public research headlines to avoid duplicating:\n${existingPublicResearchContext}` : ""}
 ${feedback ? `\nFix these quality issues from previous attempt:\n${feedback}` : ""}
 
 Return JSON with schema:
@@ -1616,7 +1708,12 @@ ${draft.articleMarkdown}`,
   );
   body = enforceWordBudget({ candidate, title, body });
   body = ensureMethodologyReference({ candidate, title, body });
-  const errors = validateDraft({ body, title, description });
+  const errors = validateDraft({
+    body,
+    title,
+    description,
+    existingArticles: existingPublicResearch,
+  });
 
   if (errors.length === 0) {
     finalDraft = {

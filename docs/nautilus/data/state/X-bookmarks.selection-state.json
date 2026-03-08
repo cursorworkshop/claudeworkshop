@@ -71,11 +71,14 @@
       "published_at": "2026-03-08T13:00:49.254Z",
       "relevance_percent": 55,
       "candidate_slug": "ai-coding-tooling-2021009544952844434",
-      "published_slug": "ai-coding-tooling-20260308-1259",
-      "article_url": "https://www.claudeworkshop.com/research/ai-coding-tooling-20260308-1259",
+      "published_slug": "ai-coding-tooling-20260307-1255",
+      "article_url": "https://www.claudeworkshop.com/research/ai-coding-tooling-20260307-1255",
       "status_url": "https://x.com/kr0der/status/2021009544952844434",
       "author_handle": "kr0der",
-      "author_name": "Anthony"
+      "author_name": "Anthony",
+      "resolution": "duplicate_topic",
+      "duplicate_of_slug": "ai-coding-tooling-20260307-1255",
+      "duplicate_of_article_url": "https://www.claudeworkshop.com/research/ai-coding-tooling-20260307-1255"
     }
   ]
 }

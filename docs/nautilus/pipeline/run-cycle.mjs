@@ -106,12 +106,18 @@ try {
   console.warn('\n⚠️ Fresh bookmark fetch failed; continuing with latest usable snapshot.');
   console.warn(`⚠️ Snapshot: ${scoredBookmarksInputPath}`);
 }
-run('select-next-research-candidate.mjs', [
+const selectionArgs = [
   '--min-relevance',
   minRelevance,
   '--input-json',
   scoredBookmarksInputPath,
-]);
+];
+
+if (cursorRepo) {
+  selectionArgs.push('--cursor-repo', cursorRepo);
+}
+
+run('select-next-research-candidate.mjs', selectionArgs);
 
 const candidatePath = path.join(
   PROJECT_ROOT,
@@ -142,6 +148,9 @@ const buildArgs = [
   '--target-word-count',
   targetWordCount,
 ];
+if (cursorRepo) {
+  buildArgs.push('--cursor-repo', cursorRepo);
+}
 if (dryRun) buildArgs.push('--dry-run');
 run('build-and-package-research.mjs', buildArgs);
 

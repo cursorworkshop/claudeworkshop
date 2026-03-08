@@ -33,6 +33,13 @@ const outputJson = path.resolve(
     path.join(dataDir, 'state', 'X-bookmarks.next-research-candidate.json')
   )
 );
+const cursorRepoPath = (() => {
+  const raw = getArgValue(
+    '--cursor-repo',
+    process.env.CURSORWORKSHOP_REPO_PATH || ''
+  );
+  return raw ? path.resolve(raw) : '';
+})();
 const stateJson = path.resolve(
   getArgValue(
     '--state-json',
@@ -53,6 +60,12 @@ const safeDate = input => {
   const ms = Date.parse(input || '');
   return Number.isFinite(ms) ? ms : 0;
 };
+
+const normalizeTitle = input =>
+  String(input || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
 
 const slugify = input =>
   (input || '')
@@ -76,6 +89,49 @@ const classifyTopic = text => {
   if (/\bworkflow|process|team|adoption/.test(t)) return 'team workflow design';
   if (/\barchitecture|codebase/.test(t)) return 'codebase architecture';
   return 'agentic coding signals';
+};
+
+const extractFrontmatter = raw => {
+  const match = String(raw || '').match(/^---\n([\s\S]*?)\n---/);
+  return match ? match[1] : '';
+};
+
+const extractFrontmatterValue = (frontmatter, key) => {
+  const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const quotedMatch = frontmatter.match(
+    new RegExp(`^${escapedKey}:\\s*['"](.+?)['"]\\s*$`, 'm')
+  );
+  if (quotedMatch) return quotedMatch[1].trim();
+
+  const plainMatch = frontmatter.match(
+    new RegExp(`^${escapedKey}:\\s*(.+?)\\s*$`, 'm')
+  );
+  return plainMatch ? plainMatch[1].trim() : '';
+};
+
+const isPublicResearchEntry = (slug, frontmatter) =>
+  /^publicResearch:\s*true\s*$/m.test(frontmatter) ||
+  slug === 'multi-agent-orchestration-2019564738649505882';
+
+const loadExistingPublicResearchTitles = repoPath => {
+  if (!repoPath) return new Set();
+
+  const editorialsDir = path.join(repoPath, 'content', 'editorials');
+  if (!fs.existsSync(editorialsDir)) return new Set();
+
+  const titles = new Set();
+  for (const filename of fs.readdirSync(editorialsDir)) {
+    if (!filename.endsWith('.mdx')) continue;
+    const slug = filename.replace(/\.mdx$/, '');
+    const raw = fs.readFileSync(path.join(editorialsDir, filename), 'utf8');
+    const frontmatter = extractFrontmatter(raw);
+    if (!isPublicResearchEntry(slug, frontmatter)) continue;
+    const title = extractFrontmatterValue(frontmatter, 'title');
+    if (!title) continue;
+    titles.add(normalizeTitle(title));
+  }
+
+  return titles;
 };
 
 const readJson = filePath => {
@@ -119,7 +175,25 @@ const ranked = [...rows]
       safeDate(b.created_at) - safeDate(a.created_at)
   );
 
-const unpublishedRanked = ranked.filter(row => !publishedIds.has(row.id));
+const existingPublicResearchTitles =
+  loadExistingPublicResearchTitles(cursorRepoPath);
+let skippedDuplicateTopicCount = 0;
+
+const unpublishedRanked = ranked.filter(row => {
+  if (publishedIds.has(row.id)) return false;
+
+  if (existingPublicResearchTitles.size === 0) {
+    return true;
+  }
+
+  const workingTitle = `What ${classifyTopic(row.text)} changes for teams shipping with coding agents`;
+  if (existingPublicResearchTitles.has(normalizeTitle(workingTitle))) {
+    skippedDuplicateTopicCount += 1;
+    return false;
+  }
+
+  return true;
+});
 
 let pick = unpublishedRanked.find(row => !selectedIds.has(row.id));
 let reusedSelectedCandidate = false;
@@ -136,9 +210,15 @@ if (!pick) {
     status: 'no_candidate',
     message:
       'No unpublished candidate found above threshold. Add fresh bookmarks or explicitly allow selected-candidate reuse.',
+    skipped_duplicate_topics: skippedDuplicateTopicCount,
   };
   writeJson(outputJson, noPick);
   console.log('No candidate found.');
+  if (skippedDuplicateTopicCount > 0) {
+    console.log(
+      `Skipped ${skippedDuplicateTopicCount} candidate(s) because their working title already exists in public research.`
+    );
+  }
   console.log(`Output: ${outputJson}`);
   process.exit(0);
 }
@@ -194,6 +274,11 @@ if (reusedSelectedCandidate) {
 } else {
   console.log(
     `Selected candidate: ${candidate.id} (${candidate.relevance_percent}%)`
+  );
+}
+if (skippedDuplicateTopicCount > 0) {
+  console.log(
+    `Skipped ${skippedDuplicateTopicCount} candidate(s) because their working title already exists in public research.`
   );
 }
 console.log(`Output: ${outputJson}`);

@@ -1092,15 +1092,15 @@
     "likes": 1588,
     "conversation_id": "2021009544952844434",
     "relevance %": 55,
-    "relevance_reason": "Partial match; likely needs a tighter engineering angle.",
+    "relevance_reason": "Resolved as duplicate topic; mapped to the canonical ai-coding-tooling article.",
     "topic": "ai coding tooling",
     "fit_for_agentic_coders": "no",
     "selected": "yes",
     "selected_at": "2026-03-08T12:59:15.961Z",
     "done": "yes",
     "done_at": "2026-03-08T13:00:49.254Z",
-    "published_slug": "ai-coding-tooling-20260308-1259",
-    "published_article_url": "https://www.claudeworkshop.com/research/ai-coding-tooling-20260308-1259",
+    "published_slug": "ai-coding-tooling-20260307-1255",
+    "published_article_url": "https://www.claudeworkshop.com/research/ai-coding-tooling-20260307-1255",
     "source": "bird_cli_bookmarks"
   },
   {
