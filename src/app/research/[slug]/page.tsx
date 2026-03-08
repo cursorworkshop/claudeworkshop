@@ -229,7 +229,7 @@ export default async function ResearchArticlePage({ params }: Props) {
           <div className='mx-auto max-w-3xl px-4'>
             <Link
               href='/research'
-              className='inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6 transition-colors'
+              className='mb-6 mt-4 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary md:mt-0'
             >
               <ArrowLeft className='h-4 w-4' />
               Back to Research

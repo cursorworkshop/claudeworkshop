@@ -909,6 +909,22 @@ const ensureMethodologyReference = ({ candidate, title, body }) => {
   return `${trimmedBody.trim()}\n\n${methodologySection}\n`.trim();
 };
 
+const enforceWordBudget = ({ candidate, title, body }) => {
+  const cleanedBody = String(body || "").trim();
+  if (!cleanedBody) return cleanedBody;
+  if (countWords(cleanedBody) <= maxWordCount) return cleanedBody;
+
+  const methodologySection = buildMethodologySection({
+    candidate,
+    title,
+    body: cleanedBody,
+  });
+  const reservedWords = countWords(methodologySection) + 8;
+  const bodyBudget = Math.max(minWordCount, maxWordCount - reservedWords);
+
+  return trimMarkdownToWordLimit(cleanedBody, bodyBudget);
+};
+
 const sanitizeBody = (body, title) => {
   let value = String(body || "").trim();
   value = value.replace(/^```[a-z]*\n?/i, "").replace(/\n?```$/, "");
@@ -1578,6 +1594,7 @@ Hard constraints:
 - Keep the tone practical for engineers.
 - Keep section headings unnumbered (no "## 1. ..." patterns).
 - Keep paragraph flow primary; keep lists short and occasional.
+- Keep the rewrite at or under the original word count. Prefer slightly shorter.
 
 Respect this additional guidance: ${candidate.humanizer_notes || "Keep direct and specific wording."}
 
@@ -1597,6 +1614,7 @@ ${draft.articleMarkdown}`,
     humanized.articleMarkdown || draft.articleMarkdown,
     title,
   );
+  body = enforceWordBudget({ candidate, title, body });
   body = ensureMethodologyReference({ candidate, title, body });
   const errors = validateDraft({ body, title, description });
 

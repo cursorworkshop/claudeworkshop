@@ -2,7 +2,9 @@
 
 set -euo pipefail
 
-VERCEL_TOKEN_CLEAN="$(printf '%s' "${VERCEL_TOKEN:-}" | tr -d '\r\n')"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+VERCEL_TOKEN_CLEAN="$(bash "$SCRIPT_DIR/resolve-vercel-token.sh" | tr -d '\r\n')"
 VERCEL_ORG_ID_CLEAN="$(printf '%s' "${VERCEL_ORG_ID:-}" | tr -d '\r\n')"
 VERCEL_PROJECT_ID_CLEAN="$(printf '%s' "${VERCEL_PROJECT_ID:-}" | tr -d '\r\n')"
 VERCEL_DEPLOY_MAX_ATTEMPTS="${VERCEL_DEPLOY_MAX_ATTEMPTS:-12}"
@@ -86,7 +88,6 @@ deploy_with_retry() {
   done
 }
 
-require_secret VERCEL_TOKEN
 require_secret VERCEL_ORG_ID
 require_secret VERCEL_PROJECT_ID
 

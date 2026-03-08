@@ -188,15 +188,15 @@ three workshop sites as one shared Vercel target.
 
 1. In `cursorworkshop/claudeworkshop`:
    - `BRAND_SYNC_TOKEN`
-   - `VERCEL_TOKEN`
+   - `VERCEL_TOKEN` or preferred `VERCEL_TOKEN_B64`
    - `VERCEL_ORG_ID`
    - `VERCEL_PROJECT_ID`
 2. In `cursorworkshop/claudeworkshop`:
-   - `VERCEL_TOKEN`
+   - `VERCEL_TOKEN` or preferred `VERCEL_TOKEN_B64`
    - `VERCEL_ORG_ID`
    - `VERCEL_PROJECT_ID`
 3. In `cursorworkshop/codexworkshop`:
-   - `VERCEL_TOKEN`
+   - `VERCEL_TOKEN` or preferred `VERCEL_TOKEN_B64`
    - `VERCEL_ORG_ID`
    - `VERCEL_PROJECT_ID`
 

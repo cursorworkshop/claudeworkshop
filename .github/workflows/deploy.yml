@@ -19,6 +19,7 @@ jobs:
     env:
       BRAND_SYNC_TOKEN: ${{ secrets.BRAND_SYNC_TOKEN }}
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_TOKEN_B64: ${{ secrets.VERCEL_TOKEN_B64 }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       VERCEL_CLAUDE_PROJECT_ID: prj_aGHPChctUlkHdDvTVNafXV9KAsj3
@@ -68,7 +69,7 @@ jobs:
             [ -z "$file_path" ] && continue
 
             case "$file_path" in
-              .github/*|AGENTS.md|CLAUDE.md|README.md|docs/*|.prettierignore|scripts/sync-brand-sites.mjs|scripts/sync-nautilus-research-map.sh|scripts/vercel-deploy-with-retry.sh)
+              .github/*|AGENTS.md|CLAUDE.md|README.md|docs/*|.prettierignore|scripts/resolve-vercel-token.sh|scripts/sync-brand-sites.mjs|scripts/sync-nautilus-research-map.sh|scripts/vercel-deploy-with-retry.sh)
                 ;;
               *)
                 deploy_required=true
@@ -128,9 +129,9 @@ jobs:
             fi
           }
 
-          require_secret VERCEL_TOKEN
           require_secret VERCEL_ORG_ID
           require_secret VERCEL_PROJECT_ID
+          bash scripts/resolve-vercel-token.sh >/dev/null
 
       - name: Sync mirror repo deploy secrets from the source repo
         if: steps.gate.outputs.should_deploy == 'true' && github.repository_owner == 'cursorworkshop' && github.event.repository.name == 'cursorworkshop'
@@ -138,6 +139,11 @@ jobs:
           GH_TOKEN: ${{ secrets.BRAND_SYNC_TOKEN }}
         run: |
           set -euo pipefail
+
+          encode_vercel_token_b64() {
+            local token="$1"
+            TOKEN_TO_ENCODE="$token" node -e 'process.stdout.write(Buffer.from(process.env.TOKEN_TO_ENCODE || "", "utf8").toString("base64"))'
+          }
 
           require_secret() {
             local name="$1"
@@ -149,10 +155,10 @@ jobs:
           }
 
           require_secret GH_TOKEN
-          require_secret VERCEL_TOKEN
           require_secret VERCEL_ORG_ID
 
-          VERCEL_TOKEN_CLEAN="$(printf '%s' "$VERCEL_TOKEN" | tr -d '\r\n')"
+          VERCEL_TOKEN_CLEAN="$(bash "$GITHUB_WORKSPACE/scripts/resolve-vercel-token.sh" | tr -d '\r\n')"
+          VERCEL_TOKEN_B64_CLEAN="$(encode_vercel_token_b64 "$VERCEL_TOKEN_CLEAN" | tr -d '\r\n')"
           VERCEL_ORG_ID_CLEAN="$(printf '%s' "$VERCEL_ORG_ID" | tr -d '\r\n')"
           VERCEL_CLAUDE_PROJECT_ID_CLEAN="$(printf '%s' "$VERCEL_CLAUDE_PROJECT_ID" | tr -d '\r\n')"
           VERCEL_CODEX_PROJECT_ID_CLEAN="$(printf '%s' "$VERCEL_CODEX_PROJECT_ID" | tr -d '\r\n')"
@@ -165,9 +171,11 @@ jobs:
           }
 
           sync_secret cursorworkshop/claudeworkshop VERCEL_TOKEN "$VERCEL_TOKEN_CLEAN"
+          sync_secret cursorworkshop/claudeworkshop VERCEL_TOKEN_B64 "$VERCEL_TOKEN_B64_CLEAN"
           sync_secret cursorworkshop/claudeworkshop VERCEL_ORG_ID "$VERCEL_ORG_ID_CLEAN"
           sync_secret cursorworkshop/claudeworkshop VERCEL_PROJECT_ID "$VERCEL_CLAUDE_PROJECT_ID_CLEAN"
           sync_secret cursorworkshop/codexworkshop VERCEL_TOKEN "$VERCEL_TOKEN_CLEAN"
+          sync_secret cursorworkshop/codexworkshop VERCEL_TOKEN_B64 "$VERCEL_TOKEN_B64_CLEAN"
           sync_secret cursorworkshop/codexworkshop VERCEL_ORG_ID "$VERCEL_ORG_ID_CLEAN"
           sync_secret cursorworkshop/codexworkshop VERCEL_PROJECT_ID "$VERCEL_CODEX_PROJECT_ID_CLEAN"
 
@@ -196,7 +204,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          VERCEL_TOKEN_CLEAN="$(printf '%s' "$VERCEL_TOKEN" | tr -d '\r\n')"
+          VERCEL_TOKEN_CLEAN="$(bash "$GITHUB_WORKSPACE/scripts/resolve-vercel-token.sh" | tr -d '\r\n')"
           VERCEL_ORG_ID_CLEAN="$(printf '%s' "$VERCEL_ORG_ID" | tr -d '\r\n')"
           VERCEL_CLAUDE_PROJECT_ID_CLEAN="$(printf '%s' "$VERCEL_CLAUDE_PROJECT_ID" | tr -d '\r\n')"
           VERCEL_CODEX_PROJECT_ID_CLEAN="$(printf '%s' "$VERCEL_CODEX_PROJECT_ID" | tr -d '\r\n')"
