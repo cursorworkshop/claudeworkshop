@@ -5,7 +5,8 @@
     "1961848171925278932",
     "2020290971951391031",
     "2003118032919613595",
-    "2021009544952844434"
+    "2021009544952844434",
+    "1943295167491871112"
   ],
   "published_ids": [
     "2019564738649505882",
@@ -13,7 +14,8 @@
     "1961848171925278932",
     "2020290971951391031",
     "2003118032919613595",
-    "2021009544952844434"
+    "2021009544952844434",
+    "1943295167491871112"
   ],
   "history": [
     {
@@ -79,6 +81,18 @@
       "resolution": "duplicate_topic",
       "duplicate_of_slug": "ai-coding-tooling-20260307-1255",
       "duplicate_of_article_url": "https://www.claudeworkshop.com/research/ai-coding-tooling-20260307-1255"
+    },
+    {
+      "id": "1943295167491871112",
+      "selected_at": "2026-03-09T08:31:59.946Z",
+      "published_at": "2026-03-09T08:34:30.794Z",
+      "relevance_percent": 46,
+      "candidate_slug": "mcp-and-integrations-1943295167491871112",
+      "published_slug": "mcp-and-integrations-20260309-0831",
+      "article_url": "https://www.claudeworkshop.com/research/mcp-and-integrations-20260309-0831",
+      "status_url": "https://x.com/ryancarson/status/1943295167491871112",
+      "author_handle": "ryancarson",
+      "author_name": "Ryan Carson"
     }
   ]
 }
