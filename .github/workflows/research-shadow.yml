@@ -1,0 +1,124 @@
+name: Research Shadow Run
+
+on:
+  schedule:
+    # 30 minutes before the nightly publish run: 01:30 Amsterdam in winter / 02:30 in summer.
+    - cron: '30 0 * * *'
+  workflow_dispatch:
+    inputs:
+      min_relevance:
+        description: 'Override minimum relevance threshold (0-100)'
+        required: false
+        default: '25'
+      image_max_attempts:
+        description: 'Override max hero image retry attempts'
+        required: false
+        default: '6'
+      min_word_count:
+        description: 'Override minimum article word count'
+        required: false
+        default: '450'
+      max_word_count:
+        description: 'Override maximum article word count'
+        required: false
+        default: '1100'
+      target_word_count:
+        description: 'Preferred article word count target'
+        required: false
+        default: '900'
+
+concurrency:
+  group: research-shadow
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  shadow:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_TEXT_MODEL: ${{ secrets.OPENAI_TEXT_MODEL }}
+      OPENAI_IMAGE_MODEL: ${{ secrets.OPENAI_IMAGE_MODEL }}
+      OPENAI_IMAGE_REVIEW_MODEL: gpt-4.1-mini
+      AUTH_TOKEN: ${{ secrets.X_AUTH_TOKEN }}
+      CT0: ${{ secrets.X_CT0 }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEARCH_NOTIFY_EMAILS: ${{ secrets.RESEARCH_NOTIFY_EMAILS }}
+      RESEARCH_NOTIFY_FROM: ${{ secrets.RESEARCH_NOTIFY_FROM }}
+      RESEARCH_NOTIFY_REPLY_TO: ${{ secrets.RESEARCH_NOTIFY_REPLY_TO }}
+      RESEARCH_BASE_URL: ${{ secrets.RESEARCH_BASE_URL != '' && secrets.RESEARCH_BASE_URL || 'https://www.claudeworkshop.com/research' }}
+      RESEARCH_SITE_BASE_URLS: ${{ secrets.RESEARCH_SITE_BASE_URLS != '' && secrets.RESEARCH_SITE_BASE_URLS || 'https://www.claudeworkshop.com/research,https://www.claudeworkshop.com/research,https://www.codexworkshop.com/research' }}
+      BIRD_CMD: bird
+      NAUTILUS_MIN_RELEVANCE: ${{ github.event.inputs.min_relevance || '25' }}
+      NAUTILUS_IMAGE_MAX_ATTEMPTS: ${{ github.event.inputs.image_max_attempts || '6' }}
+      NAUTILUS_MIN_WORD_COUNT: ${{ github.event.inputs.min_word_count || '450' }}
+      NAUTILUS_MAX_WORD_COUNT: ${{ github.event.inputs.max_word_count || '1100' }}
+      NAUTILUS_TARGET_WORD_COUNT: ${{ github.event.inputs.target_word_count || '900' }}
+      OPENAI_REQUEST_TIMEOUT_MS: '180000'
+      OPENAI_IMAGE_REQUEST_TIMEOUT_MS: '240000'
+      BRAND_SYNC_TOKEN: ${{ secrets.BRAND_SYNC_TOKEN }}
+      GH_TOKEN: ${{ secrets.BRAND_SYNC_TOKEN }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_TOKEN_B64: ${{ secrets.VERCEL_TOKEN_B64 }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_CLAUDE_PROJECT_ID: prj_aGHPChctUlkHdDvTVNafXV9KAsj3
+      VERCEL_CODEX_PROJECT_ID: prj_NSoYl4F3IhZI03Amn0kHBJ5oKr0i
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare "$(node -p "require('./package.json').packageManager")" --activate
+          pnpm --version
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Install Bird CLI
+        run: |
+          cd tools/bird-cli
+          npm install
+          npm run build
+          echo "BIRD_CMD=node $GITHUB_WORKSPACE/tools/bird-cli/dist/index.js" >> "$GITHUB_ENV"
+          node "$GITHUB_WORKSPACE/tools/bird-cli/dist/index.js" --version
+
+      - name: Run full shadow cycle without publish
+        run: |
+          export RESEARCH_SHADOW_ROOT="$RUNNER_TEMP/research-shadow"
+          bash scripts/research-shadow-run.sh
+
+      - name: Codex polish shadow article
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          model: gpt-5.1-codex-max
+          prompt-file: docs/nautilus/prompts/codex-polish.md
+          working-directory: ${{ github.workspace }}
+          sandbox: workspace-write
+          safety-strategy: drop-sudo
+
+      - name: Verify shadow build
+        run: pnpm build
+
+      - name: Upload shadow artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-shadow-${{ github.run_id }}
+          if-no-files-found: ignore
+          retention-days: 7
+          path: |
+            ${{ runner.temp }}/research-shadow
