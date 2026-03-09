@@ -225,20 +225,15 @@ three workshop sites as one shared Vercel target.
 9. Workflow-only, docs-only, and mirror-sync-infrastructure commits should skip
    the production deploy path to avoid wasting Vercel quota.
 10. If a workflow-only or docs-only source-repo commit still needs to be
-    mirrored, use the manual mirror sync path:
-
-- `node scripts/sync-brand-sites.mjs --all --push`
-- or manually dispatch `.github/workflows/sync-brand-sites.yml`
-  Those mirror sync commits should also skip production deploy.
+    mirrored, use the manual mirror sync path. Run
+    `node scripts/sync-brand-sites.mjs --all --push` or manually dispatch
+    `.github/workflows/sync-brand-sites.yml`. Those mirror sync commits should
+    also skip production deploy.
 
 11. Nightly research remains a source-repo-owned workflow, but it must keep the
-    same deploy principle:
-
-- deploy source
-- sync mirrors
-- deploy mirrors
-- the generated `chore: run research cycle [skip deploy]` commit must not
-  trigger a second source `deploy.yml` rollout
+    same deploy principle: deploy source, sync mirrors, deploy mirrors, and
+    ensure the generated `chore: run research cycle [skip deploy]` commit does
+    not trigger a second source `deploy.yml` rollout.
 
 12. Do not rely on Vercel's native Git auto-deploys for these repos.
 13. If Vercel starts sending failure emails for push-triggered deploys again,
