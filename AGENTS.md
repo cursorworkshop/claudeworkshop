@@ -220,22 +220,23 @@ three workshop sites as one shared Vercel target.
    those mirrors in the same rollout.
 6. Local Vercel CLI deploys remain the manual fallback:
    - `vercel --prod --yes`
-7. Workflow-only, docs-only, and mirror-sync-infrastructure commits should skip
+7. Before any automated publish or production deploy is treated as healthy, the workflow must pass a live Vercel access check against the target project. Secret shape checks alone are not enough.
+8. Workflow-only, docs-only, and mirror-sync-infrastructure commits should skip
    the production deploy path to avoid wasting Vercel quota.
-8. If a workflow-only or docs-only source-repo commit still needs to be
+9. If a workflow-only or docs-only source-repo commit still needs to be
    mirrored, use the manual mirror sync path:
    - `node scripts/sync-brand-sites.mjs --all --push`
    - or manually dispatch `.github/workflows/sync-brand-sites.yml`
      Those mirror sync commits should also skip production deploy.
-9. Nightly research remains a source-repo-owned workflow, but it must keep the
-   same deploy principle:
-   - deploy source
-   - sync mirrors
-   - deploy mirrors
-   - the generated `chore: run research cycle [skip deploy]` commit must not
-     trigger a second source `deploy.yml` rollout
-10. Do not rely on Vercel's native Git auto-deploys for these repos.
-11. If Vercel starts sending failure emails for push-triggered deploys again,
+10. Nightly research remains a source-repo-owned workflow, but it must keep the
+    same deploy principle:
+    - deploy source
+    - sync mirrors
+    - deploy mirrors
+    - the generated `chore: run research cycle [skip deploy]` commit must not
+      trigger a second source `deploy.yml` rollout
+11. Do not rely on Vercel's native Git auto-deploys for these repos.
+12. If Vercel starts sending failure emails for push-triggered deploys again,
     check whether a Git repository is still connected to the project and
     disconnect it so GitHub Actions remains the single deploy authority.
 

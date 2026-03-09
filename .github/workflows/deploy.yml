@@ -69,7 +69,7 @@ jobs:
             [ -z "$file_path" ] && continue
 
             case "$file_path" in
-              .github/*|AGENTS.md|CLAUDE.md|README.md|docs/*|.prettierignore|scripts/resolve-vercel-token.sh|scripts/sync-brand-sites.mjs|scripts/sync-nautilus-research-map.sh|scripts/vercel-deploy-with-retry.sh)
+              .github/*|AGENTS.md|CLAUDE.md|README.md|docs/*|.prettierignore|scripts/resolve-vercel-token.sh|scripts/sync-brand-sites.mjs|scripts/sync-nautilus-research-map.sh|scripts/vercel-deploy-with-retry.sh|scripts/verify-vercel-access.sh)
                 ;;
               *)
                 deploy_required=true
@@ -131,7 +131,7 @@ jobs:
 
           require_secret VERCEL_ORG_ID
           require_secret VERCEL_PROJECT_ID
-          bash scripts/resolve-vercel-token.sh >/dev/null
+          bash scripts/verify-vercel-access.sh >/dev/null
 
       - name: Sync mirror repo deploy secrets from the source repo
         if: steps.gate.outputs.should_deploy == 'true' && github.repository_owner == 'cursorworkshop' && github.event.repository.name == 'cursorworkshop'
