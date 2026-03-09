@@ -5,9 +5,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 VERCEL_TOKEN_CLEAN="$(bash "$SCRIPT_DIR/resolve-vercel-token.sh" | tr -d '\r\n')"
-VERCEL_ORG_ID_CLEAN="$(printf '%s' "${VERCEL_ORG_ID:-}" | tr -d '\r\n')"
-VERCEL_PROJECT_ID_CLEAN="$(printf '%s' "${VERCEL_PROJECT_ID:-}" | tr -d '\r\n')"
-VERCEL_ENVIRONMENT_CLEAN="$(printf '%s' "${VERCEL_ENVIRONMENT:-production}" | tr -d '\r\n')"
+VERCEL_ORG_ID_CLEAN="$(printf '%s' "${VERCEL_VERIFY_ORG_ID:-${VERCEL_ORG_ID:-}}" | tr -d '\r\n')"
+VERCEL_PROJECT_ID_CLEAN="$(printf '%s' "${VERCEL_VERIFY_PROJECT_ID:-${VERCEL_PROJECT_ID:-}}" | tr -d '\r\n')"
+VERCEL_ENVIRONMENT_CLEAN="$(printf '%s' "${VERCEL_VERIFY_ENVIRONMENT:-${VERCEL_ENVIRONMENT:-production}}" | tr -d '\r\n')"
 
 require_secret() {
   local name="$1"
@@ -18,8 +18,17 @@ require_secret() {
   fi
 }
 
-require_secret VERCEL_ORG_ID
-require_secret VERCEL_PROJECT_ID
+require_secret_value() {
+  local name="$1"
+  local value="$2"
+  if [ -z "$(printf '%s' "$value" | tr -d '\r\n')" ]; then
+    echo "Missing required secret: $name" >&2
+    exit 1
+  fi
+}
+
+require_secret_value VERCEL_ORG_ID "$VERCEL_ORG_ID_CLEAN"
+require_secret_value VERCEL_PROJECT_ID "$VERCEL_PROJECT_ID_CLEAN"
 
 tmp_dir="$(mktemp -d)"
 cleanup() {
