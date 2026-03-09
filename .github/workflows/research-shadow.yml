@@ -36,6 +36,7 @@ permissions:
 
 jobs:
   shadow:
+    if: github.repository == 'cursorworkshop/claudeworkshop'
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
