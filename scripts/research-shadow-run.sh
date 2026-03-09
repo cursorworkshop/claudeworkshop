@@ -42,7 +42,6 @@ require_value VERCEL_CODEX_PROJECT_ID
 bash "$PROJECT_ROOT/scripts/verify-vercel-access.sh" >/dev/null
 VERCEL_VERIFY_PROJECT_ID="$VERCEL_CLAUDE_PROJECT_ID" bash "$PROJECT_ROOT/scripts/verify-vercel-access.sh" >/dev/null
 VERCEL_VERIFY_PROJECT_ID="$VERCEL_CODEX_PROJECT_ID" bash "$PROJECT_ROOT/scripts/verify-vercel-access.sh" >/dev/null
-bash "$PROJECT_ROOT/scripts/verify-resend-access.sh" >/dev/null
 
 GH_TOKEN_VALUE="${GH_TOKEN:-${BRAND_SYNC_TOKEN:-}}"
 if [ -n "$(printf '%s' "$GH_TOKEN_VALUE" | tr -d '\r\n')" ]; then

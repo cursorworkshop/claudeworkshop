@@ -27,6 +27,7 @@ When working on the automated research/image pipeline:
 12. The default nightly research floor is `25` relevance. The selector should still choose top-down from the ranked list, but should not drop below that floor unless someone explicitly overrides it for a manual debug run.
 13. Never publish a research article whose headline or angle duplicates an existing public research page. If a candidate maps to an already-covered topic, skip it or fail the publish before it reaches `/research`.
 14. Even above the `25` floor, skip hiring posts, generic hype, and other non-publishable items. The selector should prefer the highest-scoring publishable engineering or agentic-coding signal, not merely the highest raw score.
+15. The current `RESEND_API_KEY` is send-only. Do not gate the pipeline on Resend read/list endpoints; they false-fail even when real email sends work.
 
 ## Supabase Project
 
@@ -223,22 +224,21 @@ three workshop sites as one shared Vercel target.
    - `vercel --prod --yes`
 7. Before any automated publish or production deploy is treated as healthy, the workflow must pass a live Vercel access check against the target project. Secret shape checks alone are not enough.
 8. The nightly research job must validate source deploy access, Claude deploy access, Codex deploy access, and mirror-repo GitHub access before it generates or polishes a new article.
-9. The nightly research job must also validate live Resend API access before it generates or polishes a new article.
-10. Workflow-only, docs-only, and mirror-sync-infrastructure commits should skip
-    the production deploy path to avoid wasting Vercel quota.
-11. If a workflow-only or docs-only source-repo commit still needs to be
+9. Workflow-only, docs-only, and mirror-sync-infrastructure commits should skip
+   the production deploy path to avoid wasting Vercel quota.
+10. If a workflow-only or docs-only source-repo commit still needs to be
     mirrored, use the manual mirror sync path. Run
     `node scripts/sync-brand-sites.mjs --all --push` or manually dispatch
     `.github/workflows/sync-brand-sites.yml`. Those mirror sync commits should
     also skip production deploy.
 
-12. Nightly research remains a source-repo-owned workflow, but it must keep the
+11. Nightly research remains a source-repo-owned workflow, but it must keep the
     same deploy principle: deploy source, sync mirrors, deploy mirrors, and
     ensure the generated `chore: run research cycle [skip deploy]` commit does
     not trigger a second source `deploy.yml` rollout.
 
-13. Do not rely on Vercel's native Git auto-deploys for these repos.
-14. If Vercel starts sending failure emails for push-triggered deploys again,
+12. Do not rely on Vercel's native Git auto-deploys for these repos.
+13. If Vercel starts sending failure emails for push-triggered deploys again,
     check whether a Git repository is still connected to the project and
     disconnect it so GitHub Actions remains the single deploy authority.
 
