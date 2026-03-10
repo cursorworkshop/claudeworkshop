@@ -96,10 +96,55 @@ jobs:
           echo "BIRD_CMD=node $GITHUB_WORKSPACE/tools/bird-cli/dist/index.js" >> "$GITHUB_ENV"
           node "$GITHUB_WORKSPACE/tools/bird-cli/dist/index.js" --version
 
-      - name: Run full shadow cycle without publish
+      - name: Validate required research automation secrets
+        env:
+          GH_TOKEN: ${{ secrets.BRAND_SYNC_TOKEN }}
         run: |
-          export RESEARCH_SHADOW_ROOT="$RUNNER_TEMP/research-shadow"
-          bash scripts/research-shadow-run.sh
+          set -euo pipefail
+
+          require_secret() {
+            local name="$1"
+            local value="${!name:-}"
+            if [ -z "$(printf '%s' "$value" | tr -d '\r\n')" ]; then
+              echo "Missing required secret: $name"
+              exit 1
+            fi
+          }
+
+          require_secret OPENAI_API_KEY
+          require_secret AUTH_TOKEN
+          require_secret CT0
+          require_secret RESEND_API_KEY
+          require_secret BRAND_SYNC_TOKEN
+          require_secret VERCEL_ORG_ID
+          require_secret VERCEL_PROJECT_ID
+          require_secret VERCEL_CLAUDE_PROJECT_ID
+          require_secret VERCEL_CODEX_PROJECT_ID
+
+          bash scripts/verify-vercel-access.sh >/dev/null
+          VERCEL_VERIFY_PROJECT_ID="$VERCEL_CLAUDE_PROJECT_ID" bash scripts/verify-vercel-access.sh >/dev/null
+          VERCEL_VERIFY_PROJECT_ID="$VERCEL_CODEX_PROJECT_ID" bash scripts/verify-vercel-access.sh >/dev/null
+
+          gh repo view cursorworkshop/claudeworkshop --json name >/dev/null
+          gh repo view cursorworkshop/codexworkshop --json name >/dev/null
+
+      - name: Run shadow research generation path
+        run: |
+          node docs/nautilus/pipeline/run-cycle.mjs \
+            --apply-to-cursor \
+            --cursor-repo "$GITHUB_WORKSPACE"
+
+      - name: Upload Nautilus debug artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nautilus-shadow-debug-${{ github.run_id }}
+          if-no-files-found: ignore
+          retention-days: 7
+          path: |
+            docs/nautilus/data/live
+            docs/nautilus/data/state
+            docs/nautilus/data/outbox
 
       - name: Codex polish shadow article
         uses: openai/codex-action@v1
@@ -110,6 +155,81 @@ jobs:
           working-directory: ${{ github.workspace }}
           sandbox: workspace-write
           safety-strategy: drop-sudo
+
+      - name: Format generated research list
+        run: npx prettier --write src/components/ResearchList.tsx
+
+      - name: Commit shadow pipeline updates locally
+        id: commit_shadow
+        run: |
+          git config user.name "Claude Workshop"
+          git config user.email "info@claudeworkshop.com"
+          git add \
+            docs/nautilus/data/state \
+            content/editorials \
+            public/images/editorials \
+            src/components/ResearchList.tsx
+          if git diff --staged --quiet; then
+            echo "No research cycle changes."
+            echo "did_commit=false" >> "$GITHUB_OUTPUT"
+            echo "did_publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          changed_files="$(git diff --staged --name-only)"
+          did_publish=false
+          if printf '%s\n' "$changed_files" | grep -Eq '^content/editorials/' && \
+             printf '%s\n' "$changed_files" | grep -Eq '^public/images/editorials/'; then
+            did_publish=true
+          fi
+          git commit -m "chore: rehearse research cycle [skip deploy]"
+          echo "did_commit=true" >> "$GITHUB_OUTPUT"
+          echo "did_publish=$did_publish" >> "$GITHUB_OUTPUT"
+
+      - name: Rehearse source deploy path without production deploy
+        if: steps.commit_shadow.outputs.did_commit == 'true' && steps.commit_shadow.outputs.did_publish == 'true'
+        run: |
+          VERCEL_BUILD_ONLY=1 bash scripts/vercel-deploy-with-retry.sh
+
+      - name: Rehearse brand sync without pushing mirrors
+        if: steps.commit_shadow.outputs.did_commit == 'true' && steps.commit_shadow.outputs.did_publish == 'true'
+        run: |
+          node scripts/sync-brand-sites.mjs \
+            --all \
+            --target-root "$RUNNER_TEMP/brand-sync"
+
+      - name: Rehearse mirror deploy paths without production deploy
+        if: steps.commit_shadow.outputs.did_commit == 'true' && steps.commit_shadow.outputs.did_publish == 'true'
+        run: |
+          set -euo pipefail
+
+          VERCEL_TOKEN_CLEAN="$(bash "$GITHUB_WORKSPACE/scripts/resolve-vercel-token.sh" | tr -d '\r\n')"
+          VERCEL_ORG_ID_CLEAN="$(printf '%s' "$VERCEL_ORG_ID" | tr -d '\r\n')"
+          VERCEL_CLAUDE_PROJECT_ID_CLEAN="$(printf '%s' "$VERCEL_CLAUDE_PROJECT_ID" | tr -d '\r\n')"
+          VERCEL_CODEX_PROJECT_ID_CLEAN="$(printf '%s' "$VERCEL_CODEX_PROJECT_ID" | tr -d '\r\n')"
+
+          deploy_site() {
+            local site_dir="$1"
+            local project_id="$2"
+
+            test -d "$site_dir"
+
+            (
+              cd "$site_dir"
+              export VERCEL_PROJECT_ID="$project_id"
+              export VERCEL_ORG_ID="$VERCEL_ORG_ID_CLEAN"
+              export VERCEL_TOKEN="$VERCEL_TOKEN_CLEAN"
+              export VERCEL_BUILD_ONLY=1
+              bash "$GITHUB_WORKSPACE/scripts/vercel-deploy-with-retry.sh"
+            )
+          }
+
+          deploy_site "$RUNNER_TEMP/brand-sync/claudeworkshop" "$VERCEL_CLAUDE_PROJECT_ID_CLEAN"
+          deploy_site "$RUNNER_TEMP/brand-sync/codexworkshop" "$VERCEL_CODEX_PROJECT_ID_CLEAN"
+
+      - name: Rehearse founder notification without email side effect
+        if: steps.commit_shadow.outputs.did_commit == 'true' && steps.commit_shadow.outputs.did_publish == 'true'
+        run: |
+          node docs/nautilus/pipeline/distribute-after-live.mjs --dry-run --skip-live-check
 
       - name: Verify shadow build
         run: pnpm build
@@ -122,4 +242,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
           path: |
-            ${{ runner.temp }}/research-shadow
+            ${{ runner.temp }}/brand-sync
+            docs/nautilus/data/live
+            docs/nautilus/data/state
+            docs/nautilus/data/outbox

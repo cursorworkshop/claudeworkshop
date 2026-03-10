@@ -9,6 +9,7 @@ VERCEL_ORG_ID_CLEAN="$(printf '%s' "${VERCEL_ORG_ID:-}" | tr -d '\r\n')"
 VERCEL_PROJECT_ID_CLEAN="$(printf '%s' "${VERCEL_PROJECT_ID:-}" | tr -d '\r\n')"
 VERCEL_DEPLOY_MAX_ATTEMPTS="${VERCEL_DEPLOY_MAX_ATTEMPTS:-12}"
 VERCEL_DEPLOY_BUFFER_SECONDS="${VERCEL_DEPLOY_BUFFER_SECONDS:-5}"
+VERCEL_BUILD_ONLY="${VERCEL_BUILD_ONLY:-0}"
 
 require_secret() {
   local name="$1"
@@ -97,4 +98,10 @@ export VERCEL_PROJECT_ID="$VERCEL_PROJECT_ID_CLEAN"
 
 vercel pull --yes --environment=production --token="$VERCEL_TOKEN_CLEAN"
 vercel build --prod --token="$VERCEL_TOKEN_CLEAN"
+
+if [ "$VERCEL_BUILD_ONLY" = "1" ]; then
+  echo "Vercel build-only rehearsal completed for project $VERCEL_PROJECT_ID_CLEAN."
+  exit 0
+fi
+
 deploy_with_retry

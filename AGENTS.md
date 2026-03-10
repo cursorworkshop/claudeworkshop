@@ -23,13 +23,14 @@ When working on the automated research/image pipeline:
 8. The automated research pipeline does not create or send LinkedIn posts. Do not add LinkedIn secrets or LinkedIn posting steps back into this job.
 9. The nightly research automation now starts with the scheduled GitHub Actions shadow run at `30 0 * * *` (00:30 UTC daily). The production publish path must no longer have its own separate cron.
 10. The production `research-cycle.yml` workflow must trigger from a successful scheduled `Research Shadow Run` via `workflow_run`, not from its own independent nightly schedule.
-11. A separate GitHub Actions shadow run must execute before the nightly publish path and must exercise fetch, candidate selection, article generation, hero image generation, deploy-target preflight, and mirror-repo access without pushing or publishing.
+11. A separate GitHub Actions shadow run must execute before the nightly publish path and must exercise the same internal path as the real cycle: fetch, candidate selection, article generation, hero image generation, local commit staging, source deploy rehearsal, mirror sync rehearsal, mirror deploy rehearsal, and founder-notification rehearsal. The only missing side effects should be `git push`, real production deploy, live URL wait, and real founder email send.
 12. Once a bookmark candidate has been published, it must be marked as `done` in the scored CSV/JSON state and must not be selected again unless reuse is explicitly forced for debugging.
 13. The default nightly research floor is `25` relevance. The selector should still choose top-down from the ranked list, but should not drop below that floor unless someone explicitly overrides it for a manual debug run.
 14. Never publish a research article whose headline or angle duplicates an existing public research page. If a candidate maps to an already-covered topic, skip it or fail the publish before it reaches `/research`.
 15. Even above the `25` floor, skip hiring posts, generic hype, and other non-publishable items. The selector should prefer the highest-scoring publishable engineering or agentic-coding signal, not merely the highest raw score.
 16. The current `RESEND_API_KEY` is send-only. Do not gate the pipeline on Resend read/list endpoints; they false-fail even when real email sends work.
 17. `VERCEL_TOKEN` is the canonical GitHub Actions secret for deploy auth. `VERCEL_TOKEN_B64` is only a transport fallback. Token resolution must prefer the raw secret and only accept a candidate that can actually authenticate against the target Vercel project.
+18. Shadow runs are not allowed to be shallow health checks. If the real nightly path commits, syncs mirrors, and prepares Vercel builds, the shadow path must rehearse those same internal steps on ephemeral workspace state.
 
 ## Supabase Project
 
