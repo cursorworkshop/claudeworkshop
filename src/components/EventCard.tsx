@@ -86,7 +86,7 @@ export default function EventCard({
                 </div>
               )}
               <Button variant='ghost' size='icon' asChild>
-                <Link href={`/workshops/${event.slug}`}>
+                <Link href={`/events/${event.slug}`}>
                   <ArrowRight className='w-4 h-4' />
                 </Link>
               </Button>
@@ -242,7 +242,7 @@ export default function EventCard({
 
       <CardFooter className='flex flex-wrap gap-3'>
         <Button size='sm' className='flex-1 sm:flex-none' asChild>
-          <Link href={`/workshops/${event.slug}`}>
+          <Link href={`/events/${event.slug}`}>
             View Details
             <ArrowRight className='w-4 h-4 ml-2' />
           </Link>

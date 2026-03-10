@@ -63,9 +63,9 @@ export default function Header() {
               </Link>
             </Button>
             <Button variant='default' size='sm' asChild>
-              <Link href='/workshops'>
+              <Link href='/events'>
                 <Calendar className='w-4 h-4 mr-2' />
-                Next Workshop
+                Upcoming Events
               </Link>
             </Button>
           </div>
@@ -101,9 +101,9 @@ export default function Header() {
                     </Link>
                   </Button>
                   <Button asChild>
-                    <Link href='/workshops'>
+                    <Link href='/events'>
                       <Calendar className='w-4 h-4 mr-2' />
-                      Next Workshop
+                      Upcoming Events
                     </Link>
                   </Button>
                 </div>

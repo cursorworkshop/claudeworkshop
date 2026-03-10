@@ -26,7 +26,13 @@ function GalleryCard({ item, eager }: { eager: boolean; item: Gallery4Item }) {
         className='object-cover'
         loading={eager ? 'eager' : 'lazy'}
         priority={eager}
+        style={{
+          filter:
+            'grayscale(1) contrast(1.14) brightness(1.03) sepia(0.12) hue-rotate(180deg) saturate(0.7)',
+        }}
       />
+      <div className='pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(240,244,249,0.14),rgba(203,212,224,0.08)_48%,rgba(62,74,92,0.12))] mix-blend-soft-light' />
+      <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,rgba(255,255,255,0.18),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(44,52,66,0.14))] mix-blend-screen' />
     </figure>
   );
 }

@@ -211,7 +211,7 @@ export default function TrainingPage() {
                     <Link href='/contact'>Inquire About Offsites</Link>
                   </Button>
                   <Button variant='secondary' className='flex-1' asChild>
-                    <Link href='/workshops'>View Previous</Link>
+                    <Link href='/methodology'>View Methodology</Link>
                   </Button>
                 </div>
               </div>

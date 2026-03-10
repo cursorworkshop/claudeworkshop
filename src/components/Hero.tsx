@@ -108,13 +108,13 @@ export default function Hero({ nextEvent }: HeroProps) {
 
                   <div className='flex flex-wrap gap-2'>
                     <Button size='sm' asChild>
-                      <Link href={nextEvent.registrationUrl || '/workshops'}>
+                      <Link href={nextEvent.registrationUrl || '/events'}>
                         Register Now
                         <ArrowRight className='w-4 h-4 ml-2' />
                       </Link>
                     </Button>
                     <Button variant='outline' size='sm' asChild>
-                      <Link href='/workshops'>View All Workshops</Link>
+                      <Link href='/events'>View Events</Link>
                     </Button>
                   </div>
                 </CardContent>

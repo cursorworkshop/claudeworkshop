@@ -1,7 +1,6 @@
 import { MetadataRoute } from 'next';
 
 import { siteConfig } from '@/lib/config';
-import { getAllEvents } from '@/lib/markdown';
 import { getAllResearchArticles } from '@/lib/research';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -100,12 +99,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     },
     {
-      url: `${baseUrl}/workshops`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    },
-    {
       url: `${baseUrl}/privacy`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
@@ -122,14 +115,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // Dynamic event/workshop pages
-  const events = await getAllEvents();
-  const eventPages: MetadataRoute.Sitemap = events.map(event => ({
-    url: `${baseUrl}/workshops/${event.slug}`,
-    lastModified: new Date(event.date),
-    changeFrequency: 'monthly' as const,
-    priority: 0.6,
-  }));
-
-  return [...staticPages, ...researchPages, ...eventPages];
+  return [...staticPages, ...researchPages];
 }

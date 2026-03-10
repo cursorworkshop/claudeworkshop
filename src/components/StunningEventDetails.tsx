@@ -899,9 +899,9 @@ export default function StunningEventDetails() {
                       Contact Vasilis
                     </Button>
                     <Button variant='secondary' size='lg' asChild>
-                      <Link href='/workshops'>
+                      <Link href='/events'>
                         <ArrowRight className='w-5 h-5 mr-2' />
-                        View All Workshops
+                        View Events
                       </Link>
                     </Button>
                   </div>
