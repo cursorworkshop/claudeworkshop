@@ -48,20 +48,60 @@ looks_like_vercel_token() {
   [[ "$candidate" =~ ^vca_[A-Za-z0-9]{56}$ ]]
 }
 
+can_live_validate_candidate() {
+  command -v vercel >/dev/null 2>&1 || return 1
+  [ -n "${VERCEL_VERIFY_ORG_ID:-${VERCEL_ORG_ID:-}}" ] || return 1
+  [ -n "${VERCEL_VERIFY_PROJECT_ID:-${VERCEL_PROJECT_ID:-}}" ] || return 1
+}
+
+candidate_valid_for_target() {
+  local candidate="$1"
+
+  looks_like_vercel_token "$candidate" || return 1
+
+  if ! can_live_validate_candidate; then
+    return 0
+  fi
+
+  local org_id
+  local project_id
+  local environment
+  local tmp_dir
+
+  org_id="$(trim_line_endings "${VERCEL_VERIFY_ORG_ID:-${VERCEL_ORG_ID:-}}")"
+  project_id="$(trim_line_endings "${VERCEL_VERIFY_PROJECT_ID:-${VERCEL_PROJECT_ID:-}}")"
+  environment="$(trim_line_endings "${VERCEL_VERIFY_ENVIRONMENT:-${VERCEL_ENVIRONMENT:-production}}")"
+  tmp_dir="$(mktemp -d)"
+
+  (
+    cd "$tmp_dir"
+    export VERCEL_ORG_ID="$org_id"
+    export VERCEL_PROJECT_ID="$project_id"
+    vercel pull \
+      --yes \
+      --environment="$environment" \
+      --token="$candidate" \
+      >/dev/null 2>&1
+  )
+  local status=$?
+  rm -rf "$tmp_dir"
+  return "$status"
+}
+
 raw_token="$(trim_line_endings "${VERCEL_TOKEN:-}")"
 b64_token="$(trim_line_endings "${VERCEL_TOKEN_B64:-}")"
 decoded_b64_token="$(trim_line_endings "$(decode_b64_candidate "$b64_token")")"
 local_auth_token="$(trim_line_endings "$(read_local_auth_token)")"
 
-for candidate in "$decoded_b64_token" "$raw_token" "$local_auth_token"; do
-  if looks_like_vercel_token "$candidate"; then
+for candidate in "$raw_token" "$decoded_b64_token" "$local_auth_token"; do
+  if candidate_valid_for_target "$candidate"; then
     printf '%s' "$candidate"
     exit 0
   fi
 done
 
 if [ -n "$decoded_b64_token" ] || [ -n "$raw_token" ] || [ -n "$local_auth_token" ]; then
-  echo "No valid Vercel token candidate found via VERCEL_TOKEN_B64, VERCEL_TOKEN, or local Vercel auth." >&2
+  echo "No valid Vercel token candidate could authenticate against the target project via VERCEL_TOKEN, VERCEL_TOKEN_B64, or local Vercel auth." >&2
   echo "Debug token lengths: raw_len=$(printf '%s' "$raw_token" | wc -c | tr -d ' '), decoded_b64_len=$(printf '%s' "$decoded_b64_token" | wc -c | tr -d ' '), local_auth_len=$(printf '%s' "$local_auth_token" | wc -c | tr -d ' ')" >&2
   echo "Debug token shapes: raw_matches_pattern=$([ -n "$raw_token" ] && looks_like_vercel_token "$raw_token" && echo yes || echo no), decoded_b64_matches_pattern=$([ -n "$decoded_b64_token" ] && looks_like_vercel_token "$decoded_b64_token" && echo yes || echo no), local_auth_matches_pattern=$([ -n "$local_auth_token" ] && looks_like_vercel_token "$local_auth_token" && echo yes || echo no)" >&2
   exit 1

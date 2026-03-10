@@ -21,13 +21,15 @@ When working on the automated research/image pipeline:
 6. Research generation runs exactly once per cycle, in `cursorworkshop/claudeworkshop`.
 7. `claudeworkshop` and `codexworkshop` do not run their own separate nightly research generation.
 8. The automated research pipeline does not create or send LinkedIn posts. Do not add LinkedIn secrets or LinkedIn posting steps back into this job.
-9. The nightly GitHub Actions cron for the production research cycle is `0 1 * * *` (01:00 UTC daily).
-10. A separate GitHub Actions shadow run must execute before the nightly publish path and must exercise fetch, candidate selection, article generation, hero image generation, deploy-target preflight, and mirror-repo access without pushing or publishing.
-11. Once a bookmark candidate has been published, it must be marked as `done` in the scored CSV/JSON state and must not be selected again unless reuse is explicitly forced for debugging.
-12. The default nightly research floor is `25` relevance. The selector should still choose top-down from the ranked list, but should not drop below that floor unless someone explicitly overrides it for a manual debug run.
-13. Never publish a research article whose headline or angle duplicates an existing public research page. If a candidate maps to an already-covered topic, skip it or fail the publish before it reaches `/research`.
-14. Even above the `25` floor, skip hiring posts, generic hype, and other non-publishable items. The selector should prefer the highest-scoring publishable engineering or agentic-coding signal, not merely the highest raw score.
-15. The current `RESEND_API_KEY` is send-only. Do not gate the pipeline on Resend read/list endpoints; they false-fail even when real email sends work.
+9. The nightly research automation now starts with the scheduled GitHub Actions shadow run at `30 0 * * *` (00:30 UTC daily). The production publish path must no longer have its own separate cron.
+10. The production `research-cycle.yml` workflow must trigger from a successful scheduled `Research Shadow Run` via `workflow_run`, not from its own independent nightly schedule.
+11. A separate GitHub Actions shadow run must execute before the nightly publish path and must exercise fetch, candidate selection, article generation, hero image generation, deploy-target preflight, and mirror-repo access without pushing or publishing.
+12. Once a bookmark candidate has been published, it must be marked as `done` in the scored CSV/JSON state and must not be selected again unless reuse is explicitly forced for debugging.
+13. The default nightly research floor is `25` relevance. The selector should still choose top-down from the ranked list, but should not drop below that floor unless someone explicitly overrides it for a manual debug run.
+14. Never publish a research article whose headline or angle duplicates an existing public research page. If a candidate maps to an already-covered topic, skip it or fail the publish before it reaches `/research`.
+15. Even above the `25` floor, skip hiring posts, generic hype, and other non-publishable items. The selector should prefer the highest-scoring publishable engineering or agentic-coding signal, not merely the highest raw score.
+16. The current `RESEND_API_KEY` is send-only. Do not gate the pipeline on Resend read/list endpoints; they false-fail even when real email sends work.
+17. `VERCEL_TOKEN` is the canonical GitHub Actions secret for deploy auth. `VERCEL_TOKEN_B64` is only a transport fallback. Token resolution must prefer the raw secret and only accept a candidate that can actually authenticate against the target Vercel project.
 
 ## Supabase Project
 
@@ -297,6 +299,7 @@ cursorworkshop`, create a new follow-up commit with the deploy-safe author
    - send the founders email
 4. Do not add a separate research cron, selection state, or content generator
    to the mirror repos.
+5. Manual `Research Shadow Run` executions are for rehearsal only and must not automatically cascade into a publish. Only a successful scheduled shadow run should unlock the scheduled production cycle.
 
 ## Brand-Specific Funnel Rules
 
