@@ -211,7 +211,8 @@ export default function PrivacyPage() {
               <ul className='list-disc list-inside space-y-2 text-muted-foreground'>
                 <li>
                   <strong>Analytics:</strong> We use analytics tools to
-                  understand website usage
+                  understand website usage and campaign performance, including
+                  conversion tracking pixels such as the LinkedIn Insight Tag
                 </li>
                 <li>
                   <strong>Email Services:</strong> We use email services to
