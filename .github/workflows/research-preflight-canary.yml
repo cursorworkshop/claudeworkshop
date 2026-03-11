@@ -18,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_TEXT_MODEL: ${{ secrets.OPENAI_TEXT_MODEL }}
+      OPENAI_IMAGE_MODEL: ${{ secrets.OPENAI_IMAGE_MODEL }}
       AUTH_TOKEN: ${{ secrets.X_AUTH_TOKEN }}
       CT0: ${{ secrets.X_CT0 }}
       RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}

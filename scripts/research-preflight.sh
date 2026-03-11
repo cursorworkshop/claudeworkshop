@@ -67,6 +67,8 @@ if [ -n "$REPORT_PATH" ]; then
 fi
 
 require_secret OPENAI_API_KEY || true
+require_secret OPENAI_TEXT_MODEL || true
+require_secret OPENAI_IMAGE_MODEL || true
 require_secret AUTH_TOKEN || true
 require_secret CT0 || true
 require_secret RESEND_API_KEY || true
