@@ -28,16 +28,18 @@ When working on the automated research/image pipeline:
 13. The preflight canary, shadow rehearsal, and production cycle must all share the same auth/repo preflight script so they cannot silently drift apart on required checks.
 14. The scheduled preflight canary must validate the exact model and auth configuration the real nightly run depends on: `OPENAI_API_KEY`, `OPENAI_TEXT_MODEL`, `OPENAI_IMAGE_MODEL`, X auth, Resend notify secrets, Vercel access for all three projects, and GitHub access for both mirror repos.
 15. A separate GitHub Actions shadow run must execute before the nightly publish path and must exercise the same internal path as the real cycle: fetch, candidate selection, article generation, hero image generation, local commit staging, source deploy rehearsal, mirror sync rehearsal, mirror deploy rehearsal, and founder-notification rehearsal. The only missing side effects should be `git push`, real production deploy, live URL wait, and real founder email send.
-16. Once a bookmark candidate has been published, it must be marked as `done` in the scored CSV/JSON state and must not be selected again unless reuse is explicitly forced for debugging.
-17. The default nightly research floor is `25` relevance. The selector should still choose top-down from the ranked list, but should not drop below that floor unless someone explicitly overrides it for a manual debug run.
-18. Never publish a research article whose headline or angle duplicates an existing public research page. If a candidate maps to an already-covered topic, skip it or fail the publish before it reaches `/research`.
-19. Even above the `25` floor, skip hiring posts, generic hype, and other non-publishable items. The selector should prefer the highest-scoring publishable engineering or agentic-coding signal, not merely the highest raw score.
-20. The current `RESEND_API_KEY` is send-only. Do not gate the pipeline on Resend read/list endpoints; they false-fail even when real email sends work.
-21. `VERCEL_TOKEN` is the canonical GitHub Actions secret for deploy auth. `VERCEL_TOKEN_B64` is only a transport fallback. Token resolution must prefer the raw secret and only accept a candidate that can actually authenticate against the target Vercel project.
-22. Shadow runs are not allowed to be shallow health checks. If the real nightly path commits, syncs mirrors, and prepares Vercel builds, the shadow path must rehearse those same internal steps on ephemeral workspace state.
-23. The optional Codex polish pass must never be allowed to stall the nightly publish. Time-box it, keep it in both shadow and production workflows, and continue with the generated package if the polish step hangs or fails.
-24. `research-cycle.yml` runs from a commit checkout, so any workflow push of generated research must use `git push origin HEAD:main`. Never assume Actions is on a named local branch.
-25. If the scheduled canary fails, it must send a founder alert email in English before the shadow stage would normally start.
+16. `research-cycle.yml` must install the repo dependencies explicitly before generation so the production path does not rely on an implicit runner state that shadow happened to have.
+17. Shadow and production must share the same image quality gate. If the real nightly run enforces `NAUTILUS_IMAGE_MIN_SCORE`, the shadow run must enforce the same threshold too.
+18. Once a bookmark candidate has been published, it must be marked as `done` in the scored CSV/JSON state and must not be selected again unless reuse is explicitly forced for debugging.
+19. The default nightly research floor is `25` relevance. The selector should still choose top-down from the ranked list, but should not drop below that floor unless someone explicitly overrides it for a manual debug run.
+20. Never publish a research article whose headline or angle duplicates an existing public research page. If a candidate maps to an already-covered topic, skip it or fail the publish before it reaches `/research`.
+21. Even above the `25` floor, skip hiring posts, generic hype, and other non-publishable items. The selector should prefer the highest-scoring publishable engineering or agentic-coding signal, not merely the highest raw score.
+22. The current `RESEND_API_KEY` is send-only. Do not gate the pipeline on Resend read/list endpoints; they false-fail even when real email sends work.
+23. `VERCEL_TOKEN` is the canonical GitHub Actions secret for deploy auth. `VERCEL_TOKEN_B64` is only a transport fallback. Token resolution must prefer the raw secret and only accept a candidate that can actually authenticate against the target Vercel project.
+24. Shadow runs are not allowed to be shallow health checks. If the real nightly path commits, syncs mirrors, and prepares Vercel builds, the shadow path must rehearse those same internal steps on ephemeral workspace state.
+25. The optional Codex polish pass must never be allowed to stall the nightly publish. Time-box it, keep it in both shadow and production workflows, and continue with the generated package if the polish step hangs or fails.
+26. `research-cycle.yml` runs from a commit checkout, so any workflow push of generated research must use `git push origin HEAD:main`. Never assume Actions is on a named local branch.
+27. If the scheduled canary fails, it must send a founder alert email in English before the shadow stage would normally start.
 
 ## Supabase Project
 

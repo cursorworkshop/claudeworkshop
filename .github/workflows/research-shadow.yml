@@ -12,6 +12,10 @@ on:
         description: 'Override minimum relevance threshold (0-100)'
         required: false
         default: '25'
+      image_min_score:
+        description: 'Override hero image style score threshold (0-100)'
+        required: false
+        default: '96'
       image_max_attempts:
         description: 'Override max hero image retry attempts'
         required: false
@@ -66,6 +70,7 @@ jobs:
       RESEARCH_SITE_BASE_URLS: ${{ secrets.RESEARCH_SITE_BASE_URLS != '' && secrets.RESEARCH_SITE_BASE_URLS || 'https://www.claudeworkshop.com/research,https://www.claudeworkshop.com/research,https://www.codexworkshop.com/research' }}
       BIRD_CMD: bird
       NAUTILUS_MIN_RELEVANCE: ${{ github.event.inputs.min_relevance || '25' }}
+      NAUTILUS_IMAGE_MIN_SCORE: ${{ github.event.inputs.image_min_score || '96' }}
       NAUTILUS_IMAGE_MAX_ATTEMPTS: ${{ github.event.inputs.image_max_attempts || '6' }}
       NAUTILUS_MIN_WORD_COUNT: ${{ github.event.inputs.min_word_count || '450' }}
       NAUTILUS_MAX_WORD_COUNT: ${{ github.event.inputs.max_word_count || '1100' }}
