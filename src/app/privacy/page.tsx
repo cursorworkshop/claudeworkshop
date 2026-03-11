@@ -72,6 +72,8 @@ const contactInfo = [
 ];
 
 export default function PrivacyPage() {
+  const usesLinkedInInsightTag = siteConfig.branding.key === 'cursor';
+
   return (
     <div className='min-h-screen bg-background'>
       {/* Hero Section */}
@@ -211,9 +213,15 @@ export default function PrivacyPage() {
               <ul className='list-disc list-inside space-y-2 text-muted-foreground'>
                 <li>
                   <strong>Analytics:</strong> We use analytics tools to
-                  understand website usage and campaign performance, including
-                  conversion tracking pixels such as the LinkedIn Insight Tag
+                  understand website usage and campaign performance
                 </li>
+                {usesLinkedInInsightTag ? (
+                  <li>
+                    <strong>Advertising Attribution:</strong> On
+                    claudeworkshop.com we use the LinkedIn Insight Tag for ad
+                    conversion tracking
+                  </li>
+                ) : null}
                 <li>
                   <strong>Email Services:</strong> We use email services to
                   communicate with you

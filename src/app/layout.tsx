@@ -13,6 +13,7 @@ import { siteConfig } from '@/lib/config';
 const inter = Inter({ subsets: ['latin'] });
 const ogImageUrl = `${siteConfig.url}${siteConfig.images.ogImage}`;
 const LINKEDIN_PARTNER_ID = '8633770';
+const LINKEDIN_INSIGHT_ENABLED = siteConfig.branding.key === 'cursor';
 
 export const metadata: Metadata = {
   title: `${siteConfig.title} - AI Development Training`,
@@ -67,40 +68,44 @@ export default function RootLayout({
             gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ADS_ID}');
           `}
         </Script>
-        <Script id='linkedin-insight-tag' strategy='afterInteractive'>
-          {`
-            _linkedin_partner_id = "${LINKEDIN_PARTNER_ID}";
-            window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
-            window._linkedin_data_partner_ids.push(_linkedin_partner_id);
-            (function(l) {
-              if (!l) {
-                window.lintrk = function(a, b) {
-                  window.lintrk.q.push([a, b]);
-                };
-                window.lintrk.q = [];
-              }
-              var s = document.getElementsByTagName("script")[0];
-              var b = document.createElement("script");
-              b.type = "text/javascript";
-              b.async = true;
-              b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
-              s.parentNode.insertBefore(b, s);
-            })(window.lintrk);
-          `}
-        </Script>
+        {LINKEDIN_INSIGHT_ENABLED ? (
+          <Script id='linkedin-insight-tag' strategy='afterInteractive'>
+            {`
+              _linkedin_partner_id = "${LINKEDIN_PARTNER_ID}";
+              window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
+              window._linkedin_data_partner_ids.push(_linkedin_partner_id);
+              (function(l) {
+                if (!l) {
+                  window.lintrk = function(a, b) {
+                    window.lintrk.q.push([a, b]);
+                  };
+                  window.lintrk.q = [];
+                }
+                var s = document.getElementsByTagName("script")[0];
+                var b = document.createElement("script");
+                b.type = "text/javascript";
+                b.async = true;
+                b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
+                s.parentNode.insertBefore(b, s);
+              })(window.lintrk);
+            `}
+          </Script>
+        ) : null}
       </head>
       <body className={inter.className}>
-        <noscript>
-          {/* LinkedIn requires a raw noscript pixel fallback here. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            alt=''
-            height='1'
-            src={`https://px.ads.linkedin.com/collect/?pid=${LINKEDIN_PARTNER_ID}&fmt=gif`}
-            style={{ display: 'none' }}
-            width='1'
-          />
-        </noscript>
+        {LINKEDIN_INSIGHT_ENABLED ? (
+          <noscript>
+            {/* LinkedIn requires a raw noscript pixel fallback here. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              alt=''
+              height='1'
+              src={`https://px.ads.linkedin.com/collect/?pid=${LINKEDIN_PARTNER_ID}&fmt=gif`}
+              style={{ display: 'none' }}
+              width='1'
+            />
+          </noscript>
+        ) : null}
         <ThemeProvider
           attribute='class'
           defaultTheme='light'
