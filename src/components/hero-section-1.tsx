@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, Sparkles } from 'lucide-react';
+import { bookingCtaClassName } from '@/lib/button-styles';
 
 const trustedCompanies = [
   { name: 'Algolia', logo: 'https://cdn.simpleicons.org/algolia' },
@@ -35,13 +36,22 @@ export default function HeroSection() {
             </p>
 
             <div className='mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row'>
-              <Button asChild size='lg' className='pr-1.5'>
+              <Button
+                asChild
+                size='lg'
+                className={`${bookingCtaClassName} pr-1.5`}
+              >
                 <Link href='/contact'>
                   <span className='text-nowrap'>Book Training</span>
                   <ChevronRight className='opacity-50' />
                 </Link>
               </Button>
-              <Button asChild variant='outline' size='lg'>
+              <Button
+                asChild
+                variant='secondary'
+                size='lg'
+                className='border-transparent bg-zinc-200 text-foreground hover:bg-zinc-300'
+              >
                 <Link href='/methodology'>Our Methodology</Link>
               </Button>
             </div>

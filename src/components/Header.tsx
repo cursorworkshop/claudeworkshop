@@ -11,6 +11,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  bookingCtaClassName,
+  bookingCtaProminentClassName,
+} from '@/lib/button-styles';
 import { navigation, siteConfig } from '@/lib/config';
 
 export default function Header() {
@@ -61,7 +65,11 @@ export default function Header() {
 
           {/* Desktop CTA */}
           <div className='hidden md:flex items-center space-x-2'>
-            <Button size='default' className='text-sm px-6 h-10' asChild>
+            <Button
+              size='default'
+              className={bookingCtaProminentClassName}
+              asChild
+            >
               <Link href='/contact'>Book Training</Link>
             </Button>
           </div>
@@ -93,7 +101,7 @@ export default function Header() {
                   <div className='pt-2 mt-2 border-t border-border/40'>
                     <Button
                       size='default'
-                      className='w-full'
+                      className={`w-full ${bookingCtaClassName}`}
                       onClick={() => setMobileMenuOpen(false)}
                       asChild
                     >

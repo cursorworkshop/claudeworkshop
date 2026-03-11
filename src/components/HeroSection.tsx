@@ -55,17 +55,13 @@ export function HeroSection() {
           </p>
 
           <div className='flex flex-row gap-3 justify-center pt-8'>
-            <Button
-              size='default'
-              className='h-10 px-5 sm:h-12 sm:px-8 text-sm sm:text-base'
-              asChild
-            >
+            <Button size='lg' asChild>
               <Link href='/training'>Programs</Link>
             </Button>
             <Button
-              size='default'
+              size='lg'
               variant='secondary'
-              className='h-10 px-5 sm:h-12 sm:px-8 text-sm sm:text-base'
+              className='border-transparent bg-zinc-200 text-foreground hover:bg-zinc-300'
               asChild
             >
               <Link href='/methodology'>Methodology</Link>

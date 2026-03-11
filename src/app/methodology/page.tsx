@@ -183,17 +183,10 @@ export default function MethodologyPage() {
               tailored to your codebase.
             </p>
             <div className='flex flex-row gap-3 justify-center'>
-              <Button
-                className='h-10 px-5 sm:h-12 sm:px-8 text-sm sm:text-base'
-                asChild
-              >
+              <Button size='lg' asChild>
                 <Link href='/contact'>Get Started</Link>
               </Button>
-              <Button
-                variant='secondary'
-                className='h-10 px-5 sm:h-12 sm:px-8 text-sm sm:text-base'
-                asChild
-              >
+              <Button variant='secondary' size='lg' asChild>
                 <Link href='/training'>View Training</Link>
               </Button>
             </div>

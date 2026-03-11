@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import FAQs from '@/components/faqs-2';
+import { bookingCtaClassName } from '@/lib/button-styles';
 
 export const metadata: Metadata = {
   title: 'Training Programs | Claude Workshop',
@@ -40,7 +41,7 @@ export default function TrainingPage() {
           </p>
           <div className='flex flex-row gap-3 justify-center'>
             <Button
-              className='h-10 px-5 sm:h-12 sm:px-8 text-sm sm:text-base'
+              className={`${bookingCtaClassName} h-10 px-5 text-sm sm:h-12 sm:px-8 sm:text-base`}
               asChild
             >
               <Link href='/contact'>Book Training</Link>
@@ -210,9 +211,6 @@ export default function TrainingPage() {
                   <Button className='flex-1' asChild>
                     <Link href='/contact'>Inquire About Offsites</Link>
                   </Button>
-                  <Button variant='secondary' className='flex-1' asChild>
-                    <Link href='/methodology'>View Methodology</Link>
-                  </Button>
                 </div>
               </div>
             </div>
@@ -234,15 +232,13 @@ export default function TrainingPage() {
             format.
           </p>
           <div className='flex flex-row gap-3 justify-center'>
-            <Button
-              className='h-10 px-5 sm:h-12 sm:px-8 text-sm sm:text-base'
-              asChild
-            >
+            <Button size='lg' asChild>
               <Link href='/contact'>Contact Us</Link>
             </Button>
             <Button
+              size='lg'
               variant='secondary'
-              className='h-10 px-5 sm:h-12 sm:px-8 text-sm sm:text-base'
+              className='border-transparent bg-zinc-200 text-foreground hover:bg-zinc-300'
               asChild
             >
               <Link href='/methodology'>Our Methodology</Link>

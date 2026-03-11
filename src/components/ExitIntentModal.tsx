@@ -236,7 +236,7 @@ export function ExitIntentModal({
                           placeholder='First name'
                           value={firstName}
                           onChange={e => setFirstName(e.target.value)}
-                          className='h-12 bg-zinc-100 border-0 rounded-full pl-6 focus:bg-zinc-50 transition-colors'
+                          className='h-12 border-0 bg-zinc-100 pl-6 focus:bg-zinc-50 transition-colors'
                           required
                         />
                         <Input
@@ -244,7 +244,7 @@ export function ExitIntentModal({
                           placeholder='Last name'
                           value={lastName}
                           onChange={e => setLastName(e.target.value)}
-                          className='h-12 bg-zinc-100 border-0 rounded-full pl-6 focus:bg-zinc-50 transition-colors'
+                          className='h-12 border-0 bg-zinc-100 pl-6 focus:bg-zinc-50 transition-colors'
                           required
                         />
                       </div>
@@ -253,7 +253,7 @@ export function ExitIntentModal({
                         placeholder='your@email.com'
                         value={email}
                         onChange={e => setEmail(e.target.value)}
-                        className='h-12 bg-zinc-100 border-0 rounded-full pl-6 focus:bg-zinc-50 transition-colors'
+                        className='h-12 border-0 bg-zinc-100 pl-6 focus:bg-zinc-50 transition-colors'
                         required
                       />
                       <Button

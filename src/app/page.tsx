@@ -203,17 +203,13 @@ export default async function HomePage() {
             Transform how your team builds software today.
           </p>
           <div className='flex flex-row gap-3 justify-center'>
-            <Button
-              size='default'
-              className='h-10 px-5 sm:h-12 sm:px-8 text-sm sm:text-base'
-              asChild
-            >
+            <Button size='lg' asChild>
               <Link href='/contact'>Get in touch</Link>
             </Button>
             <Button
-              size='default'
-              variant='outline'
-              className='h-10 px-5 sm:h-12 sm:px-8 text-sm sm:text-base'
+              size='lg'
+              variant='secondary'
+              className='border-transparent bg-zinc-200 text-foreground hover:bg-zinc-300'
               asChild
             >
               <Link href='/methodology'>Our approach</Link>

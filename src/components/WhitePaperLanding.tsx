@@ -104,7 +104,7 @@ export function WhitePaperLanding() {
                           placeholder='First name'
                           value={firstName}
                           onChange={e => setFirstName(e.target.value)}
-                          className='h-12 rounded-full border-0 bg-zinc-100 pl-6'
+                          className='h-12 border-0 bg-zinc-100 pl-6'
                           required
                         />
                         <Input
@@ -112,7 +112,7 @@ export function WhitePaperLanding() {
                           placeholder='Last name'
                           value={lastName}
                           onChange={e => setLastName(e.target.value)}
-                          className='h-12 rounded-full border-0 bg-zinc-100 pl-6'
+                          className='h-12 border-0 bg-zinc-100 pl-6'
                           required
                         />
                       </div>
@@ -121,7 +121,7 @@ export function WhitePaperLanding() {
                         placeholder='your@email.com'
                         value={email}
                         onChange={e => setEmail(e.target.value)}
-                        className='h-12 w-full rounded-full border-0 bg-zinc-100 pl-6'
+                        className='h-12 w-full border-0 bg-zinc-100 pl-6'
                         required
                       />
                       <Button
