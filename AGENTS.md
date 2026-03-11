@@ -38,8 +38,11 @@ When working on the automated research/image pipeline:
 23. `VERCEL_TOKEN` is the canonical GitHub Actions secret for deploy auth. `VERCEL_TOKEN_B64` is only a transport fallback. Token resolution must prefer the raw secret and only accept a candidate that can actually authenticate against the target Vercel project.
 24. Shadow runs are not allowed to be shallow health checks. If the real nightly path commits, syncs mirrors, and prepares Vercel builds, the shadow path must rehearse those same internal steps on ephemeral workspace state.
 25. The optional Codex polish pass must never be allowed to stall the nightly publish. Time-box it, keep it in both shadow and production workflows, and continue with the generated package if the polish step hangs or fails.
-26. `research-cycle.yml` runs from a commit checkout, so any workflow push of generated research must use `git push origin HEAD:main`. Never assume Actions is on a named local branch.
-27. If the scheduled canary fails, it must send a founder alert email in English before the shadow stage would normally start.
+26. The shared Vercel deploy helper should default to `--archive=tgz` uploads so nightly source and mirror deploys are less likely to trip Vercel's `api-upload-free` limit on large prebuilt outputs.
+27. `research-cycle.yml` runs from a commit checkout, so any workflow push of generated research must use `git push origin HEAD:main`. Never assume Actions is on a named local branch.
+28. If the scheduled canary fails, it must send a founder alert email in English before the shadow stage would normally start.
+29. The shared research preflight must verify the exact nightly push paths before generation starts: dry-run push access to `cursorworkshop` main and to both mirror repos is required, not just read access.
+30. `Research Shadow Run` must also dry-run the post-commit source push and both mirror pushes after it creates the rehearsal commits, so detached-head or mirror-push regressions fail before the scheduled publish window.
 
 ## Supabase Project
 

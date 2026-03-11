@@ -38,7 +38,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   shadow:
@@ -188,6 +188,11 @@ jobs:
           echo "did_commit=true" >> "$GITHUB_OUTPUT"
           echo "did_publish=$did_publish" >> "$GITHUB_OUTPUT"
 
+      - name: Rehearse source push without side effects
+        if: steps.commit_shadow.outputs.did_commit == 'true'
+        run: |
+          git push --dry-run origin HEAD:main
+
       - name: Rehearse source deploy path without production deploy
         if: steps.commit_shadow.outputs.did_commit == 'true' && steps.commit_shadow.outputs.did_publish == 'true'
         run: |
@@ -199,6 +204,21 @@ jobs:
           node scripts/sync-brand-sites.mjs \
             --all \
             --target-root "$RUNNER_TEMP/brand-sync"
+
+      - name: Rehearse mirror pushes without side effects
+        if: steps.commit_shadow.outputs.did_commit == 'true' && steps.commit_shadow.outputs.did_publish == 'true'
+        run: |
+          set -euo pipefail
+
+          for site_dir in \
+            "$RUNNER_TEMP/brand-sync/claudeworkshop" \
+            "$RUNNER_TEMP/brand-sync/codexworkshop"; do
+            test -d "$site_dir"
+            (
+              cd "$site_dir"
+              git push --dry-run origin HEAD:main
+            )
+          done
 
       - name: Rehearse mirror deploy paths without production deploy
         if: steps.commit_shadow.outputs.did_commit == 'true' && steps.commit_shadow.outputs.did_publish == 'true'

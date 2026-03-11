@@ -54,6 +54,44 @@ check_vercel_access() {
   return 1
 }
 
+check_source_push_access() {
+  if git push --dry-run origin HEAD:main >/dev/null 2>&1; then
+    pass "Git push dry-run works for cursorworkshop main"
+    return 0
+  fi
+  fail "Git push dry-run failed for cursorworkshop main"
+  return 1
+}
+
+check_mirror_push_access() {
+  local label="$1"
+  local repo="$2"
+
+  if [ -z "${BRAND_SYNC_TOKEN:-}" ]; then
+    fail "Mirror push dry-run failed for $label because BRAND_SYNC_TOKEN is missing"
+    return 1
+  fi
+
+  local auth_url="https://x-access-token:${BRAND_SYNC_TOKEN}@github.com/${repo}.git"
+  local tmp_dir
+  tmp_dir="$(mktemp -d)"
+
+  if git clone --depth 1 "$auth_url" "$tmp_dir" >/dev/null 2>&1 && \
+    (
+      cd "$tmp_dir"
+      git checkout main >/dev/null 2>&1
+      git push --dry-run origin HEAD:main >/dev/null 2>&1
+    ); then
+    rm -rf "$tmp_dir"
+    pass "Git push dry-run works for $label"
+    return 0
+  fi
+
+  rm -rf "$tmp_dir"
+  fail "Git push dry-run failed for $label"
+  return 1
+}
+
 if [ -n "$REPORT_PATH" ]; then
   mkdir -p "$(dirname "$REPORT_PATH")"
   : >"$REPORT_PATH"
@@ -87,6 +125,9 @@ check_vercel_access "codexworkshop.com" "${VERCEL_CODEX_PROJECT_ID:-}" || true
 
 check_repo_access "cursorworkshop/claudeworkshop" || true
 check_repo_access "cursorworkshop/codexworkshop" || true
+check_source_push_access || true
+check_mirror_push_access "claudeworkshop main" "cursorworkshop/claudeworkshop" || true
+check_mirror_push_access "codexworkshop main" "cursorworkshop/codexworkshop" || true
 
 if [ "$FAILURES" -gt 0 ]; then
   append_report

@@ -10,6 +10,7 @@ VERCEL_PROJECT_ID_CLEAN="$(printf '%s' "${VERCEL_PROJECT_ID:-}" | tr -d '\r\n')"
 VERCEL_DEPLOY_MAX_ATTEMPTS="${VERCEL_DEPLOY_MAX_ATTEMPTS:-12}"
 VERCEL_DEPLOY_BUFFER_SECONDS="${VERCEL_DEPLOY_BUFFER_SECONDS:-5}"
 VERCEL_BUILD_ONLY="${VERCEL_BUILD_ONLY:-0}"
+VERCEL_DEPLOY_ARCHIVE_FORMAT="${VERCEL_DEPLOY_ARCHIVE_FORMAT:-tgz}"
 
 require_secret() {
   local name="$1"
@@ -56,7 +57,11 @@ deploy_with_retry() {
     log_file="$(mktemp)"
 
     set +e
-    vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN_CLEAN" 2>&1 | tee "$log_file"
+    vercel deploy \
+      --prebuilt \
+      --archive="$VERCEL_DEPLOY_ARCHIVE_FORMAT" \
+      --prod \
+      --token="$VERCEL_TOKEN_CLEAN" 2>&1 | tee "$log_file"
     local status=${PIPESTATUS[0]}
     set -e
 
