@@ -1,0 +1,66 @@
+name: Research Preflight Canary
+
+on:
+  schedule:
+    - cron: '5 0 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: research-preflight-canary
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  canary:
+    if: github.repository == 'cursorworkshop/claudeworkshop'
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      AUTH_TOKEN: ${{ secrets.X_AUTH_TOKEN }}
+      CT0: ${{ secrets.X_CT0 }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEARCH_NOTIFY_EMAILS: ${{ secrets.RESEARCH_NOTIFY_EMAILS }}
+      RESEARCH_NOTIFY_FROM: ${{ secrets.RESEARCH_NOTIFY_FROM }}
+      RESEARCH_NOTIFY_REPLY_TO: ${{ secrets.RESEARCH_NOTIFY_REPLY_TO }}
+      BRAND_SYNC_TOKEN: ${{ secrets.BRAND_SYNC_TOKEN }}
+      GH_TOKEN: ${{ secrets.BRAND_SYNC_TOKEN }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_TOKEN_B64: ${{ secrets.VERCEL_TOKEN_B64 }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_CLAUDE_PROJECT_ID: prj_aGHPChctUlkHdDvTVNafXV9KAsj3
+      VERCEL_CODEX_PROJECT_ID: prj_NSoYl4F3IhZI03Amn0kHBJ5oKr0i
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Run research preflight canary
+        id: preflight
+        run: |
+          bash scripts/research-preflight.sh "$RUNNER_TEMP/research-preflight-report.md"
+
+      - name: Upload preflight report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-preflight-report-${{ github.run_id }}
+          if-no-files-found: ignore
+          retention-days: 7
+          path: |
+            ${{ runner.temp }}/research-preflight-report.md
+
+      - name: Send founders canary alert
+        if: failure() && github.event_name == 'schedule'
+        run: |
+          node scripts/send-research-canary-alert.mjs \
+            --report "$RUNNER_TEMP/research-preflight-report.md"

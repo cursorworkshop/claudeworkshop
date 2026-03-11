@@ -1,9 +1,11 @@
 name: Research Shadow Run
 
 on:
-  schedule:
-    # 30 minutes before the nightly publish run: 01:30 Amsterdam in winter / 02:30 in summer.
-    - cron: '30 0 * * *'
+  workflow_run:
+    workflows:
+      - Research Preflight Canary
+    types:
+      - completed
   workflow_dispatch:
     inputs:
       min_relevance:
@@ -36,7 +38,18 @@ permissions:
 
 jobs:
   shadow:
-    if: github.repository == 'cursorworkshop/claudeworkshop'
+    if: >
+      github.repository == 'cursorworkshop/claudeworkshop' &&
+      (
+        github.event_name == 'workflow_dispatch' ||
+        (
+          github.event_name == 'workflow_run' &&
+          github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.event == 'schedule' &&
+          github.event.workflow_run.head_branch == 'main' &&
+          github.event.workflow_run.repository.full_name == 'cursorworkshop/claudeworkshop'
+        )
+      )
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -70,6 +83,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -100,33 +115,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.BRAND_SYNC_TOKEN }}
         run: |
-          set -euo pipefail
-
-          require_secret() {
-            local name="$1"
-            local value="${!name:-}"
-            if [ -z "$(printf '%s' "$value" | tr -d '\r\n')" ]; then
-              echo "Missing required secret: $name"
-              exit 1
-            fi
-          }
-
-          require_secret OPENAI_API_KEY
-          require_secret AUTH_TOKEN
-          require_secret CT0
-          require_secret RESEND_API_KEY
-          require_secret BRAND_SYNC_TOKEN
-          require_secret VERCEL_ORG_ID
-          require_secret VERCEL_PROJECT_ID
-          require_secret VERCEL_CLAUDE_PROJECT_ID
-          require_secret VERCEL_CODEX_PROJECT_ID
-
-          bash scripts/verify-vercel-access.sh >/dev/null
-          VERCEL_VERIFY_PROJECT_ID="$VERCEL_CLAUDE_PROJECT_ID" bash scripts/verify-vercel-access.sh >/dev/null
-          VERCEL_VERIFY_PROJECT_ID="$VERCEL_CODEX_PROJECT_ID" bash scripts/verify-vercel-access.sh >/dev/null
-
-          gh repo view cursorworkshop/claudeworkshop --json name >/dev/null
-          gh repo view cursorworkshop/codexworkshop --json name >/dev/null
+          bash scripts/research-preflight.sh
 
       - name: Run shadow research generation path
         run: |
