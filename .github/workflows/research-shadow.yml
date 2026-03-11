@@ -147,7 +147,10 @@ jobs:
             docs/nautilus/data/outbox
 
       - name: Codex polish shadow article
+        id: codex_polish_shadow
         uses: openai/codex-action@v1
+        continue-on-error: true
+        timeout-minutes: 6
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           model: gpt-5.1-codex-max
@@ -155,6 +158,12 @@ jobs:
           working-directory: ${{ github.workspace }}
           sandbox: workspace-write
           safety-strategy: drop-sudo
+
+      - name: Continue shadow rehearsal without Codex polish if it timed out or failed
+        if: steps.codex_polish_shadow.outcome != 'success'
+        run: |
+          echo "Codex polish did not complete successfully during shadow rehearsal."
+          echo "Continuing so the shadow run still validates the rest of the nightly path."
 
       - name: Format generated research list
         run: npx prettier --write src/components/ResearchList.tsx

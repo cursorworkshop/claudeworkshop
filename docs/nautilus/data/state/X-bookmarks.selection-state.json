@@ -6,7 +6,8 @@
     "2020290971951391031",
     "2003118032919613595",
     "2021009544952844434",
-    "1943295167491871112"
+    "1943295167491871112",
+    "2008953105652842761"
   ],
   "published_ids": [
     "2019564738649505882",
@@ -15,7 +16,8 @@
     "2020290971951391031",
     "2003118032919613595",
     "2021009544952844434",
-    "1943295167491871112"
+    "1943295167491871112",
+    "2008953105652842761"
   ],
   "history": [
     {
@@ -93,6 +95,18 @@
       "status_url": "https://x.com/ryancarson/status/1943295167491871112",
       "author_handle": "ryancarson",
       "author_name": "Ryan Carson"
+    },
+    {
+      "id": "2008953105652842761",
+      "selected_at": "2026-03-11T08:55:14.425Z",
+      "published_at": "2026-03-11T09:02:02.737Z",
+      "relevance_percent": 44,
+      "candidate_slug": "agentic-coding-signals-2008953105652842761",
+      "published_slug": "agentic-coding-signals-20260311-0855",
+      "article_url": "https://www.claudeworkshop.com/research/agentic-coding-signals-20260311-0855",
+      "status_url": "https://x.com/cramforce/status/2008953105652842761",
+      "author_handle": "cramforce",
+      "author_name": "Malte Ubl"
     }
   ]
 }

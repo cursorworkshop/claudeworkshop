@@ -31,6 +31,8 @@ When working on the automated research/image pipeline:
 16. The current `RESEND_API_KEY` is send-only. Do not gate the pipeline on Resend read/list endpoints; they false-fail even when real email sends work.
 17. `VERCEL_TOKEN` is the canonical GitHub Actions secret for deploy auth. `VERCEL_TOKEN_B64` is only a transport fallback. Token resolution must prefer the raw secret and only accept a candidate that can actually authenticate against the target Vercel project.
 18. Shadow runs are not allowed to be shallow health checks. If the real nightly path commits, syncs mirrors, and prepares Vercel builds, the shadow path must rehearse those same internal steps on ephemeral workspace state.
+19. The optional Codex polish pass must never be allowed to stall the nightly publish. Time-box it, keep it in both shadow and production workflows, and continue with the generated package if the polish step hangs or fails.
+20. `research-cycle.yml` runs from a commit checkout, so any workflow push of generated research must use `git push origin HEAD:main`. Never assume Actions is on a named local branch.
 
 ## Supabase Project
 

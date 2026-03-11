@@ -1,0 +1,146 @@
+---
+title: 'Designing Agent‑Readable Docs: Markdown, Tokens, and the Real Tradeoffs'
+description: 'A practical look at returning markdown from internal docs for coding agents: why teams do it, how to implement it, and what it actually changes in agentic workflows.'
+image: '/images/editorials/agentic-coding-signals-20260311-0855.png'
+author: 'Rogier Muller'
+authorUrl: 'https://www.claudeworkshop.com/about'
+publishedAt: '2026-03-11'
+category: 'ai-coding'
+tags:
+  - 'agentic-coding'
+  - 'developer-experience'
+  - 'documentation'
+  - 'prompt-engineering'
+  - 'architecture'
+publicResearch: true
+featured: false
+metaTitle: 'Designing Agent‑Readable Docs: Markdown, Tokens, and Tradeoffs'
+metaDescription: 'For teams shipping with coding agents, returning markdown from docs can cut tokens and reduce hallucinations. This article covers concrete patterns, tradeoffs, and implementation steps.'
+---
+# Designing Agent‑Readable Docs: Markdown, Tokens, and Tradeoffs
+
+Teams shipping coding agents are changing how they write and serve documentation. A concrete shift: instead of returning full HTML or rich UI fragments, internal doc services often return compact markdown when agents ask for docs.
+
+The goal is simple: make it cheaper and more reliable for agents to read your docs.
+
+This affects how you design APIs, documentation, and prompts, and it comes with tradeoffs.
+
+## Why agents prefer markdown over HTML
+
+Most coding agents work on plain text. They can parse HTML, but they do not have a browser engine, layout tree, or CSS cascade. Every extra token of markup is noise the model has to strip away.
+
+Markdown is a practical middle ground:
+
+- It is structurally clear enough for the model to infer sections, lists, and code blocks.
+- It is compact, so you spend fewer tokens on markup.
+- It is easy to generate from existing content pipelines.
+
+In practice, teams see three main benefits when they expose markdown variants of docs to agents:
+
+- **Lower token usage**: Less boilerplate than HTML, no CSS/JS, fewer attributes.
+- **Cleaner reasoning**: Headings, lists, and code blocks are obvious to the model.
+- **Simpler prompts**: You can ask the agent to "follow the steps under `## Usage`" and expect it to find that section.
+
+There is not yet broad, public benchmark data on markdown vs HTML for agent performance. Many teams report fewer hallucinations and shorter prompts when they switch.
+
+## What actually changes in your system
+
+Supporting markdown for agents is not just a content choice. It touches several layers:
+
+- **Docs backend**: Needs a way to serve markdown representations of the same source content.
+- **APIs**: Need a stable, machine‑friendly interface for agents to query docs.
+- **Agent prompts**: Need to assume markdown structure and reference it explicitly.
+- **Authoring**: Writers and engineers need conventions that are predictable for models.
+
+The key shift is that your docs become a **machine‑first interface** as well as a human‑first one. You are designing for two readers at once.
+
+## Implementation pattern: a doc service with agent‑optimized responses
+
+A practical pattern is to introduce a small doc gateway service in front of your existing documentation system.
+
+Core responsibilities:
+
+- Accept structured queries from agents (for example, by API route, component name, or feature flag).
+- Fetch and normalize content from your existing source (MDX, CMS, wiki, etc.).
+- Return a compact markdown view with predictable sections.
+
+A minimal design might expose endpoints like:
+
+- `GET /agent-docs/by-endpoint?path=/v1/users` → markdown describing that API.
+- `GET /agent-docs/by-component?name=UserList` → markdown describing a UI component.
+
+Inside the markdown, keep a stable skeleton, for example:
+
+- `# <Resource name>`
+- `## Summary`
+- `## Inputs`
+- `## Outputs`
+- `## Usage`
+- `## Examples`
+- `## Caveats`
+
+Agents can then be prompted to:
+
+- Prefer the `## Usage` section for how‑to steps.
+- Use `## Caveats` to check for edge cases before making changes.
+
+This structure matters more than the exact wording. Models handle prose well; they handle ad‑hoc layouts poorly.
+
+## Making markdown token‑efficient without losing meaning
+
+Token efficiency is not about making the text as short as possible. It is about removing noise and redundancy.
+
+Concrete steps:
+
+- **Strip decorative markup**: No inline styles, no HTML entities beyond what is needed.
+- **Avoid repeated boilerplate**: If every endpoint repeats the same auth explanation, move it to a shared section and reference it once.
+- **Use concise headings**: `## Rate limits` is better than `## How we think about rate limiting in our platform`.
+- **Prefer code blocks over screenshots**: Agents cannot see images; code blocks are cheaper and more useful.
+
+A simple heuristic: if a human engineer skimming the markdown would find a section distracting or redundant, a model probably will too.
+
+## Prompting agents to use your markdown docs
+
+Returning markdown only helps if the agent actually calls the doc service and uses the result.
+
+Patterns that help:
+
+- **Tool design**: Expose a tool or function like `get_docs(resource_type, identifier)` that returns markdown. Describe the structure in the tool description.
+- **Prompt rules**: In system or developer messages, require the agent to call docs before modifying unfamiliar code or APIs.
+- **Section‑aware instructions**: Tell the agent to look for specific headings, for example, "Always check the `## Caveats` section before proposing changes."
+
+You can also log when the tool is called and whether the agent then contradicts the docs. This gives you a feedback loop on both doc quality and prompt design.
+
+## Tradeoffs and limitations
+
+Switching to markdown for agents has costs.
+
+Key tradeoffs:
+
+- **Loss of rich context**: HTML pages often include navigation, related links, and inline callouts. A minimal markdown view may drop some of that context.
+- **Duplication risk**: If you maintain separate human and agent views, they can drift. This is especially risky for security and compliance docs.
+- **Ambiguous semantics**: Markdown has limited semantic richness. Two sections with similar names may confuse the model.
+- **Model variability**: Different models may parse markdown slightly differently. A heading structure that works well for one model may be less effective for another.
+
+Mitigations:
+
+- Generate both human and agent views from the same source content where possible.
+- Keep a small, stable set of section names and avoid synonyms for critical concepts.
+- Test periodically with the models you actually use, not just one benchmark model.
+
+## Authoring guidelines for agent‑readable docs
+
+You do not need a new doc culture, but a few constraints help:
+
+- Write **short, direct sentences**. Long, nested clauses increase the chance the model misses a condition.
+- Put **hard requirements and caveats near the top** of a section.
+- Use **consistent terminology** for the same concept across pages.
+- Prefer **explicit steps** ("Do X, then Y") over narrative explanations when describing procedures.
+
+These also improve human readability, so you are rarely trading one audience off against the other.
+
+## Methodology reflection: designing the doc interface
+
+This kind of change fits into a **Design** step like the one in [our methodology](/methodology). Before building a doc gateway, it is worth sketching the interface from the agent’s point of view: what queries it can make, what structure it can rely on, and how errors are represented.
+
+Teams
